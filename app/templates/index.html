@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Rent WebApp</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header 
+								<header id="header">
+									<a href="{{ url_for('index') }}" class="logo"><strong>Rent WebApp</strong></a>
+								</header>
+							-->
+							<!-- Banner -->
+								<section id="banner">
+									<div class="content">
+										{% block content %} {% endblock %}
+								</section>
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section>
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										{% if current_user.is_anonymous %}
+										<li><a href="{{ url_for('login') }}">Login</a></li>
+										{% else %}
+										<li><a href="{{ url_for('index') }}">Overview</a></li>
+										<li>
+											<span class="opener {% if page == 'garage_view' or page == 'garage_manage' %}active{% endif %}">Garage</span>
+											<ul>
+												<li><a href="{{ url_for('garage_view') }}">View Garage</a></li>
+												<li><a href="{{ url_for('garage_manage') }}">Manage Garage</a></li>
+												<li><a href="#">Manage Car</a></li>
+											</ul>
+										</li>
+										<li><a href="{{ url_for('logout') }}">Logout</a></li>
+										{% endif %}
+									</ul>
+								</nav>
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p>If you are having troubles or just want to suggest something please get in touch by writing at:</p>
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/breakpoints.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	</body>
+</html>

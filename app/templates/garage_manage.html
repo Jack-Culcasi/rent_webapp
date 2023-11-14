@@ -1,0 +1,113 @@
+{% extends "index.html" %}
+
+{% block content %}
+<head>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
+  <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+</head>
+<form method="POST" action="{{ url_for('garage_manage') }}">
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+  <header id="header">
+    <h2>Add Car</h2>
+  </header>
+  <div class="row">
+    <div class="col">
+      <label for="Plate" class="form-label">Plate</label>
+      <input type="text" class="form-control" id="Plate" name="Plate">
+    </div>
+    <div class="col">
+      <label for="Make" class="form-label">Make</label>
+      <input type="text" class="form-control" id="Make" name="Make">
+    </div>
+    <div class="col">
+      <label for="Model" class="form-label">Model</label>
+      <input type="text" class="form-control" id="Model" name="Model">
+    </div>
+    <div class="col">
+      <label for="Fuel" class="form-label">Fuel</label>
+      <input type="text" class="form-control" id="Fuel" name="Fuel">
+    </div>
+    <div class="col">
+      <label for="Year" class="form-label">Year</label>
+      <input type="text" class="form-control" id="Year" name="Year">
+    </div>
+    <div class="col">
+      <label for="Cc" class="form-label">Cc</label>
+      <input type="text" class="form-control" id="Cc" name="Cc">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Car</button>
+</form>
+
+<header id="header">
+  <h2>Delete Car</h2>
+</header>
+<form action="/search" method="POST">
+  <div class="row">
+      <div class="col">
+          <label for="search_type" class="form-label">Search by</label>
+          <select class="form-select" id="search_type" name="search_type">
+              <option value="plate">Plate</option>
+              <option value="make">Make</option>
+              <option value="model">Model</option>
+              <option value="fuel">Fuel</option>
+              <option value="year">Year</option>
+              <option value="cc">Cc</option>
+          </select>
+      </div>
+      <div class="col">
+          <label for="search_type" class="form-label hidden-label">Search Query</label>
+          <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+      </div>
+  </div>
+  <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Search</button>
+</form>
+
+{% if search_query %}
+    {% if cars %}
+        <h3>Search Results:</h3>
+        <table class="table" id="carTable">
+            <thead>
+                <tr>
+                    <th scope="col">Plate</th>
+                    <th scope="col">Make</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Fuel</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Cc</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for car in cars %}
+              <tr>
+                  <td>{{ car.plate }}</td>
+                  <td>{{ car.make }}</td>
+                  <td>{{ car.model }}</td>
+                  <td>{{ car.fuel }}</td>
+                  <td>{{ car.year }}</td>
+                  <td>{{ car.cc }}</td>
+                  <td>
+                      <form action="/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this car?');">
+                          <input type="hidden" name="car_plate" value="{{ car.plate }}">
+                          <button type="submit" class="btn btn-danger">Delete</button>
+                      </form>
+                  </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No results found.</p>
+        {% endif %}
+    {% endif %}
+    
+    {% endblock %}
+

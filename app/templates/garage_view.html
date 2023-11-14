@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block content %}
+<head>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+</head>
+<table class="table" id="carTable">
+    <thead>
+      <tr>
+        <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="make">Make</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="fuel">Fuel</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="year">Year</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Cc</a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for car in user_cars %}
+      <tr>
+          <td data-sort="plate">{{ car.plate }}</td>
+          <td data-sort="make">{{ car.make }}</td>
+          <td data-sort="model">{{ car.model }}</td>
+          <td data-sort="fuel">{{ car.fuel }}</td>
+          <td data-sort="year">{{ car.year }}</td>
+          <td data-sort="cc">{{ car.cc }}</td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
