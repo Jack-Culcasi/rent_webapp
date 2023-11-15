@@ -1,0 +1,104 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('overview') }}">
+    <div class="row">
+        <!-- Other car details dropdown -->
+        <div class="col">
+            <label for="car_selection" class="form-label">Select Car</label>
+            <select class="form-select" id="car_selection" name="car_selection">
+                {% for car in user_cars %}
+                    <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Start Date -->
+        <div class="col">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+
+        <!-- End Date -->
+        <div class="col">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+
+        <!-- Start Time -->
+        <div class="col">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="start_time" name="start_time" required>
+        </div>
+
+        <!-- End Time -->
+        <div class="col">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="end_time" name="end_time" required>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Book Car</button>
+</form>
+
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  {% if category == 'success' %}
+    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+      {{ message }}
+    </div>
+  {% endif %}
+{% endfor %}
+
+<header id="header">
+    <h2>Booked Cars</h2>
+</header>
+<table>
+    <thead>
+        <tr>
+            <th>Plate</th>
+            <th>Model</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in user_bookings %}
+            <tr>
+                <td>{{ booking.car.plate }}</td>
+                <td>{{ booking.car.model }}</td>
+                <td>{{ booking.start_datetime }}</td>
+                <td>{{ booking.end_datetime }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<header id="header">
+    <h2>Avaliable Cars</h2>
+</header>
+
+<table>
+    <thead>
+        <tr>
+            <th>Plate</th>
+            <th>Model</th>
+            <th>Fuel</th>
+            <th>Year</th>
+            <th>CC</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for car in user_cars %}
+            {% if car.plate not in booked_car_plates %}
+                <tr>
+                    <td>{{ car.plate }}</td>
+                    <td>{{ car.model }}</td>
+                    <td>{{ car.fuel }}</td>
+                    <td>{{ car.year }}</td>
+                    <td>{{ car.cc }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

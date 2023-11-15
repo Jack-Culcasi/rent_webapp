@@ -48,7 +48,7 @@
 										{% if current_user.is_anonymous %}
 										<li><a href="{{ url_for('login') }}">Login</a></li>
 										{% else %}
-										<li><a href="{{ url_for('index') }}">Overview</a></li>
+										<li><a href="{{ url_for('overview') }}">Overview</a></li>
 										<li>
 											<span class="opener {% if page == 'garage_view' or page == 'garage_manage' %}active{% endif %}">Garage</span>
 											<ul>
