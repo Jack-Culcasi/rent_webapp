@@ -65,12 +65,12 @@ def logout():
 def garage_manage():
     if request.method == 'POST':
         # Process the form data for a POST request
-        plate = request.form.get('Plate')
-        make = request.form.get('Make')
-        model = request.form.get('Model')
-        fuel = request.form.get('Fuel')
-        year = request.form.get('Year')
-        cc = request.form.get('Cc')
+        plate = request.form.get('Plate').upper()
+        make = request.form.get('Make').lower().capitalize()
+        model = request.form.get('Model').lower().capitalize()
+        fuel = request.form.get('Fuel').lower().capitalize()
+        year = request.form.get('Year').lower().capitalize()
+        cc = request.form.get('Cc').lower().capitalize()
 
         new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)
 
@@ -85,8 +85,17 @@ def garage_manage():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
+        # Standardize the search input
         search_query = request.form.get('search_query')
         search_type = request.form.get('search_type')
+
+        # Handle the "plate" field separately to keep it all uppercase
+        if search_type == 'plate':
+            search_query = search_query.upper()
+        
+        # Convert other fields to lowercase and capitalize the first letter
+        else:
+            search_query = search_query.lower().capitalize()
 
         # Perform the search and filter the cars based on the query and type
         if search_type == 'plate':
@@ -106,7 +115,7 @@ def search():
 
         return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query)
     else:
-        # Render the search page template
+        # Render the search page template for a GET request
         return render_template('garage_manage.html')
 
 @app.route('/delete', methods=['POST'])

@@ -2,12 +2,16 @@
 
 {% block content %}
 <head>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+  <!-- Include jQuery library and external sorting script -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
 </head>
+
+<!-- Display a table for car data with sortable columns -->
 <table class="table" id="carTable">
     <thead>
       <tr>
+        <!-- Define sortable columns with clickable links -->
         <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="make">Make</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
@@ -17,8 +21,10 @@
       </tr>
     </thead>
     <tbody>
+      <!-- Iterate through user_cars and display car data in rows -->
       {% for car in user_cars %}
       <tr>
+          <!-- Display car data with associated sorting attribute -->
           <td data-sort="plate">{{ car.plate }}</td>
           <td data-sort="make">{{ car.make }}</td>
           <td data-sort="model">{{ car.model }}</td>
@@ -30,4 +36,5 @@
   </tbody>
 </table>
 {% endblock %}
+
 
