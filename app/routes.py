@@ -63,24 +63,31 @@ def garage_view():
 @app.route('/garage_manage', methods=['GET', 'POST'])
 @login_required
 def garage_manage(): # Add Car
-    if request.method == 'POST':
-        # Process the form data for a POST request
-        plate = request.form.get('Plate').upper()
-        make = request.form.get('Make').lower().capitalize()
-        model = request.form.get('Model').lower().capitalize()
-        fuel = request.form.get('Fuel').lower().capitalize()
-        year = request.form.get('Year').lower().capitalize()
-        cc = request.form.get('Cc').lower().capitalize()
+   if request.method == 'POST':
+       # Process the form data for a POST request
+       plate = request.form.get('Plate').upper()
+       make = request.form.get('Make').lower().capitalize()
+       model = request.form.get('Model').lower().capitalize()
+       fuel = request.form.get('Fuel').lower().capitalize()
+       year = request.form.get('Year').lower().capitalize()
+       cc = request.form.get('Cc').lower().capitalize()
 
-        new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)
+       # Check if a car with the same plate and user_id already exists
+       existing_car = Car.query.filter_by(plate=plate, user_id=current_user.id).first()
+       if existing_car is not None:
+           flash('A car with this plate already exists for this user', 'error')
+           return redirect(url_for('garage_manage'))
 
-        db.session.add(new_car)
-        db.session.commit()
-        flash('Car added successfully', 'success')
-        return redirect(url_for('garage_manage'))
-    else:
-        # Render the form for a GET request
-        return render_template('garage_manage.html', title='Add Car', page="garage_manage")
+       new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)
+
+       db.session.add(new_car)
+       db.session.commit()
+       flash('Car added successfully', 'success')
+       return redirect(url_for('garage_manage'))
+   else:
+       # Render the form for a GET request
+       return render_template('garage_manage.html', title='Add Car', page="garage_manage")
+
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -99,17 +106,17 @@ def search():
 
         # Perform the search and filter the cars based on the query and type
         if search_type == 'plate':
-            filtered_cars = Car.query.filter_by(plate=search_query).all()
+            filtered_cars = Car.query.filter_by(plate=search_query, user_id=current_user.id).all()
         elif search_type == 'make':
-            filtered_cars = Car.query.filter_by(make=search_query).all()
+            filtered_cars = Car.query.filter_by(make=search_query, user_id=current_user.id).all()
         elif search_type == 'model':
-            filtered_cars = Car.query.filter_by(model=search_query).all()
+            filtered_cars = Car.query.filter_by(model=search_query, user_id=current_user.id).all()
         elif search_type == 'fuel':
-            filtered_cars = Car.query.filter_by(fuel=search_query).all()
+            filtered_cars = Car.query.filter_by(fuel=search_query, user_id=current_user.id).all()
         elif search_type == 'year':
-            filtered_cars = Car.query.filter_by(year=search_query).all()
+            filtered_cars = Car.query.filter_by(year=search_query, user_id=current_user.id).all()
         elif search_type == 'cc':
-            filtered_cars = Car.query.filter_by(cc=search_query).all()
+            filtered_cars = Car.query.filter_by(cc=search_query, user_id=current_user.id).all()
         else:
             filtered_cars = []
 
@@ -117,7 +124,7 @@ def search():
     else:
         # Render the search page template for a GET request
         return render_template('garage_manage.html')
-
+    
 @app.route('/delete', methods=['POST'])
 def delete_car():
     car_plate = request.form.get('car_plate')
@@ -174,14 +181,8 @@ def overview():
     # Extract the plates of booked cars
     booked_car_plates = [booking.car_plate for booking in user_bookings]
 
-    # Print debugging statements
-    print("User Cars:", user_cars)
-    print("Booked Car Plates:", booked_car_plates)
-
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
-
-    print(available_cars)
 
     return render_template('overview.html', user_cars=user_cars, available_cars=available_cars, user_bookings=user_bookings)
 
