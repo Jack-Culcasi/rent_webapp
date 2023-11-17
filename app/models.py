@@ -34,6 +34,34 @@ class Car(db.Model):
     cc = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    @classmethod
+    def search(cls, search_query, search_type, current_user_id):
+        # Handle the "plate" field separately to keep it all uppercase
+        if search_type == 'plate':
+            search_query = search_query.upper()
+        
+        # Convert other fields to lowercase and capitalize the first letter
+        else:
+            search_query = search_query.lower().capitalize()
+
+        # Perform the search and filter the cars based on the query and type
+        if search_type == 'plate':
+            filtered_cars = Car.query.filter_by(plate=search_query, user_id=current_user_id).all()
+        elif search_type == 'make':
+            filtered_cars = Car.query.filter_by(make=search_query, user_id=current_user_id).all()
+        elif search_type == 'model':
+            filtered_cars = Car.query.filter_by(model=search_query, user_id=current_user_id).all()
+        elif search_type == 'fuel':
+            filtered_cars = Car.query.filter_by(fuel=search_query, user_id=current_user_id).all()
+        elif search_type == 'year':
+            filtered_cars = Car.query.filter_by(year=search_query, user_id=current_user_id).all()
+        elif search_type == 'cc':
+            filtered_cars = Car.query.filter_by(cc=search_query, user_id=current_user_id).all()
+        else:
+            filtered_cars = []
+
+        return filtered_cars
+
     def __repr__(self):
         return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'
     

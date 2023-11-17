@@ -97,31 +97,10 @@ def search():
         search_query = request.form.get('search_query')
         search_type = request.form.get('search_type')
 
-        # Handle the "plate" field separately to keep it all uppercase
-        if search_type == 'plate':
-            search_query = search_query.upper()
-        
-        # Convert other fields to lowercase and capitalize the first letter
-        else:
-            search_query = search_query.lower().capitalize()
-
-        # Perform the search and filter the cars based on the query and type
-        if search_type == 'plate':
-            filtered_cars = Car.query.filter_by(plate=search_query, user_id=current_user.id).all()
-        elif search_type == 'make':
-            filtered_cars = Car.query.filter_by(make=search_query, user_id=current_user.id).all()
-        elif search_type == 'model':
-            filtered_cars = Car.query.filter_by(model=search_query, user_id=current_user.id).all()
-        elif search_type == 'fuel':
-            filtered_cars = Car.query.filter_by(fuel=search_query, user_id=current_user.id).all()
-        elif search_type == 'year':
-            filtered_cars = Car.query.filter_by(year=search_query, user_id=current_user.id).all()
-        elif search_type == 'cc':
-            filtered_cars = Car.query.filter_by(cc=search_query, user_id=current_user.id).all()
-        else:
-            filtered_cars = []
+        filtered_cars = Car.search(search_query, search_type, current_user.id)
 
         return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query)
+    
     else:
         # Render the search page template for a GET request
         return render_template('garage_manage.html')
