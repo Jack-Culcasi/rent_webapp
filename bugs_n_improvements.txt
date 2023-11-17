@@ -1,0 +1,14 @@
+#   Bugs:
+
+- Unique Constraint when adding the same car to different users (SOLVED, kinda, different users will not be able to add the same plate)
+
+#   Improvements:
+
+- Create an Admin Dashboard to check the database
+
+- Notify the User if:
+    - The car about to be deleted has a booking
+
+- Error handling when booking, such as:
+    - Deny booking if in the past
+    

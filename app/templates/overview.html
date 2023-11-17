@@ -1,9 +1,12 @@
 {% extends "index.html" %}
 
 {% block content %}
+<!-- Booking Form -->
+<h2>Book a Car</h2>
 <form method="POST" action="{{ url_for('overview') }}">
     <div class="row">
-        <!-- Other car details dropdown -->
+
+        <!-- Car Selection Dropdown -->
         <div class="col">
             <label for="car_selection" class="form-label">Select Car</label>
             <select class="form-select" id="car_selection" name="car_selection">
@@ -13,41 +16,45 @@
             </select>
         </div>
 
-        <!-- Start Date -->
+        <!-- Start Date Input -->
         <div class="col">
             <label for="start_date" class="form-label">Start Date</label>
             <input type="date" class="form-control" id="start_date" name="start_date" required>
         </div>
 
-        <!-- End Date -->
+        <!-- End Date Input -->
         <div class="col">
             <label for="end_date" class="form-label">End Date</label>
             <input type="date" class="form-control" id="end_date" name="end_date" required>
         </div>
 
-        <!-- Start Time -->
+        <!-- Start Time Input -->
         <div class="col">
             <label for="start_time" class="form-label">Start Time</label>
             <input type="time" class="form-control" id="start_time" name="start_time" required>
         </div>
 
-        <!-- End Time -->
+        <!-- End Time Input -->
         <div class="col">
             <label for="end_time" class="form-label">End Time</label>
             <input type="time" class="form-control" id="end_time" name="end_time" required>
         </div>
     </div>
 
+    <!-- Book Car Button -->
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Book Car</button>
 </form>
 
+<!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
-  {% if category == 'success' %}
-    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-      {{ message }}
-    </div>
-  {% endif %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
 {% endfor %}
+
+<!-- Booked Cars Section -->
 
 <header id="header">
     <h2>Booked Cars</h2>
@@ -73,8 +80,10 @@
     </tbody>
 </table>
 
+<!-- Available Cars Section -->
+
 <header id="header">
-    <h2>Avaliable Cars</h2>
+    <h2>Available Cars</h2>
 </header>
 
 <table>
@@ -89,13 +98,13 @@
     </thead>
     <tbody>
         {% for car in available_cars %}
-                <tr>
-                    <td>{{ car.plate }}</td>
-                    <td>{{ car.model }}</td>
-                    <td>{{ car.fuel }}</td>
-                    <td>{{ car.year }}</td>
-                    <td>{{ car.cc }}</td>
-                </tr>
+            <tr>
+                <td>{{ car.plate }}</td>
+                <td>{{ car.model }}</td>
+                <td>{{ car.fuel }}</td>
+                <td>{{ car.year }}</td>
+                <td>{{ car.cc }}</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

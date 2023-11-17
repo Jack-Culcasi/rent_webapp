@@ -1,2 +1,0 @@
-#   Bugs:
--Unique Constraint when adding the same car to different users

@@ -10,11 +10,12 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking
 
 # Users Login/Logout
-@app.route('/')
+# Possibly useless route
+'''@app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('overview.html', title='Home')
+    return render_template('overview.html', title='Home')'''
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -44,13 +45,13 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('index'))
+        return redirect(url_for('overview'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('overview'))
 
 # Garage
 @app.route('/garage_view', methods=['GET', 'POST'])
@@ -147,6 +148,7 @@ def delete_car():
         flash('Invalid request.', 'error')
     return redirect(url_for('search'))
 
+@app.route('/')
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
 def overview(): # Booking
@@ -180,12 +182,9 @@ def overview(): # Booking
 
     # Extract the plates of booked cars
     booked_car_plates = [booking.car_plate for booking in user_bookings]
-    print(f'Booked car plates: {booked_car_plates}')
-    print(f'user bookings: {user_bookings}')
 
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
-    print(f'avaliable cars: {available_cars}')
 
     return render_template('overview.html', user_cars=user_cars, available_cars=available_cars, user_bookings=user_bookings)
 

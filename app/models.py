@@ -26,20 +26,16 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
 class Car(db.Model):
-   plate = db.Column(db.String(8), primary_key=True, index=True)
-   make = db.Column(db.String(15), index=True)
-   model = db.Column(db.String(15), index=True)
-   fuel = db.Column(db.String(8), index=True)
-   year = db.Column(db.Integer, index=True)
-   cc = db.Column(db.Integer, index=True)
-   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    plate = db.Column(db.String(8), primary_key=True, index=True, unique=True)
+    make = db.Column(db.String(15), index=True)
+    model = db.Column(db.String(15), index=True)
+    fuel = db.Column(db.String(8), index=True)
+    year = db.Column(db.Integer, index=True)
+    cc = db.Column(db.Integer, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-   __table_args__ = (
-      UniqueConstraint('plate', 'user_id', name='unique_plate_user'),
-  )
-
-   def __repr__(self):
-       return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'
+    def __repr__(self):
+        return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'
     
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
