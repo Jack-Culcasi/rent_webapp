@@ -149,7 +149,7 @@ def delete_car():
 
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
-def overview():
+def overview(): # Booking
     if request.method == 'POST':
         try:
             car_plate = request.form.get('car_selection')

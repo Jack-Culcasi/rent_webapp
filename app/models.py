@@ -49,7 +49,7 @@ class Booking(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     # Add a reference to the Car model for easier access
-    car = db.relationship('Car', backref='bookings', lazy=True, cascade='all')
+    car = db.relationship('Car', backref='bookings', lazy=True)
 
     @staticmethod
     def create_booking(car_plate, start_datetime, end_datetime, user_id):
