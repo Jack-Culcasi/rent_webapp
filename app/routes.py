@@ -180,9 +180,12 @@ def overview(): # Booking
 
     # Extract the plates of booked cars
     booked_car_plates = [booking.car_plate for booking in user_bookings]
+    print(f'Booked car plates: {booked_car_plates}')
+    print(f'user bookings: {user_bookings}')
 
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
+    print(f'avaliable cars: {available_cars}')
 
     return render_template('overview.html', user_cars=user_cars, available_cars=available_cars, user_bookings=user_bookings)
 
