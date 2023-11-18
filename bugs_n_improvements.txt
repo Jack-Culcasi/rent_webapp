@@ -13,4 +13,4 @@
     - Deny booking if in the past
     
 - Add to a booking:
-    - Comment/note
+    - Modify button along with the Delete button
