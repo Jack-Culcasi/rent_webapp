@@ -12,3 +12,5 @@
 - Error handling when booking, such as:
     - Deny booking if in the past
     
+- Add to a booking:
+    - Comment/note

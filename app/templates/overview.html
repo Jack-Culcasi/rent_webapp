@@ -54,11 +54,35 @@
     {% endif %}
 {% endfor %}
 
+<header id="header">
+    <h2>Booked and Avaliable Cars</h2>
+</header>
+<form method="POST" action="{{ url_for('overview') }}">
+<!-- Date Selector for Booked and Avaliable Cars -->
+<div class="row">
+
+    <!-- Start Date Input -->
+    <div class="col">
+        <label for="from" class="form-label">From</label>
+        <input type="date" class="form-control" id="from" name="from" value="{{ from_datetime }}" required>
+    </div>
+
+    <!-- End Date Input -->
+    <div class="col">
+        <label for="to" class="form-label">To</label>
+        <input type="date" class="form-control" id="to" name="to" value="{{ to_datetime }}" required>
+    </div>
+
+</div> 
+
+<!-- Check Booked and Avaliable Cars -->
+<button type="submit" class="btn btn-primary" style="margin-top: 20px;">Check</button>
+</form>
+<br>    
 <!-- Booked Cars Section -->
 
-<header id="header">
-    <h2>Booked Cars</h2>
-</header>
+<h2>Booked Cars</h2>
+
 <table>
     <thead>
         <tr>
@@ -82,9 +106,7 @@
 
 <!-- Available Cars Section -->
 
-<header id="header">
-    <h2>Available Cars</h2>
-</header>
+<h2>Available Cars</h2>
 
 <table>
     <thead>

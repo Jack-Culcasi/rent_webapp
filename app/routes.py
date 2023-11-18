@@ -2,7 +2,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Local imports
 from app import app, db
@@ -10,12 +10,6 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking
 
 # Users Login/Logout
-# Possibly useless route
-'''@app.route('/')
-@app.route('/index')
-@login_required
-def index():
-    return render_template('overview.html', title='Home')'''
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -139,15 +133,24 @@ def overview(): # Booking
             start_time = request.form.get('start_time')
             end_time = request.form.get('end_time')
 
-            # Convert start and end date and time to a datetime object
+            
+
+            # Convert start, end, to and from date and time to a datetime object
             start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
             end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
+            
 
             # Call the create_booking method from the Booking model
             booking = Booking.create_booking(car_plate, start_datetime, end_datetime, current_user.id)
 
+            # Extract the plates of booked cars within the specified time range
+            booked_car_plates = [booking.car_plate for booking in user_bookings]
+
+            # Filter out booked cars from available cars within the specified time range
+            available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
+
             flash('Car booked successfully!', 'success')
-            return redirect(url_for('overview'))  # Redirect after successful form submission
+            return redirect(url_for('overview'))  # Redirect after a successful form submission
 
         except ValueError as e:
             flash(str(e), 'error')
@@ -156,8 +159,24 @@ def overview(): # Booking
 
     user_cars = current_user.garage.all()
 
-    # Fetch all bookings for the user
-    user_bookings = Booking.query.filter_by(user_id=current_user.id).all()
+    # To check available and booked cars
+    from_date = request.form.get('from')
+    to_date = request.form.get('to')
+
+    # Standard time frame if no Input
+    if from_date == None:
+        from_date = datetime.now().date()
+        to_date = from_date + timedelta(days=7)
+
+    from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
+    to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+
+    # Fetch all bookings for the user within the specified time range
+    user_bookings = Booking.query.filter(
+                Booking.user_id == current_user.id,
+                Booking.end_datetime > from_datetime,
+                Booking.start_datetime < to_datetime
+                ).all()
 
     # Extract the plates of booked cars
     booked_car_plates = [booking.car_plate for booking in user_bookings]
@@ -165,5 +184,10 @@ def overview(): # Booking
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
 
-    return render_template('overview.html', user_cars=user_cars, available_cars=available_cars, user_bookings=user_bookings)
+    return render_template('overview.html',
+                            user_cars=user_cars,
+                            available_cars=available_cars,
+                            user_bookings=user_bookings,
+                            from_datetime=from_datetime.strftime('%Y-%m-%d'),
+                            to_datetime=to_datetime.strftime('%Y-%m-%d'))
 
