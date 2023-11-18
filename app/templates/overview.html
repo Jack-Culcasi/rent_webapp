@@ -1,6 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
+<!--Scripts-->
+<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
 <!-- Booking Form -->
 <h2>Book a Car</h2>
 <form method="POST" action="{{ url_for('overview') }}">
@@ -38,6 +41,14 @@
         <div class="col">
             <label for="end_time" class="form-label">End Time</label>
             <input type="time" class="form-control" id="end_time" name="end_time" required>
+        </div>
+
+
+        <!-- Note Input -->
+        <div class="col">
+            <label for="note" class="form-label">Note</label>
+            <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;"></textarea>
+            <p id="character-count">0/160</p>
         </div>
     </div>
 
@@ -80,29 +91,34 @@
 </form>
 <br>    
 <!-- Booked Cars Section -->
-
+<form method="POST" action="{{ url_for('overview') }}">
 <h2>Booked Cars</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>Plate</th>
-            <th>Model</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for booking in user_bookings %}
+    <table>
+        <thead>
             <tr>
-                <td>{{ booking.car.plate }}</td>
-                <td>{{ booking.car.model }}</td>
-                <td>{{ booking.start_datetime }}</td>
-                <td>{{ booking.end_datetime }}</td>
+                <th>Plate</th>
+                <th>Model</th>
+                <th>Start</th>            
+                <th>End</th>
+                <th>Actions</th>            
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for booking in user_bookings %}
+                <tr>
+                    <td>{{ booking.car.plate }}</td>
+                    <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>                
+                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td> 
+                    <td>
+                        <button type="submit" class="btn btn-danger" name="delete_booking" value="{{ booking.id }}">Delete</button>
+                    </td>               
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
 
 <!-- Available Cars Section -->
 

@@ -157,6 +157,18 @@ def overview(): # Booking
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
 
+    # Handling deletion logic
+        if 'delete_booking' in request.form:
+            print("EEEEOOOOOH")
+            booking_id_to_delete = request.form['delete_booking']
+            if Booking.delete_booking(booking_id_to_delete):
+                flash('Booking deleted successfully!', 'success')
+            else:
+                flash('Error deleting booking.', 'error')
+
+            return redirect(url_for('overview'))
+
+
     user_cars = current_user.garage.all()
 
     # To check available and booked cars

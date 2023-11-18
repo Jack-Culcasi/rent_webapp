@@ -71,12 +71,13 @@ class Booking(db.Model):
     end_datetime = db.Column(db.DateTime, nullable=False)
     car_plate = db.Column(db.String(8), db.ForeignKey('car.plate'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
+    note = db.Column(db.String(160))
+    
     # Add a reference to the Car model for easier access
     car = db.relationship('Car', backref='bookings', lazy=True)
 
     @staticmethod
-    def create_booking(car_plate, start_datetime, end_datetime, user_id):
+    def create_booking(car_plate, start_datetime, end_datetime, user_id, note=None):
         # Check if the selected car exists
         car = Car.query.filter_by(plate=car_plate).first()
         if not car:
@@ -89,26 +90,27 @@ class Booking(db.Model):
                 Booking.start_datetime < end_datetime,
                 Booking.end_datetime > start_datetime
             ).first()
-        
+
+            if overlapping_booking:
+                raise ValueError('Selected car is already booked for the specified period.')
+
+            # Create a new booking
+            booking = Booking(
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                car_plate=car_plate,
+                user_id=user_id,
+                note=note
+            )
+
+            db.session.add(booking)
+            db.session.commit()
+
+            return booking
         except SQLAlchemyError as e:
-            print(f"Error during query: {str(e)}")
+            print(f"Error during booking creation: {str(e)}")
+            db.session.rollback()
             raise e
-
-        if overlapping_booking:
-            raise ValueError('Selected car is already booked for the specified period.')
-
-        # Create a new booking
-        booking = Booking(
-            start_datetime=start_datetime,
-            end_datetime=end_datetime,
-            car_plate=car_plate,
-            user_id=user_id
-        )
-
-        db.session.add(booking)
-        db.session.commit()
-
-        return booking
 
     @classmethod
     def remove_booking(cls, booking_id):
@@ -126,5 +128,20 @@ class Booking(db.Model):
             return False
 
     def __repr__(self):
-        return f'<Booking {self.id}>' 
+        return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}>'
+    
+    @classmethod
+    def delete_booking(cls, booking_id):
+        try:
+            booking = cls.query.get(booking_id)
+            if booking:
+                db.session.delete(booking)
+                db.session.commit()
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"Error deleting booking: {str(e)}")
+            db.session.rollback()
+            return False
     
