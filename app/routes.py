@@ -159,7 +159,6 @@ def overview(): # Booking
 
     # Handling deletion logic
         if 'delete_booking' in request.form:
-            print("EEEEOOOOOH")
             booking_id_to_delete = request.form['delete_booking']
             if Booking.delete_booking(booking_id_to_delete):
                 flash('Booking deleted successfully!', 'success')
@@ -201,5 +200,6 @@ def overview(): # Booking
                             available_cars=available_cars,
                             user_bookings=user_bookings,
                             from_datetime=from_datetime.strftime('%Y-%m-%d'),
-                            to_datetime=to_datetime.strftime('%Y-%m-%d'))
+                            to_datetime=to_datetime.strftime('%Y-%m-%d'),
+                            user_name=current_user.username if current_user.is_authenticated else None)
 

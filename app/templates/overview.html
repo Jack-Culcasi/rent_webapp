@@ -87,11 +87,11 @@
 </div> 
 
 <!-- Check Booked and Avaliable Cars -->
-<button type="submit" class="btn btn-primary" style="margin-top: 20px;">Check</button>
+<button type="submit" class="btn btn-primary" style="margin-top: 20px;">Search</button>
 </form>
 <br>    
 <!-- Booked Cars Section -->
-<form method="POST" action="{{ url_for('overview') }}">
+<form action="{{ url_for('overview') }} " method="POST" onsubmit="return confirm('Are you sure you want to delete this booking?');">
 <h2>Booked Cars</h2>
 
     <table>
@@ -113,12 +113,15 @@
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td> 
                     <td>
                         <button type="submit" class="btn btn-danger" name="delete_booking" value="{{ booking.id }}">Delete</button>
+                    </form>
+                        <button type="submit" class="btn btn-danger" name="amend_booking" value="{{ booking.id }}">Amend</button>
+                        <button type="submit" class="btn btn-danger" name="note_booking" value="{{ booking.id }}">Note</button>
                     </td>               
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-</form>
+
 
 <!-- Available Cars Section -->
 
