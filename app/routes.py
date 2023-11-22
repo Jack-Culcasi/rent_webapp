@@ -132,6 +132,7 @@ def overview(): # Booking
             end_date = request.form.get('end_date')
             start_time = request.form.get('start_time')
             end_time = request.form.get('end_time')
+            note = request.form.get('note')
 
             
 
@@ -141,7 +142,7 @@ def overview(): # Booking
             
 
             # Call the create_booking method from the Booking model
-            booking = Booking.create_booking(car_plate, start_datetime, end_datetime, current_user.id)
+            booking = Booking.create_booking(car_plate, start_datetime, end_datetime, current_user.id, note)
             
             if booking is None:
                 flash('This car is already booked for this time period!', 'error')
@@ -173,8 +174,8 @@ def overview(): # Booking
 
     # Standard time frame if no Input
     if from_date == None:
-        from_date = datetime.now().date()
-        to_date = from_date + timedelta(days=7)
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        to_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
 
     from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
     to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')

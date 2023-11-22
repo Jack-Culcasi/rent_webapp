@@ -77,7 +77,7 @@ class Booking(db.Model):
     car = db.relationship('Car', backref='bookings', lazy=True)
 
     @staticmethod
-    def create_booking(car_plate, start_datetime, end_datetime, user_id, note=None):
+    def create_booking(car_plate, start_datetime, end_datetime, user_id, note):
         # Check if the selected car exists
         car = Car.query.filter_by(plate=car_plate).first()
         if not car:
@@ -94,7 +94,6 @@ class Booking(db.Model):
             if overlapping_booking:
                 print(f'Overalapping Booking!')
                 return None
-                raise ValueError('Selected car is already booked for the specified period.')
 
             # Create a new booking
             booking = Booking(
@@ -104,7 +103,6 @@ class Booking(db.Model):
                 user_id=user_id,
                 note=note
             )
-            print(booking)
             db.session.add(booking)
             db.session.commit()
 
@@ -130,7 +128,7 @@ class Booking(db.Model):
             return False
 
     def __repr__(self):
-        return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}>'
+        return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}, Note: {self.note}>'
     
     @classmethod
     def delete_booking(cls, booking_id):
