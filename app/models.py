@@ -92,7 +92,6 @@ class Booking(db.Model):
             ).first()
 
             if overlapping_booking:
-                print(f'Overalapping Booking!')
                 return None
 
             # Create a new booking

@@ -4,6 +4,9 @@
 <!--Scripts-->
 <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
+<!-- Link to your CSS file -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
 <!-- Booking Form -->
 <h2>Book a Car</h2>
 <form method="POST" action="{{ url_for('overview') }}">
@@ -106,7 +109,7 @@
                 <th>Start</th>            
                 <th>End</th>
                 <th>Actions</th>
-                <th>Note</th>            
+                <th>Comment</th>            
             </tr>
         </thead>
         <tbody>
@@ -119,7 +122,16 @@
                     <td>
                         <button type="submit" class="btn btn-danger" name="delete_booking" value="{{ booking.id }}">Manage</button>
                     </td>
-                    <td>{{ booking.note }}</td>               
+                    <td>
+                        {% if booking.note %}
+                            <span class="note-tooltip">
+                                Note
+                                <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                            </span>
+                        {% else %}
+                            <!-- Display nothing if there is no note -->
+                        {% endif %}
+                    </td>               
                 </tr>
             {% endfor %}
         </tbody>

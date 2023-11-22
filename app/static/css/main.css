@@ -2277,3 +2277,32 @@ button,
 .hidden-label {
   visibility: hidden;
 }
+
+/* Tooltip styles */
+.note-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.note-tooltip .tooltip {
+  visibility: hidden;
+  width: 160px;
+  background-color: #f56a6a;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.note-tooltip:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
