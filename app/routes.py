@@ -142,14 +142,11 @@ def overview(): # Booking
 
             # Call the create_booking method from the Booking model
             booking = Booking.create_booking(car_plate, start_datetime, end_datetime, current_user.id)
-
-            # Extract the plates of booked cars within the specified time range
-            booked_car_plates = [booking.car_plate for booking in user_bookings]
-
-            # Filter out booked cars from available cars within the specified time range
-            available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
-
-            flash('Car booked successfully!', 'success')
+            
+            if booking is None:
+                flash('This car is already booked for this time period!', 'error')
+            else:
+                flash('Car booked successfully!', 'success')
             return redirect(url_for('overview'))  # Redirect after a successful form submission
 
         except ValueError as e:
@@ -157,15 +154,15 @@ def overview(): # Booking
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
 
-    # Handling deletion logic
-        if 'delete_booking' in request.form:
+    # Handling deletion logic - To be called from new booking_manage page!!
+        '''if 'delete_booking' in request.form:
             booking_id_to_delete = request.form['delete_booking']
             if Booking.delete_booking(booking_id_to_delete):
                 flash('Booking deleted successfully!', 'success')
             else:
                 flash('Error deleting booking.', 'error')
 
-            return redirect(url_for('overview'))
+            return redirect(url_for('overview'))'''
 
 
     user_cars = current_user.garage.all()

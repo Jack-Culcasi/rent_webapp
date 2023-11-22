@@ -92,6 +92,8 @@ class Booking(db.Model):
             ).first()
 
             if overlapping_booking:
+                print(f'Overalapping Booking!')
+                return None
                 raise ValueError('Selected car is already booked for the specified period.')
 
             # Create a new booking
@@ -102,7 +104,7 @@ class Booking(db.Model):
                 user_id=user_id,
                 note=note
             )
-
+            print(booking)
             db.session.add(booking)
             db.session.commit()
 
