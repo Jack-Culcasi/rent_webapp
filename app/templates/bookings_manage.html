@@ -1,0 +1,85 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2>Search for a Booking</h2>
+
+<form action="/bookings_manage" method="POST">
+    <div class="row">
+      <!-- Dropdown for search type -->
+      <div class="col">
+        <label for="search_type" class="form-label">Search Booking</label>
+        <select class="form-select" id="search_type" name="search_type">
+            {% for booking in user_bookings %}
+            <option value="{{ booking.id }}">{{ booking.id }} - {{ booking.car.plate }} - {{booking.car.model}} - 
+                {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <!-- Input field for search query -->
+    </div>
+    <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Manage</button>
+  </form>
+  
+
+
+<!-- Display flash messages, if any -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  {% if category == 'success' %}
+    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+      {{ message }}
+    </div>
+  {% endif %}
+{% endfor %}
+
+<header id="header">
+    <h2>Manage Booking</h2>
+</header>
+
+{% if selected_booking %}
+  <form method="POST" action="{{ url_for('bookings_manage') }}">
+
+    <div class="row">
+
+        <div class="col">
+            <label for="booking_id" class="form-label">Booking ID</label>
+            <input type="text" class="form-control" id="booking_id" name="booking_id" value="{{ selected_booking.id }}" readonly>
+        </div>
+
+      <!-- Start Date Input -->
+      <div class="col">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" required value="{{ selected_booking.start_datetime.strftime('%Y-%m-%d') }}">
+      </div>
+
+      <!-- End Date Input -->
+      <div class="col">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" required value="{{ selected_booking.end_datetime.strftime('%Y-%m-%d') }}">
+      </div>
+
+      <!-- Start Time Input -->
+      <div class="col">
+        <label for="start_time" class="form-label">Start Time</label>
+        <input type="time" class="form-control" id="start_time" name="start_time" required value="{{ selected_booking.start_datetime.strftime('%H:%M') }}">
+      </div>
+
+      <!-- End Time Input -->
+      <div class="col">
+        <label for="end_time" class="form-label">End Time</label>
+        <input type="time" class="form-control" id="end_time" name="end_time" required value="{{ selected_booking.end_datetime.strftime('%H:%M') }}">
+      </div>
+
+      <!-- Note Input -->
+      <div class="col">
+        <label for="note" class="form-label">Note</label>
+        <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;">{{ selected_booking.note }}</textarea>
+        <p id="character-count">0/160</p>
+      </div>
+    </div>
+
+    <!-- Book Car Button -->
+    <button type="submit" class="btn btn-primary" name="action" value="amend" style="margin-top: 20px;">Amend</button>
+  </form>
+{% endif %}
+
+{% endblock %}

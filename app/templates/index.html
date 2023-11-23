@@ -56,7 +56,7 @@
 											<span class="opener {% if page == 'bookings_view' or page == 'bookings_manage' %}active{% endif %}">Bookings</span>
 											<ul>
 												<li><a href="{{ url_for('bookings_view') }}">View Bookings</a></li>												
-												<li><a href="#">Manage Booking</a></li>
+												<li><a href="{{ url_for('bookings_manage') }}">Manage Booking</a></li>
 											</ul>
 										</li>
 										<li><a href="{{ url_for('logout') }}">Logout</a></li>

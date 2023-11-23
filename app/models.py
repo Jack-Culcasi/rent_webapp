@@ -128,19 +128,16 @@ class Booking(db.Model):
 
     def __repr__(self):
         return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}, Note: {self.note}>'
-    
-    @classmethod
-    def delete_booking(cls, booking_id):
-        try:
-            booking = cls.query.get(booking_id)
-            if booking:
-                db.session.delete(booking)
-                db.session.commit()
-                return True
-            else:
-                return False
-        except Exception as e:
-            print(f"Error deleting booking: {str(e)}")
-            db.session.rollback()
-            return False
+        
+    def amend_booking(self, start_datetime, end_datetime, note):
+        if start_datetime >= end_datetime:
+            raise ValueError("End date must be after start date.")
+
+        # Update booking information
+        self.start_datetime = start_datetime
+        self.end_datetime = end_datetime
+        self.note = note
+
+        # Save changes to the database
+        db.session.commit()
     

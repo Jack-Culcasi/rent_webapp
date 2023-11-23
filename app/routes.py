@@ -208,6 +208,49 @@ def overview(): # Booking
 @app.route('/bookings_view', methods=['GET', 'POST'])
 @login_required
 def bookings_view(): 
-    user_bookings = Booking.query.filter(
-                Booking.user_id == current_user.id).all()
+    user_bookings = Booking.query.filter(Booking.user_id == current_user.id).all()
     return render_template('bookings_view.html', user_bookings=user_bookings, page='bookings_view')
+
+@app.route('/bookings_manage', methods=['GET', 'POST'])
+@login_required
+def bookings_manage():
+    user_bookings = Booking.query.filter(Booking.user_id == current_user.id).all()
+    selected_booking = None
+
+    if request.method == 'POST':
+        booking_id = request.form.get('search_type')
+        print(f"Booking ID: {booking_id}")
+        selected_booking = Booking.query.filter_by(id=booking_id).first()
+
+        # Check if the form was submitted for amendment
+        if request.form.get('action') == 'amend':
+            booking_id = request.form['booking_id']
+            selected_booking = Booking.query.filter_by(id=booking_id).first()
+            # Handle the amendment logic here, e.g., update the database
+            if selected_booking:
+                try:
+                    # Extracting form data
+                    start_date = request.form['start_date']
+                    start_time = request.form['start_time']
+                    end_date = request.form['end_date']
+                    end_time = request.form['end_time']
+                    note = request.form['note']
+
+                    # Parsing form data to create datetime objects
+                    start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
+                    end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
+
+                    # Call the amend_booking method
+                    selected_booking.amend_booking(start_datetime, end_datetime, note)
+
+                    flash('Booking amended successfully!', 'success')
+
+                except ValueError as e:
+                    flash(str(e), 'error')  # Handle any parsing errors
+                except Exception as e:
+                    flash(f'Error: {str(e)}', 'error')  # Handle other exceptions
+
+            else:
+                flash('Booking not found. Amendment failed.', 'error')
+
+    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking)

@@ -17,6 +17,7 @@
     <thead>
       <tr>
         <!-- Define sortable columns with clickable links -->
+        <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Start</a></th>
@@ -30,6 +31,7 @@
       {% for booking in user_bookings %}
       <tr>
           <!-- Display booking data with associated sorting attribute -->
+          <td data-sort="id">{{ booking.id }}</td>
           <td data-sort="plate">{{ booking.car.plate }}</td>
           <td data-sort="model">{{ booking.car.model }}</td>
           <td data-sort="start_datetime">{{ booking.start_datetime.strftime("%b %d %H:%M") }}</td>
