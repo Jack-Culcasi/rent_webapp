@@ -203,3 +203,11 @@ def overview(): # Booking
                             to_datetime=to_datetime.strftime('%Y-%m-%d'),
                             user_name=current_user.username if current_user.is_authenticated else None)
 
+# Bookings 
+
+@app.route('/bookings_view', methods=['GET', 'POST'])
+@login_required
+def bookings_view(): 
+    user_bookings = Booking.query.filter(
+                Booking.user_id == current_user.id).all()
+    return render_template('bookings_view.html', user_bookings=user_bookings, page='bookings_view')
