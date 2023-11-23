@@ -92,7 +92,7 @@ class Booking(db.Model):
             ).first()
 
             if overlapping_booking:
-                return None
+                return None, overlapping_booking.start_datetime, overlapping_booking.end_datetime
 
             # Create a new booking
             booking = Booking(

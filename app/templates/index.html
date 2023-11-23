@@ -52,6 +52,13 @@
 												<li><a href="#">Manage Car</a></li>
 											</ul>
 										</li>
+										<li>
+											<span class="opener {% if page == 'bookings_view' or page == 'bookings_manage' %}active{% endif %}">Bookings</span>
+											<ul>
+												<li><a href="#">View Bookings</a></li>												
+												<li><a href="#">Manage Booking</a></li>
+											</ul>
+										</li>
 										<li><a href="{{ url_for('logout') }}">Logout</a></li>
 										{% endif %}
 									</ul>

@@ -142,10 +142,12 @@ def overview(): # Booking
             
 
             # Call the create_booking method from the Booking model
-            booking = Booking.create_booking(car_plate, start_datetime, end_datetime, current_user.id, note)
+            booking, overlap_start, overlap_end = Booking.create_booking(
+                car_plate, start_datetime, end_datetime, current_user.id, note
+            )
             
             if booking is None:
-                flash('This car is already booked for this time period!', 'error')
+                flash(f'This car is already booked from {overlap_start.strftime("%b %d %H:%M")} to {overlap_end.strftime("%b %d %H:%M")}!', 'error')
             else:
                 flash('Car booked successfully!', 'success')
             return redirect(url_for('overview'))  # Redirect after a successful form submission
