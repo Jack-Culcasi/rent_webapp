@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import UniqueConstraint
 
 @login.user_loader
 def load_user(id):
@@ -105,7 +104,7 @@ class Booking(db.Model):
             db.session.add(booking)
             db.session.commit()
 
-            return booking
+            return booking, None, None
         except SQLAlchemyError as e:
             print(f"Error during booking creation: {str(e)}")
             db.session.rollback()

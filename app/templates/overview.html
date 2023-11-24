@@ -98,18 +98,18 @@
 </form>
 <br>    
 <!-- Booked Cars Section -->
-<form action="{{ url_for('overview') }} " method="POST"> 
-<h2>Booked Cars</h2>
+<form action="{{ url_for('bookings_manage') }}" method="POST">
+    <h2>Booked Cars</h2>
 
     <table>
         <thead>
             <tr>
                 <th>Plate</th>
                 <th>Model</th>
-                <th>Start</th>            
+                <th>Start</th>
                 <th>End</th>
                 <th>Actions</th>
-                <th>Comment</th>            
+                <th>Comment</th>
             </tr>
         </thead>
         <tbody>
@@ -117,10 +117,12 @@
                 <tr>
                     <td>{{ booking.car.plate }}</td>
                     <td>{{ booking.car.model }}</td>
-                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>                
-                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td> 
+                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>
-                        <button type="submit" class="btn btn-danger" name="delete_booking" value="{{ booking.id }}">Manage</button>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}">Manage</button>
                     </td>
                     <td>
                         {% if booking.note %}
@@ -131,7 +133,7 @@
                         {% else %}
                             <!-- Display nothing if there is no note -->
                         {% endif %}
-                    </td>               
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

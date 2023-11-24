@@ -13,6 +13,7 @@
 </header>
 
 <!-- Display a table for booking data with sortable columns -->
+<form action="{{ url_for('bookings_manage') }}" method="POST">
 <table class="table" id="bookingTable">
     <thead>
       <tr>
@@ -47,10 +48,13 @@
         {% endif %}
           </td>
           <td>
-            <button type="submit" class="btn btn-danger" name="booking_manage" value="{{ booking.id }}">Manage</button>
+              <!-- Add hidden input for booking ID -->
+              <input type="hidden" name="booking_id" value="{{ booking.id }}">
+              <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}">Manage</button>
         </td>
       </tr>
       {% endfor %}
   </tbody>
 </table>
+</form>
 {% endblock %}

@@ -1,6 +1,9 @@
 {% extends "index.html" %}
 
 {% block content %}
+<!--Scripts-->
+<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
 <h2>Search for a Booking</h2>
 
 <form action="/bookings_manage" method="POST">
@@ -36,13 +39,18 @@
 </header>
 
 {% if selected_booking %}
-  <form method="POST" action="{{ url_for('bookings_manage') }}">
+  <form method="POST" action="{{ url_for('bookings_manage') }}" id="manageForm">
 
     <div class="row">
 
         <div class="col">
             <label for="booking_id" class="form-label">Booking ID</label>
             <input type="text" class="form-control" id="booking_id" name="booking_id" value="{{ selected_booking.id }}" readonly>
+        </div>
+
+        <div class="col">
+          <label for="car_plate" class="form-label">Plate</label>
+          <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ selected_booking.car_plate }}" readonly>
         </div>
 
       <!-- Start Date Input -->
@@ -77,8 +85,15 @@
       </div>
     </div>
 
-    <!-- Book Car Button -->
-    <button type="submit" class="btn btn-primary" name="action" value="amend" style="margin-top: 20px;">Amend</button>
+    <!-- Hidden input field for the action -->
+    <input type="hidden" name="action" id="action" value="">
+
+    <!-- Amend Button with Confirmation -->
+    <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmAmend()">Amend</button>
+
+    <!-- Delete Button with Confirmation -->
+    <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmDelete()">Delete</button>
+
   </form>
 {% endif %}
 

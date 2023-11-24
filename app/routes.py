@@ -9,7 +9,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking
 
-# Users Login/Logout
+                                                                                # Users Login/Logout
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,14 +47,14 @@ def logout():
     logout_user()
     return redirect(url_for('overview'))
 
-# Garage
+                                                                                # Garage
+
 @app.route('/garage_view', methods=['GET', 'POST'])
 @login_required
 def garage_view():
     user_cars = current_user.garage.all()
     return render_template('garage_view.html', title='Garage', page="garage_view", user_cars=user_cars)
 
-# Garage tools
 @app.route('/garage_manage', methods=['GET', 'POST'])
 @login_required
 def garage_manage(): # Add Car
@@ -87,7 +87,6 @@ def garage_manage(): # Add Car
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        # Standardize the search input
         search_query = request.form.get('search_query')
         search_type = request.form.get('search_type')
 
@@ -157,17 +156,6 @@ def overview(): # Booking
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
 
-    # Handling deletion logic - To be called from new booking_manage page!!
-        '''if 'delete_booking' in request.form:
-            booking_id_to_delete = request.form['delete_booking']
-            if Booking.delete_booking(booking_id_to_delete):
-                flash('Booking deleted successfully!', 'success')
-            else:
-                flash('Error deleting booking.', 'error')
-
-            return redirect(url_for('overview'))'''
-
-
     user_cars = current_user.garage.all()
 
     # To check available and booked cars
@@ -203,7 +191,8 @@ def overview(): # Booking
                             to_datetime=to_datetime.strftime('%Y-%m-%d'),
                             user_name=current_user.username if current_user.is_authenticated else None)
 
-# Bookings 
+                                                                                # Bookings 
+
 
 @app.route('/bookings_view', methods=['GET', 'POST'])
 @login_required
@@ -219,11 +208,27 @@ def bookings_manage():
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
-        print(f"Booking ID: {booking_id}")
         selected_booking = Booking.query.filter_by(id=booking_id).first()
+
+        if request.form.get('action') == 'delete':
+            booking_id = request.form.get('booking_id')
+            # Modify the query to eagerly load the 'car' relationship
+            selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
+            if selected_booking:
+                Booking.remove_booking(booking_id)
+                flash('Booking successfully deleted!', 'success')
+
+                # Redirect to the same page to refresh
+                return redirect(url_for('bookings_manage'))
+
+        # Handles the "Manage" buttons in other pages
+        if request.form.get('manage_booking'):
+            booking_id = request.form.get('booking_id')
+            selected_booking = Booking.query.filter_by(id=booking_id).first()
 
         # Check if the form was submitted for amendment
         if request.form.get('action') == 'amend':
+            print("Amend action triggered!")
             booking_id = request.form['booking_id']
             selected_booking = Booking.query.filter_by(id=booking_id).first()
             # Handle the amendment logic here, e.g., update the database
@@ -244,6 +249,7 @@ def bookings_manage():
                     selected_booking.amend_booking(start_datetime, end_datetime, note)
 
                     flash('Booking amended successfully!', 'success')
+                    print("Amend successful!")
 
                 except ValueError as e:
                     flash(str(e), 'error')  # Handle any parsing errors
