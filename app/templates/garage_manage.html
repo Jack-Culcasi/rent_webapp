@@ -4,17 +4,7 @@
 <head>
   <!-- Include external stylesheets and scripts -->
   <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
-  <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
 </head>
-
-<!-- Display flash messages, if any -->
-{% for category, message in get_flashed_messages(with_categories=true) %}
-  {% if category == 'success' %}
-    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-      {{ message }}
-    </div>
-  {% endif %}
-{% endfor %}
 
 <!-- Add Car Section -->
 <form method="POST" action="{{ url_for('garage_manage') }}">
@@ -50,6 +40,15 @@
   </div>
   <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Car</button>
 </form>
+
+<!-- Display flash messages, if any -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  {% if category == 'success' %}
+    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+      {{ message }}
+    </div>
+  {% endif %}
+{% endfor %}
 
 <!-- Delete Car Section -->
 <header id="header">

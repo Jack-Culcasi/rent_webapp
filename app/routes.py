@@ -126,35 +126,44 @@ def delete_car():
 def overview(): # Booking
     if request.method == 'POST':
         try:
-            car_plate = request.form.get('car_selection')
-            start_date = request.form.get('start_date')
-            end_date = request.form.get('end_date')
-            start_time = request.form.get('start_time')
-            end_time = request.form.get('end_time')
-            note = request.form.get('note')
+            if 'book' in request.form:
+                car_plate = request.form.get('car_selection')
+                start_date = request.form.get('start_date')
+                end_date = request.form.get('end_date')
+                start_time = request.form.get('start_time')
+                end_time = request.form.get('end_time')
+                note = request.form.get('note')
 
-            
+                
 
-            # Convert start, end, to and from date and time to a datetime object
-            start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
-            end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
-            
+                # Convert start, end, to and from date and time to a datetime object
+                start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
+                end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
+                
 
-            # Call the create_booking method from the Booking model
-            booking, overlap_start, overlap_end = Booking.create_booking(
-                car_plate, start_datetime, end_datetime, current_user.id, note
-            )
-            
-            if booking is None:
-                flash(f'This car is already booked from {overlap_start.strftime("%b %d %H:%M")} to {overlap_end.strftime("%b %d %H:%M")}!', 'error')
-            else:
-                flash('Car booked successfully!', 'success')
-            return redirect(url_for('overview'))  # Redirect after a successful form submission
+                # Call the create_booking method from the Booking model
+                booking, overlap_start, overlap_end = Booking.create_booking(
+                    car_plate, start_datetime, end_datetime, current_user.id, note
+                )
+                
+                if booking is None:
+                    flash(f'This car is already booked from {overlap_start.strftime("%b %d %H:%M")} to {overlap_end.strftime("%b %d %H:%M")}!', 'error')
+                else:
+                    flash('Car booked successfully!', 'success')
+                return redirect(url_for('overview'))  # Redirect after a successful form submission
+
+            elif 'check' in request.form:
+                # To check available and booked cars
+                from_date = request.form.get('from')
+                to_date = request.form.get('to')
+                
 
         except ValueError as e:
             flash(str(e), 'error')
+            print(f'ValueError: {str(e)}')
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
+            print(f'Error: {str(e)}')
 
     user_cars = current_user.garage.all()
 
@@ -228,7 +237,6 @@ def bookings_manage():
 
         # Check if the form was submitted for amendment
         if request.form.get('action') == 'amend':
-            print("Amend action triggered!")
             booking_id = request.form['booking_id']
             selected_booking = Booking.query.filter_by(id=booking_id).first()
             # Handle the amendment logic here, e.g., update the database
@@ -249,7 +257,6 @@ def bookings_manage():
                     selected_booking.amend_booking(start_datetime, end_datetime, note)
 
                     flash('Booking amended successfully!', 'success')
-                    print("Amend successful!")
 
                 except ValueError as e:
                     flash(str(e), 'error')  # Handle any parsing errors

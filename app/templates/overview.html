@@ -7,58 +7,6 @@
 <!-- Link to your CSS file -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-<!-- Booking Form -->
-<h2>Book a Car</h2>
-<form method="POST" action="{{ url_for('overview') }}">
-    <div class="row">
-
-        <!-- Car Selection Dropdown -->
-        <div class="col">
-            <label for="car_selection" class="form-label">Select Car</label>
-            <select class="form-select" id="car_selection" name="car_selection">
-                {% for car in user_cars %}
-                    <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Start Date Input -->
-        <div class="col">
-            <label for="start_date" class="form-label">Start Date</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" required>
-        </div>
-
-        <!-- End Date Input -->
-        <div class="col">
-            <label for="end_date" class="form-label">End Date</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" required>
-        </div>
-
-        <!-- Start Time Input -->
-        <div class="col">
-            <label for="start_time" class="form-label">Start Time</label>
-            <input type="time" class="form-control" id="start_time" name="start_time" required>
-        </div>
-
-        <!-- End Time Input -->
-        <div class="col">
-            <label for="end_time" class="form-label">End Time</label>
-            <input type="time" class="form-control" id="end_time" name="end_time" required>
-        </div>
-
-
-        <!-- Note Input -->
-        <div class="col">
-            <label for="note" class="form-label">Note</label>
-            <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;"></textarea>
-            <p id="character-count">0/160</p>
-        </div>
-    </div>
-
-    <!-- Book Car Button -->
-    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Book Car</button>
-</form>
-
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
     {% if category == 'success' %}
@@ -72,9 +20,7 @@
     {% endif %}
 {% endfor %}
 
-<header id="header">
-    <h2>Booked and Avaliable Cars</h2>
-</header>
+<h2>Booked and Avaliable Cars</h2>
 <form method="POST" action="{{ url_for('overview') }}">
 <!-- Date Selector for Booked and Avaliable Cars -->
 <div class="row">
@@ -94,9 +40,8 @@
 </div> 
 
 <!-- Check Booked and Avaliable Cars -->
-<button type="submit" class="btn btn-primary" style="margin-top: 20px;">Search</button>
-</form>
-<br>    
+<button type="submit" name='check' class="btn btn-primary" style="margin-top: 20px;">Check</button>
+</form> 
 <!-- Booked Cars Section -->
 <form action="{{ url_for('bookings_manage') }}" method="POST">
     <h2>Booked Cars</h2>
@@ -166,4 +111,59 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Booking Form -->
+<header id="header">
+    <h2>Book a Car</h2>
+</header>
+
+<form method="POST" action="{{ url_for('overview') }}">
+    <div class="row">
+
+        <!-- Car Selection Dropdown -->
+        <div class="col">
+            <label for="car_selection" class="form-label">Select Car</label>
+            <select class="form-select" id="car_selection" name="car_selection">
+                {% for car in user_cars %}
+                    <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Start Date Input -->
+        <div class="col">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+
+        <!-- End Date Input -->
+        <div class="col">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+
+        <!-- Start Time Input -->
+        <div class="col">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="start_time" name="start_time" required>
+        </div>
+
+        <!-- End Time Input -->
+        <div class="col">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="end_time" name="end_time" required>
+        </div>
+
+
+        <!-- Note Input -->
+        <div class="col">
+            <label for="note" class="form-label">Note</label>
+            <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;"></textarea>
+            <p id="character-count">0/160</p>
+        </div>
+    </div>
+
+    <!-- Book Car Button -->
+    <button type="submit" name='book' class="btn btn-primary" style="margin-top: 20px;">Book Car</button>
+</form>
 {% endblock %}
