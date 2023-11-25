@@ -247,20 +247,25 @@ def garage_car():
                     except Exception as e:
                         flash(f'Error: {str(e)}', 'error')  # Handle other exceptions
 
-            '''elif request.form.get('action') == 'delete':
+            elif request.form.get('action') == 'delete':
                 car_plate = request.form['car_plate']
                 selected_car = Car.query.filter_by(plate=car_plate).first()
                 if selected_car:
                     try:
-                        
+                        # Remove bookings associated with the car
+                        bookings_to_remove = Booking.query.filter_by(car_plate=car_plate).all()
+                        for booking in bookings_to_remove:
+                            Booking.remove_booking(booking.id)
 
-                        flash('Car amended successfully!', 'success')
+                        # Delete the car
+                        db.session.delete(selected_car)
+                        db.session.commit()
+                        flash('Car deleted successfully.', 'success')
 
                     except ValueError as e:
                         flash(str(e), 'error')  # Handle any parsing errors
                     except Exception as e:
-                        flash(f'Error: {str(e)}', 'error')  # Handle other exceptions'''
-
+                        flash(f'Error: {str(e)}', 'error')  # Handle other exceptions
                 
         except ValueError as e:
             flash(str(e), 'error')
