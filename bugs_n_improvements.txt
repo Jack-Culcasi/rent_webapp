@@ -10,6 +10,4 @@
     - The car about to be deleted has a booking
 
 - Error handling when booking, such as:
-    - Deny booking if in the past
-
-- Automatic deletaion of expired bookings
+    
