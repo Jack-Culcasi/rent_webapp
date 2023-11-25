@@ -218,6 +218,57 @@ def overview(): # Booking
 @login_required
 def garage_car():
     user_cars = current_user.garage.all()
+    if request.method == 'POST':
+        try:
+            if 'plate' in request.form:
+                car_plate = request.form.get('plate')
+                car = Car.query.filter_by(plate=car_plate).first()
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=car)
+            
+            elif request.form.get('action') == 'amend':
+                car_plate = request.form['car_plate']
+                selected_car = Car.query.filter_by(plate=car_plate).first()
+                if selected_car:
+                    try:
+                        # Extracting form data
+                        car_make = request.form['car_make']
+                        car_model = request.form['car_model']
+                        car_fuel = request.form['car_fuel']
+                        car_year = request.form['car_year']
+                        car_cc = request.form['car_cc']
+
+                        # Call the amend_car method
+                        selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc)
+
+                        flash('Car amended successfully!', 'success')
+
+                    except ValueError as e:
+                        flash(str(e), 'error')  # Handle any parsing errors
+                    except Exception as e:
+                        flash(f'Error: {str(e)}', 'error')  # Handle other exceptions
+
+            '''elif request.form.get('action') == 'delete':
+                car_plate = request.form['car_plate']
+                selected_car = Car.query.filter_by(plate=car_plate).first()
+                if selected_car:
+                    try:
+                        
+
+                        flash('Car amended successfully!', 'success')
+
+                    except ValueError as e:
+                        flash(str(e), 'error')  # Handle any parsing errors
+                    except Exception as e:
+                        flash(f'Error: {str(e)}', 'error')  # Handle other exceptions'''
+
+                
+        except ValueError as e:
+            flash(str(e), 'error')
+            print(f'ValueError: {str(e)}')
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
+            print(f'Error: {str(e)}')
+
     return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars)
 
                                                                                 # Bookings 

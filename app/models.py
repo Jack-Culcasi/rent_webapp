@@ -60,6 +60,36 @@ class Car(db.Model):
             filtered_cars = []
 
         return filtered_cars
+    
+    def amend_car(self, car_plate, car_make, car_model, car_fuel, car_year, car_cc):
+        try:
+            self.plate = car_plate
+            self.make = car_make
+            self.model = car_model
+            self.year = car_year
+            self.fuel = car_fuel
+            self.cc = car_cc
+
+            db.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            print(f"Error amending car: {str(e)}")
+
+    @classmethod
+    def delete_car(cls, car_plate):
+        try:
+            car = cls.query.get(car_plate)
+            if car:
+                db.session.delete(car)
+                db.session.commit()
+                return True
+            else:
+                return False
+        except SQLAlchemyError as e:
+            print(f"Error removing car: {str(e)}")
+            db.session.rollback()
+            return False
+
 
     def __repr__(self):
         return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'
