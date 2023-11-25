@@ -201,9 +201,9 @@ def overview(): # Booking
         (Booking.user_id == current_user.id) &
         (Booking.end_datetime < three_months_ago)
     ).all()
-
+    
+    # Delete the old booking
     for old_booking in old_bookings:
-        # Delete the old booking
         Booking.remove_booking(old_booking.id)
 
     return render_template('overview.html',
@@ -213,6 +213,12 @@ def overview(): # Booking
                             from_datetime=from_datetime.strftime('%Y-%m-%d'),
                             to_datetime=to_datetime.strftime('%Y-%m-%d'),
                             user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/garage_car', methods=['GET', 'POST'])
+@login_required
+def garage_car():
+    user_cars = current_user.garage.all()
+    return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars)
 
                                                                                 # Bookings 
 

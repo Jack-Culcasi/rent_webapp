@@ -1,0 +1,37 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2>Search for a Car</h2>
+
+<form action="/garage_car" method="POST">
+    <div class="row">
+      <!-- Dropdown for search type -->
+      <div class="col">
+        <label for="search_type" class="form-label">Search Car</label>
+        <select class="form-select" id="search_type" name="search_type">
+            {% for car in user_cars %}
+            <option value="{{ car.plate }}">{{ car.plate }} - {{ car.make }} - {{ car.model }} - {{ car.year }}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <!-- Input field for search query -->
+    </div>
+    <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Manage</button>
+  </form>
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+
+
+{% endblock %}

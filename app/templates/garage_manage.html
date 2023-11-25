@@ -41,13 +41,17 @@
   <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Car</button>
 </form>
 
-<!-- Display flash messages, if any -->
+<!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
-  {% if category == 'success' %}
-    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-      {{ message }}
-    </div>
-  {% endif %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
 {% endfor %}
 
 <!-- Delete Car Section -->

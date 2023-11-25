@@ -3,13 +3,17 @@
 {% block content %}
 <h5>Bookings older than 3 months are automatically deleted</h5>
 
-<!-- Display flash messages, if any -->
+<!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
-  {% if category == 'success' %}
-    <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-      {{ message }}
-    </div>
-  {% endif %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
 {% endfor %}
 
 <head>

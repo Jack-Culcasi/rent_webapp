@@ -45,11 +45,11 @@
 										{% else %}
 										<li><a href="{{ url_for('overview') }}">Overview</a></li>
 										<li>
-											<span class="opener {% if page == 'garage_view' or page == 'garage_manage' %}active{% endif %}">Garage</span>
+											<span class="opener {% if page == 'garage_view' or page == 'garage_manage' or page == 'garage_car' %}active{% endif %}">Garage</span>
 											<ul>
 												<li><a href="{{ url_for('garage_view') }}">View Garage</a></li>
 												<li><a href="{{ url_for('garage_manage') }}">Manage Garage</a></li>
-												<li><a href="#">Manage Car</a></li>
+												<li><a href="{{ url_for('garage_car') }}">Manage Car</a></li>
 											</ul>
 										</li>
 										<li>
