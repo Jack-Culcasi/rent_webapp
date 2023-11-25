@@ -185,7 +185,8 @@ def overview(): # Booking
     user_bookings = Booking.query.filter(
                 Booking.user_id == current_user.id,
                 Booking.end_datetime > from_datetime,
-                Booking.start_datetime < to_datetime
+                Booking.start_datetime < to_datetime,
+                Booking.end_datetime > datetime.now()  # Additional condition to exclude expired bookings
                 ).all()
 
     # Extract the plates of booked cars
@@ -193,6 +194,17 @@ def overview(): # Booking
 
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
+
+    # Check and deletes bookings older than 3 months
+    three_months_ago = datetime.now() - timedelta(days=3 * 30)
+    old_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        (Booking.end_datetime < three_months_ago)
+    ).all()
+
+    for old_booking in old_bookings:
+        # Delete the old booking
+        Booking.remove_booking(old_booking.id)
 
     return render_template('overview.html',
                             user_cars=user_cars,
@@ -208,13 +220,26 @@ def overview(): # Booking
 @app.route('/bookings_view', methods=['GET', 'POST'])
 @login_required
 def bookings_view(): 
-    user_bookings = Booking.query.filter(Booking.user_id == current_user.id).all()
-    return render_template('bookings_view.html', user_bookings=user_bookings, page='bookings_view')
+    current_date = datetime.utcnow()
+    
+    # Retrieve active bookings
+    active_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        (Booking.end_datetime > current_date)
+    ).all()
+
+    return render_template('bookings_view.html', user_bookings=active_bookings, page='bookings_view')
 
 @app.route('/bookings_manage', methods=['GET', 'POST'])
 @login_required
 def bookings_manage():
-    user_bookings = Booking.query.filter(Booking.user_id == current_user.id).all()
+    current_date = datetime.utcnow()
+    
+    # Retrieve active bookings
+    user_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        (Booking.end_datetime > current_date)
+    ).all()
     selected_booking = None
 
     if request.method == 'POST':
@@ -269,3 +294,28 @@ def bookings_manage():
                 flash('Booking not found. Amendment failed.', 'error')
 
     return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking)
+
+@app.route('/bookings_history', methods=['GET', 'POST'])
+@login_required
+def bookings_history(): 
+    current_date = datetime.utcnow()
+    
+    # Retrieve expired bookings
+    expired_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        (Booking.end_datetime < current_date)
+    ).all()
+
+    if request.method == 'POST':
+        if request.form.get('delete'):
+            booking_id = request.form.get('delete')
+            # Modify the query to eagerly load the 'car' relationship
+            selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
+            if selected_booking:
+                Booking.remove_booking(booking_id)
+                flash('Booking successfully deleted!', 'success')
+
+                # Redirect to the same page to refresh
+                return redirect(url_for('bookings_history'))
+
+    return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history')
