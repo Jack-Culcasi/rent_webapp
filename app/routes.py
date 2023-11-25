@@ -132,14 +132,16 @@ def overview(): # Booking
                 end_date = request.form.get('end_date')
                 start_time = request.form.get('start_time')
                 end_time = request.form.get('end_time')
-                note = request.form.get('note')
-
-                
+                note = request.form.get('note')                
 
                 # Convert start, end, to and from date and time to a datetime object
                 start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
                 end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
-                
+
+                # Check if start_datetime is in the past
+                if start_datetime < datetime.now():
+                    flash('Booking cannot be made for a past date and time.', 'error')
+                    return redirect(url_for('overview'))                
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
@@ -232,8 +234,8 @@ def bookings_manage():
 
         # Handles the "Manage" buttons in other pages
         if request.form.get('manage_booking'):
-            booking_id = request.form.get('booking_id')
-            selected_booking = Booking.query.filter_by(id=booking_id).first()
+            booking_id = request.form.get('manage_booking')
+            selected_booking = Booking.query.filter_by(id=booking_id).first()            
 
         # Check if the form was submitted for amendment
         if request.form.get('action') == 'amend':
