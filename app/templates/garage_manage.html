@@ -1,6 +1,19 @@
 {% extends "index.html" %}
 
 {% block content %}
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
 <head>
   <!-- Include external stylesheets and scripts -->
   <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
@@ -8,9 +21,8 @@
 
 <!-- Add Car Section -->
 <form method="POST" action="{{ url_for('garage_manage') }}">
-  <header id="header">
-    <h2>Add Car</h2>
-  </header>
+  <h2>Add Car</h2>
+  
   <div class="row">
     <!-- Input fields for adding a car -->
     <div class="col">
@@ -40,19 +52,6 @@
   </div>
   <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Car</button>
 </form>
-
-<!-- Flash Messages -->
-{% for category, message in get_flashed_messages(with_categories=true) %}
-    {% if category == 'success' %}
-        <div class="alert alert-success" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-            {{ message }}
-        </div>
-    {% elif category == 'error' %}
-        <div class="alert alert-danger" style="color: #f56a6a; padding: 10px; margin-top: 10px;">
-            {{ message }}
-        </div>
-    {% endif %}
-{% endfor %}
 
 <!-- Delete Car Section -->
 <header id="header">

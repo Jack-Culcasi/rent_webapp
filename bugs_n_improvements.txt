@@ -12,3 +12,8 @@
 - Error handling when booking, such as:
     
 Unlink bookings from cars when booking is expired
+
+fix username in different pages
+
+add manage booking 
+
