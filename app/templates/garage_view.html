@@ -7,6 +7,7 @@
   <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
 </head>
 
+<form action="{{ url_for('garage_car') }}" method="POST">
 <header id="header">
   <h2>Garage</h2>
 </header>
@@ -22,6 +23,7 @@
         <th scope="col"><a href="#" class="sort-link" data-sort="fuel">Fuel</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="year">Year</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="cc">Cc</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Actions</a></th>
       </tr>
     </thead>
     <tbody>
@@ -35,10 +37,17 @@
           <td data-sort="fuel">{{ car.fuel }}</td>
           <td data-sort="year">{{ car.year }}</td>
           <td data-sort="cc">{{ car.cc }}</td>
+          <td>
+            <!-- Add hidden input for Car plate -->
+            <input type="hidden" name="car_plate" value="{{ car.plate }}">
+            <button type="submit" class="btn btn-danger" name="garage_car" value="{{ car.plate }}">Manage</button>
+        </td>
+        <td>
       </tr>
       {% endfor %}
   </tbody>
 </table>
+</form>
 {% endblock %}
 
 

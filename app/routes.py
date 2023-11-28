@@ -266,6 +266,12 @@ def garage_car():
                         flash(str(e), 'error')  # Handle any parsing errors
                     except Exception as e:
                         flash(f'Error: {str(e)}', 'error')  # Handle other exceptions
+
+            # Handles the "Manage" buttons in other pages
+            elif request.form.get('garage_car'):
+                car_plate = request.form.get('garage_car')
+                selected_car = Car.query.filter_by(plate=car_plate).first()
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car)
                 
         except ValueError as e:
             flash(str(e), 'error')
