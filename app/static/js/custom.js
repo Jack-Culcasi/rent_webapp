@@ -58,3 +58,25 @@ function confirmDelete(context) {
 
     return false; // Prevent default behavior
 }
+
+// Function to toggle dark mode
+function toggleDarkMode() {
+    var button = document.getElementById('darkModeToggle');
+    var body = document.body;
+
+    // Toggle dark mode class on the body
+    body.classList.toggle('dark-mode');
+
+    // Update button text based on dark mode state
+    if (body.classList.contains('dark-mode')) {
+        button.textContent = 'Dark Mode On';
+    } else {
+        button.textContent = 'Dark Mode Off';
+    }
+}
+
+  // Add an event listener to the button
+  var darkModeButton = document.getElementById('darkModeToggle');
+  if (darkModeButton) {
+      darkModeButton.addEventListener('click', toggleDarkMode);
+  }

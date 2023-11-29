@@ -2306,3 +2306,9 @@ button,
   visibility: visible;
   opacity: 1;
 }
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: #222; /* Set your dark mode background color */
+  color: #fff; /* Set your dark mode text color */
+}
