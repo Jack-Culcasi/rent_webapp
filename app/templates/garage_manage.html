@@ -77,11 +77,25 @@
       <label for="search_type" class="form-label hidden-label">Search Query</label>
       <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
     </div>
+    <!-- "Or" text -->
+    <div class="col">
+      <p style="text-align: center; margin-top: 3em;">Or</p>
+    </div>
+    <!-- Dropdown for selecting a car -->
+    <div class="col">
+      <label for="select_car" class="form-label">Select a Car</label>
+      <select class="form-select" id="select_car" name="select_car">
+        <option value="blank">Select a car...</option>
+        {% for car in user_cars %}
+        <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }} - {{ car.year }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Search</button>
 </form>
 
-{% if search_query %}
+{% if search_query or cars %}
   {% if cars %}
     <!-- Display search results in a table -->
     <h3>Search Results:</h3>

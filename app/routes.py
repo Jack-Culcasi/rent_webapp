@@ -58,7 +58,8 @@ def garage_view():
 @app.route('/garage_manage', methods=['GET', 'POST'])
 @login_required
 def garage_manage(): # Add Car
-   if request.method == 'POST':
+    user_cars = current_user.garage.all()
+    if request.method == 'POST':
        # Process the form data for a POST request
        plate = request.form.get('Plate').upper()
        make = request.form.get('Make').lower().capitalize()
@@ -79,20 +80,31 @@ def garage_manage(): # Add Car
        db.session.commit()
        flash('Car added successfully', 'success')
        return redirect(url_for('garage_manage'))
-   else:
+    else:
        # Render the form for a GET request
-       return render_template('garage_manage.html', title='Add Car', page="garage_manage")
+       return render_template('garage_manage.html', title='Add Car', page="garage_manage", user_cars=user_cars)
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    user_cars = current_user.garage.all()
     if request.method == 'POST':
         search_query = request.form.get('search_query')
         search_type = request.form.get('search_type')
+        select_car = request.form.get('select_car')
 
-        filtered_cars = Car.search(search_query, search_type, current_user.id)
+        # Perform search based on both search type and selected car
+        if search_type and search_query:
+            filtered_cars = Car.search(search_query, search_type, current_user.id)
+        elif select_car and select_car != "blank":
+            # If a car is selected, perform search based on the selected car
+            filtered_cars = [Car.query.filter_by(plate=select_car).first()]
+            print(filtered_cars)
+        else:
+            # No valid search parameters provided
+            filtered_cars = []
 
-        return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query)
+        return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
     
     else:
         # Render the search page template for a GET request
