@@ -3,6 +3,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
+from sqlalchemy import and_
 
 # Local imports
 from app import app, db
@@ -397,5 +398,16 @@ def bookings_history():
 
                 # Redirect to the same page to refresh
                 return redirect(url_for('bookings_history'))
+        if 'search' in request.form:
+            start_date = request.form.get('start_date')
+            end_date = request.form.get('end_date')
+            
+            searched_booking = Booking.query.filter(
+                and_(
+                    Booking.start_datetime >= start_date,
+                    Booking.end_datetime <= end_date
+                )
+            ).all()
+            return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking)
 
     return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history')
