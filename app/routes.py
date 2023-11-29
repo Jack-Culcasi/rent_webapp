@@ -231,12 +231,28 @@ def overview(): # Booking
 @login_required
 def garage_car():
     user_cars = current_user.garage.all()
+    current_datetime = datetime.utcnow()
+
     if request.method == 'POST':
         try:
             if 'plate' in request.form:
                 car_plate = request.form.get('plate')
+
+                # Retrieve active bookings for a given car
+                car_active_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime > current_datetime)
+                ).all()
+
+                # Retrieve past bookings for a given car
+                car_past_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime <= current_datetime)
+                ).all()
+
                 car = Car.query.filter_by(plate=car_plate).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=car)
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+                                        car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings)
             
             elif request.form.get('action') == 'amend':
                 car_plate = request.form['car_plate']
@@ -283,8 +299,22 @@ def garage_car():
             # Handles the "Manage" buttons in other pages
             elif request.form.get('garage_car'):
                 car_plate = request.form.get('garage_car')
+
+                # Retrieve active bookings for a given car
+                car_active_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime > current_datetime)
+                ).all()
+
+                # Retrieve past bookings for a given car
+                car_past_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime <= current_datetime)
+                ).all()
+
                 selected_car = Car.query.filter_by(plate=car_plate).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car)
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings)
                 
         except ValueError as e:
             flash(str(e), 'error')
@@ -398,6 +428,18 @@ def bookings_history():
 
                 # Redirect to the same page to refresh
                 return redirect(url_for('bookings_history'))
+            
+        if request.form.get('delete_car'):
+            booking_id = request.form.get('delete_car')
+            # Modify the query to eagerly load the 'car' relationship
+            selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
+            if selected_booking:
+                Booking.remove_booking(booking_id)
+                flash('Booking successfully deleted!', 'success')
+
+                # Redirect to the same page to refresh
+                return redirect(url_for('garage_car'))
+            
         if 'search' in request.form:
             start_date = request.form.get('start_date')
             end_date = request.form.get('end_date')
