@@ -22,7 +22,7 @@ function confirmAmend() {
 
 // Function to show confirmation dialog for Delete
 function confirmDelete() {
-    var isConfirmed = window.confirm('Are you sure you want to delete this booking?');
+    var isConfirmed = window.confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');
     if (isConfirmed) {
         // Set the action field before submitting the form
         document.getElementById('action').value = 'delete';

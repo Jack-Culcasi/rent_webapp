@@ -1,8 +1,6 @@
 {% extends "index.html" %}
 
 {% block content %}
-<h5>Bookings older than 3 months are automatically deleted</h5>
-
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
     {% if category == 'success' %}
@@ -15,6 +13,8 @@
         </div>
     {% endif %}
 {% endfor %}
+
+<h5>Bookings older than 3 months are automatically deleted</h5>
 
 <head>
   <!-- Include jQuery library and external sorting script -->
