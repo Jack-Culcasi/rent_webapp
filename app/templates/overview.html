@@ -7,6 +7,18 @@
 <!-- Link to your CSS file -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
+<div class="row">
+<form action="{{ url_for('garage_manage') }}" method="get">
+    <button type="submit">Add/Delete Car</button>
+</form>
+<form action="{{ url_for('bookings_manage') }}" method="get">
+    <button type="submit">Delete/Amend Booking</button>
+</form>
+<form action="{{ url_for('garage_car') }}" method="get">
+    <button type="submit">Manage Car</button>
+</form>
+</div>
+
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
     {% if category == 'success' %}
@@ -19,14 +31,7 @@
         </div>
     {% endif %}
 {% endfor %}
-<div class="row">
-<form action="{{ url_for('garage_manage') }}" method="get">
-    <button type="submit">Add/Delete Car</button>
-</form>
-<form action="{{ url_for('bookings_manage') }}" method="get">
-    <button type="submit">Delete/Amend Booking</button>
-</form>
-</div>
+
 <!-- Booking Form -->
 <header id="header" style="padding: 0;">
     <h2>Book a Car</h2>
