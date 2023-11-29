@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<!-- Change Username Form -->
+<form method="POST" action="{{ url_for('profile') }}">
+    <header id="header">
+        <h2>Change Username</h2>
+    </header>
+    <div class="row">
+        <!-- Input field for changing username -->
+        <div class="col">
+            <label for="username" class="form-label">New Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Change Username</button>
+</form>
+
+<!-- Change Email Form -->
+<form method="POST" action="{{ url_for('profile') }}">
+    <header id="header">
+        <h2>Change Email</h2>
+    </header>
+    <div class="row">
+        <!-- Input field for changing email -->
+        <div class="col">
+            <label for="email" class="form-label">New Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Change Email</button>
+</form>
+
+<!-- Change Password Form -->
+<form method="POST" action="{{ url_for('profile') }}">
+    <header id="header">
+        <h2>Change Password</h2>
+    </header>
+    <div class="row">
+        <!-- Input fields for changing password -->
+        <div class="col">
+            <label for="password" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <div class="col">
+            <label for="confirm_password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Change Password</button>
+</form>
+
+
+
+{% endblock %}

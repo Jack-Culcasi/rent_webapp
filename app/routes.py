@@ -48,11 +48,30 @@ def logout():
     logout_user()
     return redirect(url_for('overview'))
 
-app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
-def profile():
-    x = current_user
-    print(x)
+def profile(): 
+    if request.method == 'POST':
+        if 'username' in request.form:
+            username = request.form.get('username')
+            try:
+                current_user.change_username(username)
+            except:
+                pass
+        elif 'email' in request.form:
+            email = request.form.get('email')
+            print(email)
+        elif 'password' in request.form:        
+            password = request.form.get('password')
+            password_confirm = request.form.get('confirm_password')
+            print(password, password_confirm)
+
+            '''if password == password_confirm:
+                current_user.username = username
+                current_user.email = email'''
+
+    return render_template('profile.html', title='Profile', page='profile', user=current_user, 
+                           user_name=current_user.username if current_user.is_authenticated else None)
 
                                                                                 # Garage
 

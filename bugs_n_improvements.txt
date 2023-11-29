@@ -6,12 +6,5 @@
 
 - Create an Admin Dashboard to check the database
 
-- Notify the User if:
-    - The car about to be deleted has a booking
-
-- Error handling when booking, such as:
-    
-Unlink bookings from cars when booking is expired
-
-fix username in different pages
+- Fix username in different pages
 
