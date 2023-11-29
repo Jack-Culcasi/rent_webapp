@@ -10,23 +10,51 @@ function updateCharacterCount(textarea) {
 }
 
 // Function to show confirmation dialog for Amend
-function confirmAmend() {
-    var isConfirmed = window.confirm('Are you sure you want to amend this booking?');
+function confirmAmend(context) {
+    var confirmationMessage = '';
+
+    // Adjust the message based on the context
+    if (context === 'car') {
+        confirmationMessage = 'Are you sure you want to amend this car?';
+    } else if (context === 'booking') {
+        confirmationMessage = 'Are you sure you want to amend this booking?';
+    } else {
+        // Default message if context is not recognized
+        confirmationMessage = 'Are you sure you want to proceed?';
+    }
+
+    var isConfirmed = window.confirm(confirmationMessage);
+
     if (isConfirmed) {
         // Set the action field before submitting the form
         document.getElementById('action').value = 'amend';
         document.getElementById('manageForm').submit();
     }
+
     return false; // Prevent default behavior
 }
 
 // Function to show confirmation dialog for Delete
-function confirmDelete() {
-    var isConfirmed = window.confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');
+function confirmDelete(context) {
+    var confirmationMessage = '';
+
+    // Adjust the message based on the context
+    if (context === 'car') {
+        confirmationMessage = 'Are you sure you want to delete this car? All the bookings related to this car will be deleted too.';
+    } else if (context === 'booking') {
+        confirmationMessage = 'Are you sure you want to delete this booking?';
+    } else {
+        // Default message if context is not recognized
+        confirmationMessage = 'Are you sure you want to proceed?';
+    }
+
+    var isConfirmed = window.confirm(confirmationMessage);
+
     if (isConfirmed) {
         // Set the action field before submitting the form
         document.getElementById('action').value = 'delete';
         document.getElementById('manageForm').submit();
     }
+
     return false; // Prevent default behavior
 }
