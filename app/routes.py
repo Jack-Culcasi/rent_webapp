@@ -10,7 +10,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking
 
-                                                                                # Users Login/Logout
+                                                                                # Users Login/Logout/Profile
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,13 +48,20 @@ def logout():
     logout_user()
     return redirect(url_for('overview'))
 
+app.route('/profile')
+@login_required
+def profile():
+    x = current_user
+    print(x)
+
                                                                                 # Garage
 
 @app.route('/garage_view', methods=['GET', 'POST'])
 @login_required
 def garage_view():
     user_cars = current_user.garage.all()
-    return render_template('garage_view.html', title='Garage', page="garage_view", user_cars=user_cars)
+    return render_template('garage_view.html', title='Garage', 
+                           page="garage_view", user_cars=user_cars, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_manage', methods=['GET', 'POST'])
 @login_required
@@ -83,7 +90,8 @@ def garage_manage(): # Add Car
        return redirect(url_for('garage_manage'))
     else:
        # Render the form for a GET request
-       return render_template('garage_manage.html', title='Add Car', page="garage_manage", user_cars=user_cars)
+       return render_template('garage_manage.html', title='Add Car', page="garage_manage", user_cars=user_cars,
+                              user_name=current_user.username if current_user.is_authenticated else None)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -252,7 +260,8 @@ def garage_car():
 
                 car = Car.query.filter_by(plate=car_plate).first()
                 return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
-                                        car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings)
+                                        car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                        user_name=current_user.username if current_user.is_authenticated else None)
             
             elif request.form.get('action') == 'amend':
                 car_plate = request.form['car_plate']
@@ -314,7 +323,8 @@ def garage_car():
 
                 selected_car = Car.query.filter_by(plate=car_plate).first()
                 return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
-                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings)
+                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                        user_name=current_user.username if current_user.is_authenticated else None)
                 
         except ValueError as e:
             flash(str(e), 'error')
@@ -323,7 +333,8 @@ def garage_car():
             flash(f'Error: {str(e)}', 'error')
             print(f'Error: {str(e)}')
 
-    return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars)
+    return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+                           user_name=current_user.username if current_user.is_authenticated else None)
 
                                                                                 # Bookings 
 
@@ -339,7 +350,8 @@ def bookings_view():
         (Booking.end_datetime > current_date)
     ).all()
 
-    return render_template('bookings_view.html', user_bookings=active_bookings, page='bookings_view')
+    return render_template('bookings_view.html', user_bookings=active_bookings, page='bookings_view',
+                           user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_manage', methods=['GET', 'POST'])
 @login_required
@@ -404,7 +416,8 @@ def bookings_manage():
             else:
                 flash('Booking not found. Amendment failed.', 'error')
 
-    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking)
+    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking,
+                           user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
 @login_required
@@ -450,6 +463,8 @@ def bookings_history():
                     Booking.end_datetime <= end_date
                 )
             ).all()
-            return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking)
+            return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking,
+                                   user_name=current_user.username if current_user.is_authenticated else None)
 
-    return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history')
+    return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history',
+                           user_name=current_user.username if current_user.is_authenticated else None)
