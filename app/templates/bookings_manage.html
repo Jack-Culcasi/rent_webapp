@@ -23,7 +23,6 @@
     <div class="row">
       <!-- Dropdown for search type -->
       <div class="col">
-        <label for="search_type" class="form-label">Search Booking</label>
         <select class="form-select" id="search_type" name="search_type">
             {% for booking in user_bookings %}
             <option value="{{ booking.id }}">{{ booking.id }} - {{ booking.car.plate }} - {{booking.car.model}} - 
