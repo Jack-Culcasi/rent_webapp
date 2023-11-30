@@ -53,22 +53,40 @@ def logout():
 def profile(): 
     if request.method == 'POST':
         if 'username' in request.form:
-            username = request.form.get('username')
-            try:
-                current_user.change_username(username)
-            except:
-                pass
+            new_username = request.form.get('username')
+            existing_username = User.query.filter_by(username=new_username).first()
+            if existing_username:
+                flash(f'{existing_username.username} already taken, please choose another one', 'error')
+                return redirect(url_for('profile'))
+            else:
+                current_user.change_username(new_username)
+                db.session.commit()
+                flash('Username successfully changed!', 'success')
+                return redirect(url_for('profile'))                
+                
         elif 'email' in request.form:
-            email = request.form.get('email')
-            print(email)
+            new_email = request.form.get('email')
+            existing_email = User.query.filter_by(email=new_email).first()
+            if existing_email:
+                flash(f'{existing_email.email} already taken, please choose another one', 'error')
+                return redirect(url_for('profile'))
+            else:
+                current_user.email = new_email
+                db.session.commit()
+                flash('Email successfully changed!', 'success')
+                return redirect(url_for('profile'))   
         elif 'password' in request.form:        
-            password = request.form.get('password')
+            new_password = request.form.get('password')
             password_confirm = request.form.get('confirm_password')
-            print(password, password_confirm)
 
-            '''if password == password_confirm:
-                current_user.username = username
-                current_user.email = email'''
+            if new_password == password_confirm:
+                current_user.set_password(new_password)
+                db.session.commit()
+                flash('Password successfully changed!', 'success')
+                return redirect(url_for('profile'))  
+            else:
+                flash('Passwords do not match!', 'error') 
+                return redirect(url_for('profile'))  
 
     return render_template('profile.html', title='Profile', page='profile', user=current_user, 
                            user_name=current_user.username if current_user.is_authenticated else None)
@@ -96,9 +114,10 @@ def garage_manage(): # Add Car
        cc = request.form.get('Cc').lower().capitalize()
 
        # Check if a car with the same plate and user_id already exists
-       existing_car = Car.query.filter_by(plate=plate, user_id=current_user.id).first()
+       existing_car = Car.query.filter_by(plate=plate).first()
+
        if existing_car is not None:
-           flash('A car with this plate already exists for this user', 'error')
+           flash('A car with this plate already exists in the database', 'error')
            return redirect(url_for('garage_manage'))
 
        new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)

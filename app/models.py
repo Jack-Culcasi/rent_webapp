@@ -25,9 +25,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def change_username(self, new_username):
-        print(self.username)
         self.username = new_username
-        print(self.username)
+        
     
 class Car(db.Model):
     plate = db.Column(db.String(8), primary_key=True, index=True, unique=True)
