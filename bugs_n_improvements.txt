@@ -8,3 +8,5 @@
 
 - History booking, does not show different past bookings for same car / other problems with history books
 
+- Add Overview Calendar
+- In overview, a booked car for just one day is not avaliable for the whole week
