@@ -61,22 +61,39 @@ function confirmDelete(context) {
 
 // Function to toggle dark mode
 function toggleDarkMode() {
-    var button = document.getElementById('darkModeToggle');
     var body = document.body;
 
     // Toggle dark mode class on the body
     body.classList.toggle('dark-mode');
 
     // Update button text based on dark mode state
+    var button = document.getElementById('darkModeToggle');
     if (body.classList.contains('dark-mode')) {
         button.textContent = 'Dark Mode On';
+        // Store dark mode preference in localStorage
+        localStorage.setItem('darkMode', 'on');
     } else {
         button.textContent = 'Dark Mode Off';
+        // Remove dark mode preference from localStorage
+        localStorage.removeItem('darkMode');
     }
 }
 
-  // Add an event listener to the button
-  var darkModeButton = document.getElementById('darkModeToggle');
-  if (darkModeButton) {
-      darkModeButton.addEventListener('click', toggleDarkMode);
-  }
+// Check for dark mode preference on page load
+document.addEventListener('DOMContentLoaded', function() {
+    var darkMode = localStorage.getItem('darkMode');
+    var body = document.body;
+
+    // Set dark mode based on the stored preference
+    if (darkMode === 'on') {
+        body.classList.add('dark-mode');
+        // Update button text
+        document.getElementById('darkModeToggle').textContent = 'Dark Mode On';
+    }
+});
+
+// Add an event listener to the button
+var darkModeButton = document.getElementById('darkModeToggle');
+if (darkModeButton) {
+    darkModeButton.addEventListener('click', toggleDarkMode);
+}

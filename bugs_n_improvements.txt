@@ -6,5 +6,5 @@
 
 - Create an Admin Dashboard to check the database
 
-- Fix username in different pages
+- History booking, does not show different past bookings for same car / other problems with history books
 
