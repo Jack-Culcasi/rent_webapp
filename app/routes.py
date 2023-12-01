@@ -146,7 +146,6 @@ def search():
         elif select_car and select_car != "blank":
             # If a car is selected, perform search based on the selected car
             filtered_cars = [Car.query.filter_by(plate=select_car).first()]
-            print(filtered_cars)
         else:
             # No valid search parameters provided
             filtered_cars = []
@@ -183,10 +182,13 @@ def delete_car():
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
 def overview(): # Booking
+    # Check if it is the first of the year, if it is it resets car.days and car.money
+    Car.reset_parameters() 
     if request.method == 'POST':
         try:
             if 'book' in request.form:
                 car_plate = request.form.get('car_selection')
+                price = int(request.form.get('Price'))
                 start_date = request.form.get('start_date')
                 end_date = request.form.get('end_date')
                 start_time = request.form.get('start_time')
@@ -204,7 +206,7 @@ def overview(): # Booking
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
-                    car_plate, start_datetime, end_datetime, current_user.id, note
+                    car_plate, price, start_datetime, end_datetime, current_user.id, note
                 )
                 
                 if booking is None:
@@ -494,26 +496,20 @@ def bookings_history():
         if 'search' in request.form:
             start_date = request.form.get('start_date')
             end_date = request.form.get('end_date')
+            searched_booking = []
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+            #Include the full end_date
+            end_date = end_date + timedelta(days=1)
             
-            searched_booking = Booking.query.filter(
-                    and_(
-                        or_(
-                            and_(
-                                Booking.start_datetime >= start_date,
-                                Booking.start_datetime <= end_date
-                            ),
-                            and_(
-                                Booking.end_datetime >= start_date,
-                                Booking.end_datetime <= end_date
-                            ),
-                            and_(
-                                Booking.start_datetime <= start_date,
-                                Booking.end_datetime >= end_date
-                            )
-                        ),
-                        Booking.user_id == current_user.id
-                    )
-                ).all()
+            # Check booking which end date and start date is within the search
+            for booking in expired_bookings:
+                if booking.end_datetime >= start_date and booking.end_datetime <= end_date:
+                    searched_booking.append(booking)
+                elif booking.start_datetime >= start_date and booking.start_datetime <= end_date:
+                    searched_booking.append(booking)
+
             return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking,
                                    user_name=current_user.username if current_user.is_authenticated else None)
 

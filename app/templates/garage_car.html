@@ -79,6 +79,18 @@
         <input type="text" class="form-control" id="car_cc" name="car_cc" value="{{ car_object.cc }}">
       </div>
 
+      <!-- Days Booked -->
+      <div class="col">
+        <label for="days" class="form-label">Days Booked</label>
+        <input type="text" class="form-control" id="days" name="days" value="{{ car_object.days }}" readonly>
+      </div>
+
+      <!-- Car money -->
+      <div class="col">
+        <label for="money" class="form-label">Revenue</label>
+        <input type="text" class="form-control" id="money" name="money" value="{{ car_object.money }}" readonly>
+      </div>
+
     </div>
 
     <!-- Hidden input field for the action -->

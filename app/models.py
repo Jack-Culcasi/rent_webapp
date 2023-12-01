@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 @login.user_loader
 def load_user(id):
@@ -36,6 +37,8 @@ class Car(db.Model):
     year = db.Column(db.Integer, index=True)
     cc = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    days = db.Column(db.Integer, default=0, index=True)
+    money = db.Column(db.Integer, default=0, index=True)
 
     @classmethod
     def search(cls, search_query, search_type, current_user_id):
@@ -94,6 +97,16 @@ class Car(db.Model):
             db.session.rollback()
             return False
 
+    # Reset days and money for every car at the beginning of every year
+    @classmethod
+    def reset_parameters(cls):
+        today = datetime.now()
+        if today.month == 1 and today.day == 1:
+            for car in Car.query.all():
+                car.days = 0
+                car.money = 0
+
+            db.session.commit()
 
     def __repr__(self):
         return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'
@@ -105,12 +118,13 @@ class Booking(db.Model):
     car_plate = db.Column(db.String(8), db.ForeignKey('car.plate'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     note = db.Column(db.String(160))
+    money = db.Column(db.Integer, default=0, index=True)
     
     # Add a reference to the Car model for easier access
     car = db.relationship('Car', backref='bookings', lazy=True)
 
     @staticmethod
-    def create_booking(car_plate, start_datetime, end_datetime, user_id, note):
+    def create_booking(car_plate, price, start_datetime, end_datetime, user_id, note):
         # Check if the selected car exists
         car = Car.query.filter_by(plate=car_plate).first()
         if not car:
@@ -126,6 +140,9 @@ class Booking(db.Model):
 
             if overlapping_booking:
                 return None, overlapping_booking.start_datetime, overlapping_booking.end_datetime
+            
+            # Calculate booking duration
+            booking_duration = (end_datetime - start_datetime).days + 1 # It adds a day because a booking within the same day counts as zero days.
 
             # Create a new booking
             booking = Booking(
@@ -133,9 +150,13 @@ class Booking(db.Model):
                 end_datetime=end_datetime,
                 car_plate=car_plate,
                 user_id=user_id,
-                note=note
+                note=note,
+                money=price
             )
+
             db.session.add(booking)
+            car.days += booking_duration
+            car.money += price
             db.session.commit()
 
             return booking, None, None
@@ -149,7 +170,17 @@ class Booking(db.Model):
         try:
             booking = cls.query.get(booking_id)
             if booking:
+                # Calculate booking duration
+                booking_duration = (booking.end_datetime - booking.start_datetime).days + 1
+                car = Car.query.filter_by(plate=booking.car_plate).first()
+
                 db.session.delete(booking)
+
+                # Check if the booking is active, otherwise no days/money are subtracted 
+                if booking.end_datetime > datetime.now():
+                    car.days -= booking_duration
+                    car.money -= booking.money
+
                 db.session.commit()
                 return True
             else:
