@@ -2315,7 +2315,7 @@ body.dark-mode {
 
 /* Dark mode styles for the navbar */
 body.dark-mode #sidebar {
-  background-color: #020202; /* Set your dark mode navbar background color */
+  background-color: #0a0a0a; /* Set your dark mode navbar background color */
   color: #fff; /* Set your dark mode navbar text color */
 }
 
@@ -2337,7 +2337,7 @@ body.dark-mode textarea {
 body.dark-mode #menu ul,
 body.dark-mode label,
 body.dark-mode table th  {
-  color: #fff; /* Set your dark mode text color */
+  color: #fff; 
 }
 
 body.dark-mode select option {
