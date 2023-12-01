@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 
 # Local imports
 from app import app, db
@@ -496,11 +496,24 @@ def bookings_history():
             end_date = request.form.get('end_date')
             
             searched_booking = Booking.query.filter(
-                and_(
-                    Booking.start_datetime >= start_date,
-                    Booking.end_datetime <= end_date
-                )
-            ).all()
+                    and_(
+                        or_(
+                            and_(
+                                Booking.start_datetime >= start_date,
+                                Booking.start_datetime <= end_date
+                            ),
+                            and_(
+                                Booking.end_datetime >= start_date,
+                                Booking.end_datetime <= end_date
+                            ),
+                            and_(
+                                Booking.start_datetime <= start_date,
+                                Booking.end_datetime >= end_date
+                            )
+                        ),
+                        Booking.user_id == current_user.id
+                    )
+                ).all()
             return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking,
                                    user_name=current_user.username if current_user.is_authenticated else None)
 
