@@ -1,0 +1,75 @@
+{% extends "index.html" %}
+
+{% block content %}
+<!-- Link to your CSS file -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<style>
+    /* Add additional styles here */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #777777;
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #8d8d8d;
+    }
+
+    .booked {
+        background-color: green;
+        color: white;
+    }
+</style>
+<title>Car Booking Grid</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Car</th>
+                {% for day in range(1, days+1) %}
+                    <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+                <tr>
+                    <td>{{ car.plate }} {{ car.model }}</td>
+                    {% set is_booked = false %}
+                    {% for day in range(1, days+1) %}
+                        {% if not is_booked %}
+                            {% for booking in car.bookings %}
+                                {% if day >= booking.start_datetime.day and day <= booking.end_datetime.day %}
+                                    {% set is_booked = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        <td class="{% if is_booked %}booked{% endif %}"></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+{% endblock %}

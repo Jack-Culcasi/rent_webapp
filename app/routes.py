@@ -4,6 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
 from sqlalchemy import and_, or_
+import calendar as cal
 
 # Local imports
 from app import app, db
@@ -520,3 +521,21 @@ def bookings_history():
 
     return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history',
                            user_name=current_user.username if current_user.is_authenticated else None)
+
+                                                                                # Calendar
+
+@app.route('/calendar', methods=['GET', 'POST'])
+@login_required
+def calendar(): 
+    current_date = datetime.utcnow()
+    user_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        (Booking.end_datetime > current_date)
+    ).all()
+
+    user_cars = current_user.garage.all()
+    current_month = datetime.now().month
+    next_month = current_month % 12 + 1
+    days_in_month = cal.monthrange(datetime.now().year, next_month)[1]
+    return render_template('calendar.html', cars=user_cars, days=days_in_month, bookings=user_bookings,
+                            user_name=current_user.username if current_user.is_authenticated else None)
