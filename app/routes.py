@@ -184,6 +184,7 @@ def delete_car():
 def overview(): # Booking
     # Check if it is the first of the year, if it is it resets car.days and car.money
     Car.reset_parameters() 
+
     if request.method == 'POST':
         try:
             if 'book' in request.form:
@@ -238,16 +239,20 @@ def overview(): # Booking
     if from_date == None:
         from_date = datetime.now().strftime('%Y-%m-%d')
         to_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
-
-    from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
-    to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
+        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+    # Chosen time frame if Input    
+    else:
+        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
+        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+        #Include the full to_datetime
+        to_datetime += timedelta(days=1)    
 
     # Fetch all bookings for the user within the specified time range
     user_bookings = Booking.query.filter(
                 Booking.user_id == current_user.id,
-                Booking.end_datetime > from_datetime,
-                Booking.start_datetime < to_datetime,
-                Booking.end_datetime > datetime.now()  # Additional condition to exclude expired bookings
+                Booking.end_datetime >= from_datetime,
+                Booking.start_datetime <= to_datetime,
                 ).all()
 
     # Extract the plates of booked cars
