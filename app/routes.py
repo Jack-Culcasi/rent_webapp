@@ -534,8 +534,5 @@ def calendar():
     ).all()
 
     user_cars = current_user.garage.all()
-    current_month = datetime.now().month
-    next_month = current_month % 12 + 1
-    days_in_month = cal.monthrange(datetime.now().year, next_month)[1]
-    return render_template('calendar.html', cars=user_cars, days=days_in_month, bookings=user_bookings,
+    return render_template('calendar.html', cars=user_cars, bookings=user_bookings,
                             user_name=current_user.username if current_user.is_authenticated else None)

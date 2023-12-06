@@ -2,7 +2,8 @@
 
 {% block content %}
 <!-- Link to your CSS file -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -17,59 +18,33 @@
     {% endif %}
 {% endfor %}
 
-<style>
-    /* Add additional styles here */
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
+<table class="calendar">
+    <tr>
+        <th>Car</th>
+        {% for day in range(1, 32) %}
+        <th>{{ day }}</th>
+        {% endfor %}
+    </tr>
+    {% for car in cars %}
+    <tr>
+      <td>{{ car.model }} - {{ car.plate }}</td>
+      {% for day in range(1, 32) %}
+      {% set booked = false %}
+      {% for booking in bookings %}
+      {% if booking.car_id == car.id %}
+      {{ booking.start_datetime.date() }} - {{ day }}
+      {% if booking.start_datetime.date().day == day %}
+      {% set booked = true %}
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+      <td class="{% if booked %}booked{% endif %}"></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+    
+</table>
 
-    th, td {
-        border: 1px solid #777777;
-        padding: 8px;
-        text-align: center;
-    }
 
-    th {
-        background-color: #8d8d8d;
-    }
-
-    .booked {
-        background-color: green;
-        color: white;
-    }
-</style>
-<title>Car Booking Grid</title>
-</head>
-<body>
-    <table>
-        <thead>
-            <tr>
-                <th>Car</th>
-                {% for day in range(1, days+1) %}
-                    <th>{{ day }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for car in cars %}
-                <tr>
-                    <td>{{ car.plate }} {{ car.model }}</td>
-                    {% set is_booked = false %}
-                    {% for day in range(1, days+1) %}
-                        {% if not is_booked %}
-                            {% for booking in car.bookings %}
-                                {% if day >= booking.start_datetime.day and day <= booking.end_datetime.day %}
-                                    {% set is_booked = true %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                        <td class="{% if is_booked %}booked{% endif %}"></td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
 
 {% endblock %}

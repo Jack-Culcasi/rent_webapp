@@ -2343,9 +2343,3 @@ body.dark-mode table th  {
 body.dark-mode select option {
   color: #000; /* Set a different text color for dropdown menu options in dark mode */
 }
-
-.booked {
-  background-color: green;
-  width: 20px; /* Adjust the width and height as needed */
-  height: 20px;
-}

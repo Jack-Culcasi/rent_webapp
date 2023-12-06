@@ -1,0 +1,15 @@
+/* Literal Grid Layout */
+.calendar {
+    border-collapse: collapse;
+}
+
+.calendar th, .calendar td {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar .booked {
+    background-color: #f00;
+}
+
