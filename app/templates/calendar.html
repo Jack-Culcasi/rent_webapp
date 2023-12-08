@@ -2,8 +2,23 @@
 
 {% block content %}
 <!-- Link to your CSS file -->
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<div class="row">
+    <form action="{{ url_for('garage_manage') }}" method="get">
+        <button type="submit">Add/Delete Car</button>
+    </form>
+    <form action="{{ url_for('bookings_manage') }}" method="get">
+        <button type="submit">Delete/Amend Booking</button>
+    </form>
+    <form action="{{ url_for('garage_car') }}" method="get">
+        <button type="submit">Manage Car</button>
+    </form>
+    <form action="{{ url_for('overview') }}" method="get">
+        <button type="submit">Overview</button>
+    </form>
+</div>
+
 
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -18,33 +33,32 @@
     {% endif %}
 {% endfor %}
 
+<!-- Display current month -->
+<div class="current-month">
+    <h3>{{ current_month }}</h3>
+</div>
+
 <table class="calendar">
     <tr>
         <th>Car</th>
         {% for day in range(1, 32) %}
-        <th>{{ day }}</th>
+            <th>{{ day }}</th>
         {% endfor %}
     </tr>
     {% for car in cars %}
-    <tr>
-      <td>{{ car.model }} - {{ car.plate }}</td>
-      {% for day in range(1, 32) %}
-      {% set booked = false %}
-      {% for booking in bookings %}
-      {% if booking.car_id == car.id %}
-      {{ booking.start_datetime.date() }} - {{ day }}
-      {% if booking.start_datetime.date().day == day %}
-      {% set booked = true %}
-      {% endif %}
-      {% endif %}
-      {% endfor %}
-      <td class="{% if booked %}booked{% endif %}"></td>
-      {% endfor %}
-    </tr>
+        <tr>
+            <td>{{ car.model }} - {{ car.plate }}</td>
+            {% for day in range(1, 32) %}
+                {% set booked = false %}
+                {% for booking in bookings %}
+                   {% if booking.car_plate == car.plate and booking.start_datetime.day == day %}
+                       {% set booked = true %}
+                       <td class="{% if booked %}booked{% endif %}"></td>
+                   {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tr>
     {% endfor %}
-    
-</table>
-
-
-
+ </table>
+ 
 {% endblock %}

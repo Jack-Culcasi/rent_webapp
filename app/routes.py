@@ -527,12 +527,17 @@ def bookings_history():
 @app.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def calendar(): 
-    current_date = datetime.utcnow()
+    current_date = datetime.now()
+    current_month = datetime.now().strftime("%B %Y")
+    first_day_of_month = current_date.replace(day=1)
+    last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+
     user_bookings = Booking.query.filter(
         (Booking.user_id == current_user.id) &
-        (Booking.end_datetime > current_date)
+        (Booking.start_datetime <= last_day_of_month) &
+        (Booking.end_datetime >= first_day_of_month)
     ).all()
 
     user_cars = current_user.garage.all()
-    return render_template('calendar.html', cars=user_cars, bookings=user_bookings,
+    return render_template('calendar.html', cars=user_cars, bookings=user_bookings, current_month=current_month,
                             user_name=current_user.username if current_user.is_authenticated else None)
