@@ -51,9 +51,11 @@
             {% for day in range(1, 32) %}
                 {% set booked = false %}
                 {% for booking in bookings %}
-                   {% if booking.car_plate == car.plate and booking.start_datetime.day == day %}
+                   {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
                        {% set booked = true %}
                        <td class="{% if booked %}booked{% endif %}"></td>
+                    {% else %}
+                        <td class=""></td>
                    {% endif %}
                 {% endfor %}
             {% endfor %}
