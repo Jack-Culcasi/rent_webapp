@@ -40,27 +40,34 @@
 
 <table class="calendar">
     <tr>
-        <th>Car</th>
-        {% for day in range(1, 32) %}
-            <th>{{ day }}</th>
-        {% endfor %}
+       <th>Car</th>
+       {% for day in range(1, 32) %}
+           <th>{{ day }}</th>
+       {% endfor %}
     </tr>
     {% for car in cars %}
-        <tr>
-            <td>{{ car.model }} - {{ car.plate }}</td>
-            {% for day in range(1, 32) %}
-                {% set booked = false %}
-                {% for booking in bookings %}
-                   {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
-                       {% set booked = true %}
-                       <td class="{% if booked %}booked{% endif %}"></td>
-                    {% else %}
-                        <td class=""></td>
-                   {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </tr>
+       <tr>
+           <td>{{ car.model }} - {{ car.plate }}</td>
+           {% set ns = namespace(booked=false) %}
+           {% for day in range(1, 32) %}
+               {% for booking in bookings %}
+                 {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
+                   {% set ns.booked = true %}
+                 {% endif %}
+               {% endfor %}
+               {% if ns.booked %}
+                 <td class="booked"></td>
+                 {% set ns.booked = false %}
+               {% else %}
+                 <td class=""></td>
+               {% endif %}
+           {% endfor %}
+       </tr>
     {% endfor %}
- </table>
+   </table>
+   
+   
+  
+  
  
 {% endblock %}
