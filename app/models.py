@@ -52,7 +52,11 @@ class Car(db.Model):
 
         # Perform the search and filter the cars based on the query and type
         if search_type == 'plate':
-            filtered_cars = Car.query.filter_by(plate=search_query, user_id=current_user_id).all()
+            filtered_cars = []
+            cars = Car.query.filter_by(user_id=current_user_id).all()
+            for car in cars:
+                if search_query in car.plate:
+                    filtered_cars.append(car)
         elif search_type == 'make':
             filtered_cars = Car.query.filter_by(make=search_query, user_id=current_user_id).all()
         elif search_type == 'model':
