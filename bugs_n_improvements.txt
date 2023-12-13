@@ -6,8 +6,4 @@
 
 - Create an Admin Dashboard to check the database
 
-- History booking, does not show different past bookings for same car / other problems with history books
-
-- Error Handling during login (es. incorrect pass/user etc..)
-
-- Calendar View not correctly showing bookings
+- Add Email support (autentication etc...)
