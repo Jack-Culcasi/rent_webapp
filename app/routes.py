@@ -11,7 +11,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking
 
-                                                                                # Users Login/Logout/Profile
+                                                                                # Users Login/Logout/Profile/Admin
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -91,6 +91,15 @@ def profile():
 
     return render_template('profile.html', title='Profile', page='profile', user=current_user, 
                            user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin(): 
+    if current_user.username == 'admin':
+        return render_template('admin.html')
+    else:
+        return render_template('404.html')
+
 
                                                                                 # Garage
 

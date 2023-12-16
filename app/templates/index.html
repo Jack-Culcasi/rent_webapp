@@ -64,6 +64,9 @@
 										</li>
 										<li><a href="{{ url_for('calendar') }}">Calendar</a></li>
 										<li><a href="{{ url_for('profile') }}">Profile</a></li>
+										{% if current_user.username == 'admin' %}
+										<li><a href="{{ url_for('admin') }}">Admin Dashboard</a></li>
+										{% endif %}
 										<li><a href="{{ url_for('logout') }}">Logout</a></li>
 										{% endif %}
 									</ul>
