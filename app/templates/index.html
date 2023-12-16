@@ -64,8 +64,14 @@
 										</li>
 										<li><a href="{{ url_for('calendar') }}">Calendar</a></li>
 										<li><a href="{{ url_for('profile') }}">Profile</a></li>
-										{% if current_user.username == 'admin' %}
-										<li><a href="{{ url_for('admin') }}">Admin Dashboard</a></li>
+										{% if current_user.username == 'admin' and current_user.role == 'admin' %}
+										<li>
+											<span class="opener {% if page == 'admin' or page == 'users_list' %}active{% endif %}">Admin Dashboard</span>
+											<ul>
+												<li><a href="{{ url_for('admin') }}">Overview</a></li>
+												<li><a href="{{ url_for('users_list') }}">Users List</a></li>
+											</ul>
+										</li>
 										{% endif %}
 										<li><a href="{{ url_for('logout') }}">Logout</a></li>
 										{% endif %}

@@ -95,8 +95,16 @@ def profile():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin(): 
-    if current_user.username == 'admin':
-        return render_template('admin.html')
+    if current_user.username == 'admin' and current_user.role == 'admin':
+        return render_template('admin.html', page='admin')
+    else:
+        return render_template('404.html')
+    
+@app.route('/users_list', methods=['GET', 'POST'])
+@login_required
+def users_list(): 
+    if current_user.username == 'admin' and current_user.role == 'admin':
+        return render_template('users_list.html', page='users_list')
     else:
         return render_template('404.html')
 
