@@ -96,7 +96,13 @@ def profile():
 @login_required
 def admin(): 
     if current_user.username == 'admin' and current_user.role == 'admin':
-        return render_template('admin.html', page='admin')
+        users = User.query.all()
+        cars = Car.query.all()
+        bookings = Booking.query.all()
+        revenue = 0
+        for booking in bookings:
+            revenue += booking.money
+        return render_template('admin.html', page='admin', total_users=len(users), total_cars=len(cars), total_bookings=len(bookings), total_revenue=revenue)
     else:
         return render_template('404.html')
     
@@ -104,10 +110,29 @@ def admin():
 @login_required
 def users_list(): 
     if current_user.username == 'admin' and current_user.role == 'admin':
-        return render_template('users_list.html', page='users_list')
+        users = User.query.all()
+        return render_template('users_list.html', page='users_list', users=users)
     else:
         return render_template('404.html')
-
+    
+@app.route('/user/<username>', methods=['GET', 'POST'])
+@login_required
+def user(username):
+    if current_user.username == 'admin' and current_user.role == 'admin':
+        user = User.query.filter_by(username=username).one()
+        if request.method == 'POST':
+            user_id = request.form.get('user_id')
+            user_to_delete = User.query.get(user_id)
+            if user_to_delete:
+                user_to_delete.delete_user()
+                db.session.commit()
+                flash('User succefully deleted!', 'success')
+                return redirect(url_for('users_list'))
+            else:
+                return flash('User not found!', 'error')          
+        return render_template('user.html', page='users_page', user=user)        
+    else:
+        return render_template('404.html')
 
                                                                                 # Garage
 
