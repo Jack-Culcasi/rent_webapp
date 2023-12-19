@@ -38,6 +38,35 @@ class User(UserMixin, db.Model):
         else:
             return "N/A"
         
+    def user_revenue(self):
+        total_revenue = 0
+        for booking in Booking.query.filter_by(user_id=self.id).all():
+            total_revenue += booking.money
+        return total_revenue
+    
+    def delete_user(self):
+        try:
+            # Step 1: Remove all bookings associated with the user
+            bookings_to_remove = Booking.query.filter_by(user_id=self.id).all()
+            for booking in bookings_to_remove:
+                Booking.remove_booking(booking.id)
+
+            # Step 2: Delete all cars owned by the user
+            cars_to_remove = Car.query.filter_by(user_id=self.id).all()
+            for car in cars_to_remove:
+                Car.delete_car(car.plate)
+
+            # Step 3: Delete the user itself
+            db.session.delete(self)
+            db.session.commit()
+            
+            return True
+        except SQLAlchemyError as e:
+            print(f"Error deleting user: {str(e)}")
+            db.session.rollback()
+            return False
+        
+        
     
 class Car(db.Model):
     plate = db.Column(db.String(8), primary_key=True, index=True, unique=True)
