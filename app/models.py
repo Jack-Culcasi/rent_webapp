@@ -11,6 +11,7 @@ def load_user(id):
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    registration_date = db.Column(db.DateTime, default=datetime.utcnow)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -28,6 +29,14 @@ class User(UserMixin, db.Model):
     
     def change_username(self, new_username):
         self.username = new_username
+
+    def formatted_registration_date(self):
+        if self.registration_date:
+            return self.registration_date.strftime('%Y-%m-%d')
+        elif self.registration_date == None:
+            return None
+        else:
+            return "N/A"
         
     
 class Car(db.Model):
