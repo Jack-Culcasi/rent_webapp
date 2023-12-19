@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<form action="{{ url_for('users_list') }}" method="get">
+    <button type="submit">Back to the list</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Reg Date</th>
+            <th>User Revenue</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.formatted_registration_date() }}</td>
+                <td>{{ user.user_revenue() }}</td>
+                <td>
+                    <form action="{{ url_for('user', username=user.username) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this account? All cars and bookings related to it will be deleted');">
+                        <input type="hidden" id="user_id" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+    </tbody>
+</table>
+
+
+{% endblock %}
