@@ -76,6 +76,7 @@ def profile():
                 db.session.commit()
                 flash('Email successfully changed!', 'success')
                 return redirect(url_for('profile'))   
+            
         elif 'password' in request.form:        
             new_password = request.form.get('password')
             password_confirm = request.form.get('confirm_password')
@@ -88,6 +89,17 @@ def profile():
             else:
                 flash('Passwords do not match!', 'error') 
                 return redirect(url_for('profile'))  
+            
+        elif 'delete_account' in request.form:
+            user_to_delete = User.query.get(current_user.id)
+            if user_to_delete:
+                user_to_delete.delete_user()
+                db.session.commit()
+                flash('User succefully deleted!', 'success')
+                return redirect(url_for('login'))
+            else:
+                return flash('User not found!', 'error')          
+        return render_template('user.html', page='users_page', user=user) 
 
     return render_template('profile.html', title='Profile', page='profile', user=current_user, 
                            user_name=current_user.username if current_user.is_authenticated else None)
