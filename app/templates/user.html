@@ -34,5 +34,71 @@
     </tbody>
 </table>
 
+<h3>User Cars</h3>
+<table class="table" id="carTable">
+    <thead>
+      <tr>
+        <!-- Define sortable columns with clickable links -->
+        <th>Plate</th>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Fuel</th>
+        <th>Year</th>
+        <th>Cc</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Iterate through user_cars and display car data in rows -->
+      {% for car in cars %}
+      <tr>
+          <!-- Display car data with associated sorting attribute -->
+          <td te">{{ car.plate }}</td>
+          <td e">{{ car.make }}</td>
+          <td el">{{ car.model }}</td>
+          <td l">{{ car.fuel }}</td>
+          <td r">{{ car.year }}</td>
+          <td >{{ car.cc }}</td>
+        <td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
 
+<h3>User Bookings</h3>
+<table class="table" id="bookingTable">
+    <thead>
+      <tr>
+        <!-- Define sortable columns with clickable links -->
+        <th>ID</th>
+        <th>Plate</th>
+        <th>Model</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Note</th>        
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Iterate through user_bookings and display booking data in rows -->
+      {% for booking in bookings %}
+      <tr>
+          <!-- Display booking data with associated sorting attribute -->
+          <td >{{ booking.id }}</td>
+          <td>{{ booking.car.plate }}</td>
+          <td>{{ booking.car.model }}</td>
+          <td>{{ booking.start_datetime.strftime("%b %d %H:%M") }}</td>
+          <td>{{ booking.end_datetime.strftime("%b %d %H:%M") }}</td>
+          <td>
+            {% if booking.note %}
+            <span class="note-tooltip">
+                Note
+                <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+            </span>
+        {% else %}
+            <!-- Display nothing if there is no note -->
+        {% endif %}
+          </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
