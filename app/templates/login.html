@@ -1,27 +1,26 @@
 {% extends "index.html" %} 
 
 {% block content %}
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+{% if category == 'success' %}
+    <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+        {{ message }}
+    </div>
+{% elif category == 'error' %}
+    <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+        {{ message }}
+    </div>
+{% endif %}
+{% endfor %}
+
     <h2>Sign In</h2>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-
-
-                        <!-- Flash Messages -->
-            {% for category, message in get_flashed_messages(with_categories=true) %}
-            {% if category == 'success' %}
-                <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
-                    {{ message }}
-                </div>
-            {% elif category == 'error' %}
-                <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
-                    {{ message }}
-                </div>
-            {% endif %}
-            {% endfor %}
-            
+            {{ form.username(size=32) }}<br>            
         </p>
         <p>
             {{ form.password.label }}<br>
