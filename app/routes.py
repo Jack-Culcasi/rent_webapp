@@ -132,6 +132,8 @@ def users_list():
 def user(username):
     if current_user.username == 'admin' and current_user.role == 'admin':
         user = User.query.filter_by(username=username).one()
+        cars = Car.query.filter_by(user_id=user.id)
+        bookings = Booking.query.filter_by(user_id=user.id)
         if request.method == 'POST':
             user_id = request.form.get('user_id')
             user_to_delete = User.query.get(user_id)
@@ -142,7 +144,7 @@ def user(username):
                 return redirect(url_for('users_list'))
             else:
                 return flash('User not found!', 'error')          
-        return render_template('user.html', page='users_page', user=user)        
+        return render_template('user.html', page='users_page', user=user, cars=cars, bookings=bookings)        
     else:
         return render_template('404.html')
 
