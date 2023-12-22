@@ -459,13 +459,21 @@ def bookings_view():
 @login_required
 def bookings_manage():
     current_date = datetime.utcnow()
+    booking_id = request.args.get('booking_id')
     
     # Retrieve active bookings
     user_bookings = Booking.query.filter(
         (Booking.user_id == current_user.id) &
         (Booking.end_datetime > current_date)
     ).all()
-    selected_booking = None
+
+    if booking_id:
+        selected_booking = Booking.query.filter_by(id=booking_id).first()
+        if selected_booking.is_expired():
+            flash(f'Booking with ID {selected_booking.id} is no longer active, you can only delete it', 'error')
+            return redirect(url_for('bookings_history'))
+    else:
+        selected_booking = None
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
