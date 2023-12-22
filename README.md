@@ -6,5 +6,6 @@ Through different pages you can manage you cars and bookings, you can also see t
 ## Features
 Starting with creating an account, you can then add a new car to your garage. From the Overview page, you can check your car avaliability for a specific time frame and make a booking. 
 There is also a Calendar View that lets you have a more comprehensive outlook of your bookings: 
-![Demostration](https://github.com/Jack-Culcasi/rent_webapp/assets/143043461/5a356cc6-e56e-4ca7-bf25-9425f7d63d53)
+
+https://github.com/Jack-Culcasi/rent_webapp/assets/143043461/18961b9e-6e0c-4400-acb9-d09454f9d6c8
 
