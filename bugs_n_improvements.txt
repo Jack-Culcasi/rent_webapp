@@ -7,3 +7,5 @@
 - Create an Admin Dashboard to check the database
 
 - Add Email support (autentication etc...)
+
+- Add detailed Read.me on GitHub
