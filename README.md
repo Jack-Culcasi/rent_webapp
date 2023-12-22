@@ -9,3 +9,11 @@ There is also a Calendar View that lets you have a more comprehensive outlook of
 
 https://github.com/Jack-Culcasi/rent_webapp/assets/143043461/18961b9e-6e0c-4400-acb9-d09454f9d6c8
 
+There are many ways to manage you cars and bookings, you can easily view for how many days a car has been booked and the revenue generated or you can amend or delete cars and bookings:
+
+https://github.com/Jack-Culcasi/rent_webapp/assets/143043461/c9ca9a7d-181e-4620-a648-1de1f383a54c
+
+The application restricts certain actions, such as booking a car for a past date, creating overlapping bookings, or adding two cars with the same plate.
+
+## Developing
+The application has been made using python's framework Flask, some JavaScript is used to make sorting lists and pop-up messages, the HTML and CSS used are a modified template and style from https://html5up.net/.
