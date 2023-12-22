@@ -247,4 +247,8 @@ class Booking(db.Model):
 
         # Save changes to the database
         db.session.commit()
+
+    def is_expired(self):
+        current_datetime = datetime.now()
+        return self.end_datetime < current_datetime
     
