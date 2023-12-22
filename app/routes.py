@@ -343,6 +343,26 @@ def garage_car():
     user_cars = current_user.garage.all()
     current_datetime = datetime.utcnow()
 
+    # Handles the redirection from other pages
+    car_plate = request.args.get('car_plate')
+    if car_plate:
+        # Retrieve active bookings for a given car
+                car_active_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime > current_datetime)
+                ).all()
+
+                # Retrieve past bookings for a given car
+                car_past_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime <= current_datetime)
+                ).all()
+
+                selected_car = Car.query.filter_by(plate=car_plate).first()
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                        user_name=current_user.username if current_user.is_authenticated else None)
+
     if request.method == 'POST':
         try:
             if 'plate' in request.form:
@@ -592,9 +612,12 @@ def bookings_history():
 @login_required
 def calendar(): 
     current_date = datetime.now()
+    current_day = datetime.now().day
     current_month = datetime.now().strftime("%B %Y")
     first_day_of_month = current_date.replace(day=1)
     last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+    days_in_month = cal.monthrange(datetime.now().year, datetime.now().month)[1]
+
 
     user_bookings = Booking.query.filter(
         (Booking.user_id == current_user.id) &
@@ -603,5 +626,5 @@ def calendar():
     ).all()
 
     user_cars = current_user.garage.all()
-    return render_template('calendar.html', cars=user_cars, bookings=user_bookings, current_month=current_month,
-                            user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('calendar.html', cars=user_cars, bookings=user_bookings, current_month=current_month, current_day=current_day,
+                            days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
