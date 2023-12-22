@@ -35,25 +35,29 @@
 
 <!-- Display current month -->
 <div class="current-month">
-    <h3>{{ current_month }}</h3>
+    <h3>{{ current_day }} {{ current_month }}</h3>
 </div>
 
 <table class="calendar">
     <tr>
-       <th>Car</th>
-       {% for day in range(1, 32) %}
-           <th>{{ day }}</th>
-       {% endfor %}
-    </tr>
+        <th>Car</th>
+        {% for day in range(1, days_in_month + 1) %}
+            {% if day == current_day %}
+                <th class="current-day">{{ day }}</th>
+            {% else %}
+                <th>{{ day }}</th>
+            {% endif %}
+        {% endfor %}
+     </tr>
     {% for car in cars %}
        <tr>
-           <td>{{ car.model }} - {{ car.plate }}</td>
-           {% for day in range(1, 32) %}
+           <td><a href="{{ url_for('garage_car', car_plate=car.plate ) }}">{{ car.model }} - {{ car.plate }}</a></td>
+           {% for day in range(1, days_in_month + 1) %}
                {% set ns = namespace(booked=false) %}
                {% for booking in bookings %}
                  {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
                    {% set ns.booked = true %}
-                   <td class="booked"><a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}">#</a></td>
+                   <td class="booked"><a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">#</a></td>
                  {% endif %}
                {% endfor %}
                {% if not ns.booked %}
