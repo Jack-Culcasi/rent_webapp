@@ -98,7 +98,7 @@
 </form>
 
 <header id="header" style="padding: 0;">
-<h2>Booked and Avaliable Cars</h2>
+<h2>Bookings</h2>
 </header>
 <form method="POST" action="{{ url_for('overview') }}">
 <!-- Date Selector for Booked and Avaliable Cars -->
@@ -123,7 +123,6 @@
 </form> 
 <!-- Booked Cars Section -->
 <form action="{{ url_for('bookings_manage') }}" method="POST">
-    <h2>Booked Cars</h2>
 
     <table>
         <thead>
@@ -163,32 +162,5 @@
         </tbody>
     </table>
 </form>
-
-<!-- Available Cars Section -->
-
-<h2>Available Cars</h2>
-
-<table>
-    <thead>
-        <tr>
-            <th>Plate</th>
-            <th>Model</th>
-            <th>Fuel</th>
-            <th>Year</th>
-            <th>CC</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for car in available_cars %}
-            <tr>
-                <td>{{ car.plate }}</td>
-                <td>{{ car.model }}</td>
-                <td>{{ car.fuel }}</td>
-                <td>{{ car.year }}</td>
-                <td>{{ car.cc }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 {% endblock %}
