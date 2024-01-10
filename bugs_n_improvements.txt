@@ -2,10 +2,24 @@
 
 - Unique Constraint when adding the same car to different users (SOLVED, kinda, different users will not be able to add the same plate)
 
+- Calendar View does not work properly, new boxes are created based on the booking in the past compared to the current day!
+
 #   Improvements:
 
-- Create an Admin Dashboard to check the database
+- Improve Admin Dashboard
 
 - Add Email support (autentication etc...)
 
-- Add detailed Read.me on GitHub
+- aggiungere rubrica
+
+- add quotes section
+
+- add insurance exp and MOT and Bollo 
+
+- add bacheca con scandeze
+
+- remove all deletation logic
+
+- add contract/backup
+
+- add car-s km when bookings
