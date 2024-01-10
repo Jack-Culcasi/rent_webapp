@@ -252,3 +252,9 @@ class Booking(db.Model):
         current_datetime = datetime.now()
         return self.end_datetime < current_datetime
     
+class Contacts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(8), index=True)
+    driver_licence_n = db.Column(db.Integer, index=True)
+    dob = db.Column(db.String(8), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
