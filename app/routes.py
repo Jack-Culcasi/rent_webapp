@@ -9,7 +9,7 @@ import calendar as cal
 # Local imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Car, Booking
+from app.models import User, Car, Booking, Contacts
 
                                                                                 # Users Login/Logout/Profile/Admin
 
@@ -628,3 +628,46 @@ def calendar():
     user_cars = current_user.garage.all()
     return render_template('calendar.html', cars=user_cars, bookings=user_bookings, current_month=current_month, current_day=current_day,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/contacts', methods=['GET', 'POST'])
+@login_required
+def contacts(): 
+    user_contacts = current_user.contacts.all()
+
+    if request.method == 'POST':
+       # Process the form data for a POST request
+       full_name = request.form.get('full_name')
+       dob = request.form.get('dob')
+       driver_licence_n = request.form.get('driver_licence_n')
+
+       Contacts.add_contact(full_name, dob, driver_licence_n, current_user.id)
+       flash('Contact added successfully', 'success')
+       return redirect(url_for('contacts'))
+    else:
+       # Render the form for a GET request       
+        return render_template('contacts.html', user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+    
+@app.route('/contact/<int:contact_id>', methods=['GET', 'POST'])
+@login_required
+def contact_manage(contact_id):
+    contact = Contacts.query.get_or_404(contact_id)
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'amend':
+            # Handle amendment logic
+            contact.full_name = request.form.get('full_name')
+            contact.dob = request.form.get('dob')
+            contact.driver_licence_n = request.form.get('driver_licence_n')
+            db.session.commit()
+            flash('Contact details amended successfully', 'success')
+
+        elif action == 'delete':
+            # Handle deletion logic
+            db.session.delete(contact)
+            db.session.commit()
+            flash('Contact deleted successfully', 'success')
+            return redirect(url_for('contacts'))
+
+    return render_template('contact_manage.html', contact=contact, user_name=current_user.username if current_user.is_authenticated else None)
