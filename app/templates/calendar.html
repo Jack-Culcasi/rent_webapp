@@ -58,7 +58,7 @@
                  {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
                    {% set ns.booked = true %}
                    {% set ns.bookings_on_day = ns.bookings_on_day + 1 %}
-                   <td class="{% if ns.booked and ns.bookings_on_day > 1 %}" style="background-color: #ffc66d;"{% endif %} booked" 
+                   <td class="{% if ns.booked and ns.bookings_on_day > 1 %}" style="background-color: #ffcccb;"{% endif %} booked" 
                        title="Booking ID: {{ booking.id }}&#10;Start Date: {{ booking.start_datetime }}&#10;End Date: {{ booking.end_datetime }}&#10;Note: {{ booking.note }}">
                        <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">{{ booking.id }}</a>
                    </td>
