@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     garage = db.relationship('Car', backref='owner', lazy='dynamic')
+    contacts = db.relationship('Contacts', backref='owner', lazy='dynamic')
     role = db.Column(db.String(20), default='user')  
 
     def __repr__(self):
@@ -254,7 +255,19 @@ class Booking(db.Model):
     
 class Contacts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(8), index=True)
+    full_name = db.Column(db.String(128), index=True)
     driver_licence_n = db.Column(db.Integer, index=True)
     dob = db.Column(db.String(8), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
+
+    @staticmethod
+    def add_contact(full_name, dob, driver_licence_n, user_id):
+        new_contact = Contacts(
+            full_name = full_name,
+            driver_licence_n = driver_licence_n,
+            dob = dob,
+            user_id = user_id
+        )
+
+        db.session.add(new_contact)
+        db.session.commit()
