@@ -1,0 +1,81 @@
+{% extends "index.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<!-- Add Contact Section -->
+<form method="POST" action="{{ url_for('contacts') }}">
+    <header id="header">
+    <h2>Add Contact</h2>
+    </header>
+    <div class="row">
+      <!-- Input fields for adding a contact -->
+      <div class="col">
+        <label for="full_name" class="form-label">Full name</label>
+        <input type="text" class="form-control" id="full_name" name="full_name">
+      </div>
+      <div class="col">
+        <label for="dob" class="form-label">Date of Birth</label>
+        <input type="text" class="form-control" id="dob" name="dob">
+      </div>
+      <div class="col">
+        <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
+        <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Contact</button>
+  </form>
+
+<header id="header">
+    <h2>Contacts</h2>
+</header>
+
+<table class="table" id="contactTable">
+  <thead>
+    <tr>
+      <!-- Define sortable columns with clickable links -->
+      <th scope="col"><a href="#" class="sort-link" data-sort="id">Id</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="full_name">Full Name</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="dob">Date of Birth</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="driver_licence_n">Driver Licence</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="action">Actions</a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Iterate through user_contacts and display contact data in rows -->
+    {% for contact in user_contacts %}
+    <tr>
+        <!-- Display contact data with associated sorting attribute -->
+        <td data-sort="id">{{ contact.id }}</td>
+        <td data-sort="full_name">{{ contact.full_name }}</td>
+        <td data-sort="dob">{{ contact.dob }}</td>
+        <td data-sort="driver_licence_n">{{ contact.driver_licence_n }}</td>
+        <td>
+          <!-- Add hidden input for contact id -->
+          <form class="table-form" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
+              <button type="submit">Manage</button>
+          </form>
+      </td>
+      <td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+
+  
+    
+{% endblock %}

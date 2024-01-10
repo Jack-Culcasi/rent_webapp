@@ -1,0 +1,48 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<h2>Contact Management</h2>
+
+<form method="POST" onsubmit="return confirm('Are you sure you want to proceed?');">
+    <div class="row">
+        <div class="col">
+            <label for="id" class="form-label">ID</label>
+            <input type="text" class="form-control" id="id" name="id" value="{{ contact.id }}" readonly>
+        </div>
+        <div class="col">
+            <label for="full_name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ contact.full_name }}">
+        </div>
+        <div class="col">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="text" class="form-control" id="dob" name="dob" value="{{ contact.dob }}">
+        </div>
+        <div class="col">
+            <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
+            <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n" value="{{ contact.driver_licence_n }}">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <button type="submit" class="btn btn-primary" name="action" value="amend">Amend</button>
+            <button type="submit" class="btn btn-danger" name="action" value="delete">Delete</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
