@@ -79,6 +79,13 @@ class Car(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     days = db.Column(db.Integer, default=0, index=True)
     money = db.Column(db.Integer, default=0, index=True)
+    car_cost = db.Column(db.Integer, default=0, index=True)
+    insurance_cost = db.Column(db.Float, default=0, index=True)
+    insurance_expiry_date = db.Column(db.DateTime)
+    mot_cost = db.Column(db.Float, default=0, index=True)
+    mot_expiry_date = db.Column(db.DateTime)
+    road_tax_cost = db.Column(db.Float, default=0, index=True)
+    road_tax_expiry_date = db.Column(db.DateTime)
 
     @classmethod
     def search(cls, search_query, search_type, current_user_id):
@@ -112,7 +119,8 @@ class Car(db.Model):
 
         return filtered_cars
     
-    def amend_car(self, car_plate, car_make, car_model, car_fuel, car_year, car_cc):
+    def amend_car(self, car_plate, car_make, car_model, car_fuel, car_year, car_cc, 
+                                               road_tax_expiry_date, mot_expiry_date, insurance_expiry_date):
         try:
             self.plate = car_plate
             self.make = car_make
@@ -120,8 +128,14 @@ class Car(db.Model):
             self.year = car_year
             self.fuel = car_fuel
             self.cc = car_cc
+            self.road_tax_expiry_date = road_tax_expiry_date
+            self.mot_expiry_date = mot_expiry_date
+            self.insurance_expiry_date = insurance_expiry_date
+
+            print(self.road_tax_expiry_date)
 
             db.session.commit()
+            print(self.road_tax_expiry_date)
             return True
         except SQLAlchemyError as e:
             print(f"Error amending car: {str(e)}")
