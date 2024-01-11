@@ -16,6 +16,7 @@
 
 <!--Scripts-->
 <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <h2>Search for a Car</h2>
 
@@ -41,13 +42,7 @@
 {% if car_object %}
   <form method="POST" action="{{ url_for('garage_car') }}" id="manageForm">
 
-    <div class="row">
-
-      <!-- Plate Input -->
-      <div class="col">
-        <label for="car_plate" class="form-label">Plate</label>
-        <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ car_object.plate }}" readonly>
-      </div>
+    <div class="row">      
 
       <!-- Make Input -->
       <div class="col">
@@ -79,19 +74,29 @@
         <input type="text" class="form-control" id="car_cc" name="car_cc" value="{{ car_object.cc }}">
       </div>
 
-      <!-- Days Booked -->
-      <div class="col">
-        <label for="days" class="form-label">Days Booked</label>
-        <input type="text" class="form-control" id="days" name="days" value="{{ car_object.days }}" readonly>
-      </div>
-
-      <!-- Car money -->
-      <div class="col">
-        <label for="money" class="form-label">Revenue</label>
-        <input type="text" class="form-control" id="money" name="money" value="{{ car_object.money }}" readonly>
-      </div>
-
+      <!-- Road Tax Expiry Date -->
+    <div class="col">
+      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
+      <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
+                                                            value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}">
     </div>
+
+    <!-- MOT Expiry Date -->
+    <div class="col">
+      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
+      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}">
+    </div>
+    <h5>{{ car_object.mot_expiry_date }}</h5>
+    <!-- Insurance Expiry Date -->
+    <div class="col">
+      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
+      <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}">
+    </div>
+    
+    </div>
+
+    <!-- Hidden input field for the car plate -->
+    <input type="hidden" name="car_plate" id="car_plate" value="{{ car_object.plate }}">
 
     <!-- Hidden input field for the action -->
     <input type="hidden" name="action" id="action" value="">
@@ -103,6 +108,52 @@
     <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmDelete('car')">Delete</button>
 
   </form>
+
+  <div class="row">     
+
+    <!-- Plate Input -->
+    <div class="col">
+      <label for="car_plate" class="form-label">Plate</label>
+      <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ car_object.plate }}" readonly>
+    </div>
+
+    <!-- Days Booked -->
+    <div class="col">
+      <label for="days" class="form-label">Days Booked</label>
+      <input type="text" class="form-control" id="days" name="days" value="{{ car_object.days }}" readonly>
+    </div>
+
+    <!-- Car revenue -->
+    <div class="col">
+      <label for="money" class="form-label">Revenue</label>
+      <input type="text" class="form-control" id="money" name="money" value="{{ car_object.money }}" readonly>
+    </div>
+
+    <!-- Car cost -->
+    <div class="col">
+      <label for="car_cost" class="form-label">Cost</label>
+      <input type="text" class="form-control" id="car_cost" name="car_cost" value="{{ car_object.car_cost }}" readonly>
+    </div>
+
+    <!-- Insurance Cost -->
+    <div class="col">
+      <label for="insurance_cost" class="form-label">Insurance Cost</label>
+      <input type="text" class="form-control" id="insurance_cost" name="insurance_cost" value="{{ car_object.insurance_cost }}" readonly>
+    </div>
+
+    <!-- MOT Cost -->
+    <div class="col">
+      <label for="mot_cost" class="form-label">MOT Cost</label>
+      <input type="text" class="form-control" id="mot_cost" name="mot_cost" value="{{ car_object.mot_cost }}" readonly>
+    </div>
+
+    <!-- Road Tax Cost -->
+    <div class="col">
+      <label for="road_tax_cost" class="form-label">Road Tax Cost</label>
+      <input type="text" class="form-control" id="road_tax_cost" name="road_tax_cost" value="{{ car_object.road_tax_cost }}" readonly>
+    </div>
+
+</div>
   
 
 <h2>Active Bookings</h2>
