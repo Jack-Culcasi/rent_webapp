@@ -20,3 +20,11 @@
 form.table-form {
     margin: 0;
 }
+
+/* Apply a specific style to read-only input fields */
+input[readonly] {
+    background-color: #f2f2f2; /* Use a light grey background color */
+    color: #333; /* Set text color to a dark color for better visibility */
+    border: 1px solid #ddd; /* Add a border for a clear boundary */
+    cursor: not-allowed; /* Change cursor to indicate it's not editable */
+  }
