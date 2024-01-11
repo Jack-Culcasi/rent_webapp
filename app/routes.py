@@ -396,9 +396,18 @@ def garage_car():
                         car_fuel = request.form['car_fuel']
                         car_year = request.form['car_year']
                         car_cc = request.form['car_cc']
+                        road_tax_expiry_date_str = request.form['road_tax_expiry_date']
+                        mot_expiry_date_str = request.form['mot_expiry_date']
+                        insurance_expiry_date_str = request.form['insurance_expiry_date']
+
+                        # Convert date strings to datetime objects
+                        road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
+                        mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
+                        insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
 
                         # Call the amend_car method
-                        selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc)
+                        selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc, 
+                                               road_tax_expiry_date, mot_expiry_date, insurance_expiry_date)
 
                         flash('Car amended successfully!', 'success')
 
