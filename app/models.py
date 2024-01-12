@@ -132,10 +132,7 @@ class Car(db.Model):
             self.mot_expiry_date = mot_expiry_date
             self.insurance_expiry_date = insurance_expiry_date
 
-            print(self.road_tax_expiry_date)
-
             db.session.commit()
-            print(self.road_tax_expiry_date)
             return True
         except SQLAlchemyError as e:
             print(f"Error amending car: {str(e)}")
