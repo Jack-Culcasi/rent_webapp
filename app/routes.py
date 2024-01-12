@@ -388,6 +388,19 @@ def garage_car():
             elif request.form.get('action') == 'amend':
                 car_plate = request.form['car_plate']
                 selected_car = Car.query.filter_by(plate=car_plate).first()
+
+                # Retrieve active bookings for a given car
+                car_active_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime > current_datetime)
+                ).all()
+
+                # Retrieve past bookings for a given car
+                car_past_bookings = Booking.query.filter(
+                    (Booking.car_plate == car_plate) &
+                    (Booking.end_datetime <= current_datetime)
+                ).all()
+
                 if selected_car:
                     try:
                         # Extracting form data
@@ -410,6 +423,9 @@ def garage_car():
                                                road_tax_expiry_date, mot_expiry_date, insurance_expiry_date)
 
                         flash('Car amended successfully!', 'success')
+                        return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                        user_name=current_user.username if current_user.is_authenticated else None)
 
                     except ValueError as e:
                         flash(str(e), 'error')  # Handle any parsing errors
