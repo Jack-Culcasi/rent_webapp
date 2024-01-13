@@ -97,3 +97,47 @@ var darkModeButton = document.getElementById('darkModeToggle');
 if (darkModeButton) {
     darkModeButton.addEventListener('click', toggleDarkMode);
 }
+
+$(document).ready(function() {
+    var searchNameInput = $('#search_name');
+    var searchResultsContainer = $('#searchResults');  // Corrected ID
+
+    searchNameInput.on('input', function() {
+        var searchQuery = searchNameInput.val().trim();
+
+        // Clear previous results
+        searchResultsContainer.html('');
+
+        if (searchQuery.length > 0) {
+            // Make an asynchronous request to the server
+            $.ajax({
+                type: 'POST',
+                url: '/search_contacts',
+                data: { search_name: searchQuery },
+                success: function(response) {
+                    // Populate the dropdown with results
+                    searchResultsContainer.html(response);
+
+                    // Show the dropdown
+                    searchResultsContainer.show();
+                }
+            });
+        } else {
+            // Hide the dropdown if the input is empty
+            searchResultsContainer.hide();
+        }
+    });
+
+    // Hide the dropdown when clicking outside the input and results container
+    $(document).on('click', function(event) {
+        if (!$(event.target).is(searchNameInput) && !$(event.target).is('.result-item')) {
+            searchResultsContainer.hide();
+        }
+    });
+
+    // Handle click event on a result item
+    searchResultsContainer.on('click', '.result-item', function() {
+        searchNameInput.val($(this).text());
+        searchResultsContainer.hide(); // Clear and hide the dropdown
+    });
+});
