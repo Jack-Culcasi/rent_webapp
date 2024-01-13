@@ -276,8 +276,7 @@ def overview(): # Booking
             elif 'check' in request.form:
                 # To check available and booked cars
                 from_date = request.form.get('from')
-                to_date = request.form.get('to')
-                
+                to_date = request.form.get('to')                
 
         except ValueError as e:
             flash(str(e), 'error')
@@ -287,6 +286,7 @@ def overview(): # Booking
             print(f'Error: {str(e)}')
 
     user_cars = current_user.garage.all()
+    user_contacts = current_user.contacts.all()
 
     # To check available and booked cars
     from_date = request.form.get('from')
@@ -335,7 +335,16 @@ def overview(): # Booking
                             user_bookings=user_bookings,
                             from_datetime=from_datetime.strftime('%Y-%m-%d'),
                             to_datetime=to_datetime.strftime('%Y-%m-%d'),
+                            user_contacts=user_contacts,
                             user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/search_contacts', methods=['GET', 'POST'])
+@login_required
+def search_contacts():
+    if 'search_name' in request.form:
+                    search_query = request.form.get('search_name')
+                    contacts = Contacts.search(search_query, current_user.id)  # Adjust the current_user_id accordingly
+                    return render_template('search_results.html', contacts=contacts)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
