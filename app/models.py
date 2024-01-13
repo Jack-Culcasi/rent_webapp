@@ -282,3 +282,13 @@ class Contacts(db.Model):
 
         db.session.add(new_contact)
         db.session.commit()
+
+    @classmethod
+    def search(cls, search_query, current_user_id):
+        # Perform a case-insensitive search on the 'full_name' field
+        search_results = cls.query.filter(
+            (cls.full_name.ilike(f"%{search_query}%")) &
+            (cls.user_id == current_user_id)
+        ).all()
+
+        return search_results
