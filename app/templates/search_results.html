@@ -1,0 +1,3 @@
+{% for contact in contacts %}
+    <option value="{{ contact.full_name }}">{{ contact.full_name }} - {{ contact.dob }} - {{ contact.driver_licence_n }}</option>
+{% endfor %}
