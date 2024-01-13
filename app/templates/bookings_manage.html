@@ -16,6 +16,7 @@
 
 <!--Scripts-->
 <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <h2>Search for an active Booking</h2>
 
@@ -53,6 +54,15 @@
           <label for="car_plate" class="form-label">Plate</label>
           <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ selected_booking.car_plate }}" readonly>
         </div>
+
+        <div class="col">
+          <label for="price" class="form-label">Price</label>
+          <input type="text" class="form-control" id="price" name="price" value="{{ selected_booking.money }}" readonly>
+        </div>
+
+    </div>
+
+    <div class="row">
 
       <!-- Start Date Input -->
       <div class="col">
