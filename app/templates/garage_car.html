@@ -84,9 +84,9 @@
     <!-- MOT Expiry Date -->
     <div class="col">
       <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
-      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}">
+      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}">
     </div>
-    <h5>{{ car_object.mot_expiry_date }}</h5>
+    
     <!-- Insurance Expiry Date -->
     <div class="col">
       <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
