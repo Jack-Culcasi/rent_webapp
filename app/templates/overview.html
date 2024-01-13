@@ -3,6 +3,7 @@
 {% block content %}
 <!--Scripts-->
 <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <!-- Link to your CSS file -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -84,14 +85,43 @@
             <input type="time" class="form-control" id="end_time" name="end_time" required>
         </div>
 
+    </div>
+
+  <div class="row">
+    <div class="col">
+        <label for="search_name" class="form-label">Search Contact by Name</label>
+        <input type="text" class="form-control" id="search_name" name="search_name" placeholder="Enter name...">
+        <!-- Dropdown container -->
+        <div id="searchResults" class="dropdown-content"></div>
+    </div>
+
+    <div class="col">
+        <p style="text-align: center; margin-top: 3em;">Or</p>
+    </div>
+
+    <!-- Input fields for adding a contact -->
+    <div class="col">
+        <label for="full_name" class="form-label">Full name</label>
+        <input type="text" class="form-control" id="full_name" name="full_name">
+      </div>
+      <div class="col">
+        <label for="dob" class="form-label">Date of Birth</label>
+        <input type="text" class="form-control" id="dob" name="dob">
+      </div>
+      <div class="col">
+        <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
+        <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
+      </div>
+      
+  </div> 
+
 
         <!-- Note Input -->
         <div class="col">
             <label for="note" class="form-label">Note</label>
             <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;"></textarea>
             <p id="character-count">0/160</p>
-        </div>
-    </div>
+        </div>    
 
     <!-- Book Car Button -->
     <button type="submit" name='book' class="btn btn-primary" >Book Car</button>
