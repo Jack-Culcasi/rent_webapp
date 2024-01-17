@@ -35,6 +35,10 @@
         <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
         <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
       </div>
+      <div class="col">
+        <label for="telephone" class="form-label">Telephone</label>
+        <input type="text" class="form-control" id="telephone" name="telephone">
+      </div>
     </div>
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Contact</button>
   </form>
@@ -75,7 +79,9 @@
                 <th>Full Name</th>
                 <th>Date of Birth</th>
                 <th>Driver Licence</th>
-                <th>Actions</th>                 
+                <th>Telephone</th>
+                <th>Booking</th>   
+                <th>Action</th>              
             </tr>
         </thead>
         <tbody>
@@ -85,14 +91,15 @@
                     <td>{{ contact.full_name }}</td>
                     <td>{{ contact.dob }}</td>
                     <td>{{ contact.driver_licence_n }}</td>
+                    <td>{{ contact.telephone }}</td>
+                    <td>
+                      <button type="submit" class="btn btn-danger" name="book_contact" value="{{ contact.id }}">Book</button>
+                    </td>
                     <td>
                         <!-- Add hidden input for booking ID -->
                         <input type="hidden" name="contact_id" value="{{contact.id }}">
                         <button type="submit" class="btn btn-danger" name="manage_contact" value="{{ contact.id }}">Manage</button>
-                    </td>
-                    <td>
-                      <button type="submit" class="btn btn-danger" name="book_contact" value="{{ contact.id }}">Book</button>
-                    </td>
+                    </td>                    
                 </tr>
             {% endfor %}
         </tbody>
@@ -116,6 +123,7 @@
       <th scope="col"><a href="#" class="sort-link" data-sort="full_name">Full Name</a></th>
       <th scope="col"><a href="#" class="sort-link" data-sort="dob">Date of Birth</a></th>
       <th scope="col"><a href="#" class="sort-link" data-sort="driver_licence_n">Driver Licence</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="telephone">Telephone</a></th>
       <th scope="col"><a href="#" class="sort-link" data-sort="action">Actions</a></th>
     </tr>
   </thead>
@@ -128,6 +136,7 @@
         <td data-sort="full_name">{{ contact.full_name }}</td>
         <td data-sort="dob">{{ contact.dob }}</td>
         <td data-sort="driver_licence_n">{{ contact.driver_licence_n }}</td>
+        <td data-sort="telephone">{{ contact.telephone }}</td>
         <td>
           <!-- Add hidden input for contact id -->
           <form class="table-form" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
