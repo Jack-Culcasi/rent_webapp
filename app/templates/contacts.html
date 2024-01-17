@@ -39,6 +39,71 @@
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Contact</button>
   </form>
 
+  <header id="header">
+    <h2>Search Contact</h2>
+  </header>
+
+  <form action="{{ url_for('contacts') }}" method="POST">
+    <div class="row">
+      <!-- Dropdown for search type -->
+      <div class="col">
+        <label for="search_type" class="form-label">Search by</label>
+        <select class="form-select" id="search_type" name="search_type">
+          <option value="full_name">Full Name</option>
+          <option value="driver_licence">Driver Licence</option>
+          <option value="dob">Date of Birth</option>
+          <option value="id">ID</option>
+        </select>
+      </div>
+      <!-- Input field for search query -->
+      <div class="col">
+        <label for="search_type" class="form-label hidden-label">Search Query</label>
+        <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Search</button>
+  </form>
+
+  {% if search_results or search_query %}
+  {% if search_results %}
+  <form action="{{ url_for('contacts') }}" method="POST">
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Date of Birth</th>
+                <th>Driver Licence</th>
+                <th>Actions</th>                 
+            </tr>
+        </thead>
+        <tbody>
+          {% for contact in search_results %}
+                <tr>
+                    <td>{{ contact.id }}</td>
+                    <td>{{ contact.full_name }}</td>
+                    <td>{{ contact.dob }}</td>
+                    <td>{{ contact.driver_licence_n }}</td>
+                    <td>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="contact_id" value="{{contact.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_contact" value="{{ contact.id }}">Manage</button>
+                    </td>
+                    <td>
+                      <button type="submit" class="btn btn-danger" name="book_contact" value="{{ contact.id }}">Book</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endif %}
+</form>
+
+
 <header id="header">
     <h2>Contacts</h2>
 </header>
