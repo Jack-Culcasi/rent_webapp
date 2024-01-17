@@ -669,17 +669,36 @@ def contacts():
     user_contacts = current_user.contacts.all()
 
     if request.method == 'POST':
-       # Process the form data for a POST request
-       full_name = request.form.get('full_name')
-       dob = request.form.get('dob')
-       driver_licence_n = request.form.get('driver_licence_n')
+        if 'full_name' in request.form:
+            # Process the form data for adding a contact
+            full_name = request.form.get('full_name')
+            dob = request.form.get('dob')
+            driver_licence_n = request.form.get('driver_licence_n')
 
-       Contacts.add_contact(full_name, dob, driver_licence_n, current_user.id)
-       flash('Contact added successfully', 'success')
-       return redirect(url_for('contacts'))
-    else:
-       # Render the form for a GET request       
-        return render_template('contacts.html', user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+            Contacts.add_contact(full_name, dob, driver_licence_n, current_user.id)
+            flash('Contact added successfully', 'success')
+
+        elif 'search_type' in request.form:
+            # Process the form data for searching a contact
+            search_type = request.form.get('search_type')
+            search_query = request.form.get('search_query')
+            search_results = Contacts.search_contacts(search_type, search_query, current_user.id)
+            return render_template('contacts.html', user_contacts=user_contacts, search_query=search_query, search_results=search_results, user_name=current_user.username if current_user.is_authenticated else None)
+        
+        elif 'manage_contact' in request.form:
+            # Process the form data for managing a contact
+            contact_id = request.form.get('manage_contact')
+            # Implement your logic for managing a contact
+
+        elif 'book_contact' in request.form:
+            # Process the form data for booking a contact
+            contact_id = request.form.get('book_contact')
+            # Implement your logic for booking a contact
+
+        return redirect(url_for('contacts'))
+
+    return render_template('contacts.html', user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+
     
 @app.route('/contact/<int:contact_id>', methods=['GET', 'POST'])
 @login_required
