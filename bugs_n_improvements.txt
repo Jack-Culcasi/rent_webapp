@@ -6,15 +6,13 @@
 
 #   Improvements:
 
-- Improve Admin Dashboard
+- Dark mode button too big
+
+- Improve Admin Dashboard, aggiungere contatti per user
 
 - Add Email support (autentication etc...)
 
-- aggiungere rubrica
-
 - add quotes section
-
-- add insurance exp and MOT and Bollo 
 
 - add bacheca con scandeze
 
@@ -23,3 +21,5 @@
 - add contract/backup
 
 - add car-s km when bookings
+
+- implementare contatti con bookings
