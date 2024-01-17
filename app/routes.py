@@ -674,8 +674,9 @@ def contacts():
             full_name = request.form.get('full_name')
             dob = request.form.get('dob')
             driver_licence_n = request.form.get('driver_licence_n')
+            telephone = request.form.get('telephone')
 
-            Contacts.add_contact(full_name, dob, driver_licence_n, current_user.id)
+            Contacts.add_contact(full_name, dob, driver_licence_n, telephone, current_user.id)
             flash('Contact added successfully', 'success')
 
         elif 'search_type' in request.form:
@@ -688,7 +689,7 @@ def contacts():
         elif 'manage_contact' in request.form:
             # Process the form data for managing a contact
             contact_id = request.form.get('manage_contact')
-            # Implement your logic for managing a contact
+            return redirect(url_for('contact_manage', contact_id=contact_id))
 
         elif 'book_contact' in request.form:
             # Process the form data for booking a contact
@@ -713,6 +714,7 @@ def contact_manage(contact_id):
             contact.full_name = request.form.get('full_name')
             contact.dob = request.form.get('dob')
             contact.driver_licence_n = request.form.get('driver_licence_n')
+            contact.telephone = request.form.get('telephone')
             db.session.commit()
             flash('Contact details amended successfully', 'success')
 
