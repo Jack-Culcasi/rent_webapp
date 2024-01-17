@@ -269,14 +269,16 @@ class Contacts(db.Model):
     full_name = db.Column(db.String(128), index=True)
     driver_licence_n = db.Column(db.Integer, index=True)
     dob = db.Column(db.String(8), index=True)
+    telephone = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
 
     @staticmethod
-    def add_contact(full_name, dob, driver_licence_n, user_id):
+    def add_contact(full_name, dob, driver_licence_n, telephone, user_id):
         new_contact = Contacts(
             full_name = full_name,
             driver_licence_n = driver_licence_n,
             dob = dob,
+            telephone = telephone,
             user_id = user_id
         )
 
@@ -292,3 +294,29 @@ class Contacts(db.Model):
         ).all()
 
         return search_results
+    
+    @classmethod
+    def search_contacts(cls, search_type, search_query, user_id):
+        # Build filter conditions dynamically based on search criteria
+        filter_conditions = cls.build_filter_conditions(search_type, search_query, user_id)
+
+        # Apply filter conditions and return the search results
+        return cls.query.filter(*filter_conditions).all()
+
+    @classmethod
+    def build_filter_conditions(cls, search_type, search_query, user_id):
+        if search_type == 'full_name':
+            # Case-insensitive search on the 'full_name' field
+            return cls.full_name.ilike(f"%{search_query}%"), cls.user_id == user_id
+        elif search_type == 'driver_licence':
+            # Exact match on the 'driver_licence_n' field
+            return cls.driver_licence_n == search_query, cls.user_id == user_id
+        elif search_type == 'dob':
+            # Exact match on the 'dob' field
+            return cls.dob == search_query, cls.user_id == user_id
+        elif search_type == 'id':
+            # Exact match on the 'id' field
+            return cls.id == search_query, cls.user_id == user_id
+        else:
+            # Invalid search type, return an invalid condition to produce an empty result
+            return cls.user_id == -1  # Assuming an invalid condition
