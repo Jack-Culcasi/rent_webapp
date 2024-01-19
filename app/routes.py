@@ -251,8 +251,12 @@ def overview(): # Booking
                 end_date = request.form.get('end_date')
                 start_time = request.form.get('start_time')
                 end_time = request.form.get('end_time')
-                note = request.form.get('note')                
-
+                note = request.form.get('note')
+                full_name = request.form.get("full_name")
+                dob = request.form.get("dob")
+                driver_licence_n = request.form.get("driver_licence_n")                
+                telephone = request.form.get("telephone") 
+                
                 # Convert start, end, to and from date and time to a datetime object
                 start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
                 end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
