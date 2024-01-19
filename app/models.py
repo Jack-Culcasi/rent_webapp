@@ -181,10 +181,13 @@ class Booking(db.Model):
 
     @staticmethod
     def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note):
-        # Check if the selected car exists
+        # Check if the selected car and contact exist
         car = Car.query.filter_by(plate=car_plate).first()
+        contact = Contacts.query.filter_by(id=contact_id).first()
         if not car:
             raise ValueError(f'Car with plate {car_plate} not found.')
+        if not contact:
+            raise ValueError(f'Contact with ID {contact_id} not found.')
 
         try:
             # Check for overlapping bookings
@@ -213,7 +216,9 @@ class Booking(db.Model):
 
             db.session.add(booking)
             car.days += booking_duration
+            contact.rented_days += booking_duration
             car.money += price
+            contact.money_spent += price
             db.session.commit()
 
             return booking, None, None
@@ -266,14 +271,20 @@ class Booking(db.Model):
         current_datetime = datetime.now()
         return self.end_datetime < current_datetime
     
+    def booking_duration(self):
+        booking_duration = (self.end_datetime - self.start_datetime).days + 1 # It adds a day because a booking within the same day counts as zero days.
+        return booking_duration
+    
 class Contacts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), index=True)
     driver_licence_n = db.Column(db.Integer, index=True)
     dob = db.Column(db.String(8), index=True)
-    telephone = db.Column(db.Integer, index=True)
+    telephone = db.Column(db.String(20), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
     bookings = db.relationship('Booking', backref='owner', lazy='dynamic')
+    money_spent = db.Column(db.Integer, default=0, index=True)
+    rented_days = db.Column(db.Integer, default=0, index=True)
 
     @staticmethod
     def add_contact(full_name, dob, driver_licence_n, telephone, user_id):
