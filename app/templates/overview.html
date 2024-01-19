@@ -7,7 +7,30 @@
 
 <!-- Link to your CSS file -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
+<div class="row">
+<!-- First Notice Board: Upcoming Bookings -->
+<div class="notice-board" style="margin-top: -10px;">
+    <h3>Upcoming Bookings:</h3>
+    <p>Bookings expiring or starting in a week:</p>
+    <ul class="notice-list">
+        {% for booking in upcoming_bookings %}
+            <li>{{ booking.car.model }} - {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Second Notice Board: Expiring Insurances, MOTs, and Road Taxes -->
+<div class="notice-board" style="margin-top: -10px;">
+    <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
+    <ul class="notice-list">
+        {% for car in cars_expiring_soon %}
+            <li>{{ car.model }} - Insurance, MOT, and Road Tax expiring soon</li>
+        {% endfor %}
+    </ul>
+</div>
+</div>
 <div class="row">
     <form action="{{ url_for('garage_manage') }}" method="get">
         <button type="submit">Add/Delete Car</button>
@@ -43,6 +66,67 @@
 </header>
 
 <form method="POST" action="{{ url_for('overview') }}">
+
+    <h3 style="margin-top: 10px;">Client Details</h3>
+        {% if contact %}
+        <div class="row">
+        <div class="col">
+            <label for="full_name" class="form-label">Full name</label>
+            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ contact.full_name }}" readonly>
+          </div>
+          <div class="col">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="text" class="form-control" id="dob" name="dob" value="{{ contact.dob }}" readonly>
+          </div>
+          <div class="col">
+            <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
+            <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n" value="{{ contact.driver_licence_n }}" readonly>
+          </div>
+          <div class="col">
+            <label for="telephone" class="form-label">Telephone</label>
+            <input type="text" class="form-control" id="telephone" name="telephone" value="{{ contact.telephone }}" readonly>
+          </div>
+          <div class="col">
+            <label for="id" class="form-label">ID</label>
+            <input type="text" class="form-control" id="id" name="id" value="{{ contact.id }}" readonly>
+        </div>
+        </div>   
+        {% else %}
+            <!-- Your input fields for adding a new contact go here -->
+        
+    <div class="row">
+
+        <!-- Input fields for adding a contact -->
+        <div class="col">
+            <label for="full_name" class="form-label">Full name</label>
+            <input type="text" class="form-control" id="full_name" name="full_name">
+        </div>
+        <div class="col">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="text" class="form-control" id="dob" name="dob">
+        </div>
+        <div class="col">
+            <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
+            <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
+        </div>
+        <div class="col">
+            <label for="telephone" class="form-label">Telephone</label>
+            <input type="text" class="form-control" id="telephone" name="telephone">
+        </div>
+
+        <div class="col">
+            <p style="text-align: center; margin-top: 3em;">Or</p>
+        </div>
+
+        <div class="col">
+            <a href="{{ url_for('contacts')}}">            
+                <p style="margin-top: 50px;">Search Existing Contact</p>
+            </a>
+        </div>   
+        
+    </div> 
+    {% endif %}
+
     <div class="row">
 
         <!-- Car Selection Dropdown -->
@@ -87,43 +171,6 @@
 
     </div>
 
-    <h3 style="margin-top: 10px;">Client Details</h3>
-
-  <div class="row">
-
-    <!-- Input fields for adding a contact -->
-    <div class="col">
-        <label for="full_name" class="form-label">Full name</label>
-        <input type="text" class="form-control" id="full_name" name="full_name">
-      </div>
-      <div class="col">
-        <label for="dob" class="form-label">Date of Birth</label>
-        <input type="text" class="form-control" id="dob" name="dob">
-      </div>
-      <div class="col">
-        <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
-        <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
-      </div>
-      <div class="col">
-        <label for="telephone" class="form-label">Telephone</label>
-        <input type="text" class="form-control" id="telephone" name="telephone">
-      </div>
-
-      <div class="col">
-        <p style="text-align: center; margin-top: 3em;">Or</p>
-    </div>
-
-    <div class="col">
-        <label for="search_name" class="form-label">Add Existing Contact</label>
-        <button type="submit" name='book' class="btn btn-primary">Add</button>
-    </div>
-
-    
-
-    
-      
-  </div> 
-
         <!-- Note Input -->
         <div class="col">
             <label for="note" class="form-label">Note</label>
@@ -133,6 +180,7 @@
 
     <!-- Book Car Button -->
     <button type="submit" name='book' class="btn btn-primary" >Book Car</button>
+    
 </form>
 
 <header id="header" style="padding: 0;">

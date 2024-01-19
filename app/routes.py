@@ -240,7 +240,11 @@ def delete_car():
 @login_required
 def overview(): # Booking
     # Check if it is the first of the year, if it is it resets car.days and car.money
-    Car.reset_parameters() 
+    Car.reset_parameters()
+    contact_id = request.args.get('contact_id')
+    contact = None
+    if contact_id:
+        contact = Contacts.query.filter_by(id=contact_id).first() 
 
     if request.method == 'POST':
         try:
@@ -256,6 +260,7 @@ def overview(): # Booking
                 dob = request.form.get("dob")
                 driver_licence_n = request.form.get("driver_licence_n")                
                 telephone = request.form.get("telephone") 
+                contact_id = request.form.get("id")
                 
                 # Convert start, end, to and from date and time to a datetime object
                 start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
@@ -266,19 +271,20 @@ def overview(): # Booking
                     flash('Booking cannot be made for a past date and time.', 'error')
                     return redirect(url_for('overview'))
 
-                # Create a new contact
-                new_contact = Contacts(
-                full_name=full_name,
-                driver_licence_n=driver_licence_n,
-                dob=dob,
-                telephone=telephone,
-                user_id=current_user.id
-                )
-                db.session.add(new_contact)
-                db.session.commit()
+                if contact_id == None:
+                    # Create a new contact
+                    new_contact = Contacts(
+                    full_name=full_name,
+                    driver_licence_n=driver_licence_n,
+                    dob=dob,
+                    telephone=telephone,
+                    user_id=current_user.id
+                    )
+                    db.session.add(new_contact)
+                    db.session.commit()
 
-                #Get the id of the newly created contact
-                contact_id = new_contact.id
+                    #Get the id of the newly created contact
+                    contact_id = new_contact.id                
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
@@ -347,6 +353,21 @@ def overview(): # Booking
     for old_booking in old_bookings:
         Booking.remove_booking(old_booking.id)
 
+    # Fetch upcoming bookings (expiring or starting in a week)
+    upcoming_bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        ((Booking.end_datetime <= (datetime.now() + timedelta(weeks=1))) | (Booking.start_datetime <= (datetime.now() + timedelta(weeks=1))))
+    ).all()
+
+    # Fetch cars with expiring insurance, MOT, and road tax in a month
+    cars_expiring_soon = Car.query.filter(
+        (Car.user_id == current_user.id) &
+        ((Car.insurance_expiry_date <= (datetime.now() + timedelta(weeks=4))) |
+        (Car.mot_expiry_date <= (datetime.now() + timedelta(weeks=4))) |
+        (Car.road_tax_expiry_date <= (datetime.now() + timedelta(weeks=4))))
+    ).all()
+
+    # Render the template with the new data
     return render_template('overview.html',
                             user_cars=user_cars,
                             available_cars=available_cars,
@@ -354,7 +375,10 @@ def overview(): # Booking
                             from_datetime=from_datetime.strftime('%Y-%m-%d'),
                             to_datetime=to_datetime.strftime('%Y-%m-%d'),
                             user_contacts=user_contacts,
-                            user_name=current_user.username if current_user.is_authenticated else None)
+                            contact=contact,
+                            user_name=current_user.username if current_user.is_authenticated else None,
+                            upcoming_bookings=upcoming_bookings,
+                            cars_expiring_soon=cars_expiring_soon)
 
 @app.route('/search_contacts', methods=['GET', 'POST'])
 @login_required
@@ -550,8 +574,9 @@ def bookings_manage():
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
-        selected_booking = Booking.query.filter_by(id=booking_id).first()
-        contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+        if booking_id:
+            selected_booking = Booking.query.filter_by(id=booking_id).first()
+            contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
         
         if request.form.get('action') == 'delete':
             booking_id = request.form.get('booking_id')
@@ -719,7 +744,7 @@ def contacts():
         elif 'book_contact' in request.form:
             # Process the form data for booking a contact
             contact_id = request.form.get('book_contact')
-            # Implement your logic for booking a contact
+            return redirect(url_for('overview', contact_id=contact_id))
 
         return redirect(url_for('contacts'))
 

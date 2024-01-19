@@ -64,7 +64,8 @@
           <label for="client" class="form-label">Client</label>
           {% if contact %}
           <a href="{{ url_for('contact_manage', contact_id=contact.id) }}">
-            <button type="button" class="btn btn-primary">{{ contact.full_name }}</button>
+            
+            <p>{{ contact.full_name }}</p>
           </a>
           {% else %}
           <input type="text" class="form-control" id="price" name="price" value="" readonly>
