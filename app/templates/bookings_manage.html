@@ -62,8 +62,14 @@
 
         <div class="col">
           <label for="client" class="form-label">Client</label>
-          <input type="text" class="form-control" id="client" name="client" value="{{ contact.full_name }}" readonly>
-        </div>
+          {% if contact %}
+          <a href="{{ url_for('contact_manage', contact_id=contact.id) }}">
+            <button type="button" class="btn btn-primary">{{ contact.full_name }}</button>
+          </a>
+          {% else %}
+          <input type="text" class="form-control" id="price" name="price" value="" readonly>
+          {% endif %}
+      </div>
 
     </div>
 
