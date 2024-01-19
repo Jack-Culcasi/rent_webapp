@@ -177,9 +177,10 @@ class Booking(db.Model):
     
     # Add a reference to the Car model for easier access
     car = db.relationship('Car', backref='bookings', lazy=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id', name='booking_contacts_id'), nullable=True)
 
     @staticmethod
-    def create_booking(car_plate, price, start_datetime, end_datetime, user_id, note):
+    def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note):
         # Check if the selected car exists
         car = Car.query.filter_by(plate=car_plate).first()
         if not car:
@@ -206,7 +207,8 @@ class Booking(db.Model):
                 car_plate=car_plate,
                 user_id=user_id,
                 note=note,
-                money=price
+                money=price,
+                contact_id=contact_id
             )
 
             db.session.add(booking)
@@ -271,6 +273,7 @@ class Contacts(db.Model):
     dob = db.Column(db.String(8), index=True)
     telephone = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
+    bookings = db.relationship('Booking', backref='owner', lazy='dynamic')
 
     @staticmethod
     def add_contact(full_name, dob, driver_licence_n, telephone, user_id):
