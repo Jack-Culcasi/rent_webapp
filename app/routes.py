@@ -264,11 +264,25 @@ def overview(): # Booking
                 # Check if start_datetime is in the past
                 if start_datetime < datetime.now():
                     flash('Booking cannot be made for a past date and time.', 'error')
-                    return redirect(url_for('overview'))                
+                    return redirect(url_for('overview'))
+
+                # Create a new contact
+                new_contact = Contacts(
+                full_name=full_name,
+                driver_licence_n=driver_licence_n,
+                dob=dob,
+                telephone=telephone,
+                user_id=current_user.id
+                )
+                db.session.add(new_contact)
+                db.session.commit()
+
+                #Get the id of the newly created contact
+                contact_id = new_contact.id
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
-                    car_plate, price, start_datetime, end_datetime, current_user.id, note
+                    car_plate, price, start_datetime, end_datetime, contact_id, current_user.id, note
                 )
                 
                 if booking is None:
@@ -518,6 +532,7 @@ def bookings_view():
 def bookings_manage():
     current_date = datetime.utcnow()
     booking_id = request.args.get('booking_id')
+    contact = None
     
     # Retrieve active bookings
     user_bookings = Booking.query.filter(
@@ -535,7 +550,6 @@ def bookings_manage():
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
-        selected_booking = Booking.query.filter_by(id=booking_id).first()
 
         if request.form.get('action') == 'delete':
             booking_id = request.form.get('booking_id')
@@ -551,7 +565,12 @@ def bookings_manage():
         # Handles the "Manage" buttons in other pages
         if request.form.get('manage_booking'):
             booking_id = request.form.get('manage_booking')
-            selected_booking = Booking.query.filter_by(id=booking_id).first()            
+            selected_booking = Booking.query.filter_by(id=booking_id).first()
+
+            if selected_booking:
+                contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+            else:
+                flash('Selected booking not found.', 'error')            
 
         # Check if the form was submitted for amendment
         if request.form.get('action') == 'amend':
@@ -584,7 +603,7 @@ def bookings_manage():
             else:
                 flash('Booking not found. Amendment failed.', 'error')
 
-    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking,
+    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
@@ -709,6 +728,7 @@ def contacts():
 @login_required
 def contact_manage(contact_id):
     contact = Contacts.query.get_or_404(contact_id)
+    contact_bookings = contact.bookings.all()
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -729,4 +749,4 @@ def contact_manage(contact_id):
             flash('Contact deleted successfully', 'success')
             return redirect(url_for('contacts'))
 
-    return render_template('contact_manage.html', contact=contact, user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('contact_manage.html', contact=contact, contact_bookings=contact_bookings, user_name=current_user.username if current_user.is_authenticated else None)
