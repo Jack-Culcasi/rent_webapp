@@ -550,7 +550,9 @@ def bookings_manage():
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
-
+        selected_booking = Booking.query.filter_by(id=booking_id).first()
+        contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+        
         if request.form.get('action') == 'delete':
             booking_id = request.form.get('booking_id')
             # Modify the query to eagerly load the 'car' relationship
@@ -728,7 +730,7 @@ def contacts():
 @login_required
 def contact_manage(contact_id):
     contact = Contacts.query.get_or_404(contact_id)
-    contact_bookings = contact.bookings.all()
+    contact_bookings = contact.bookings.all()    
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -749,4 +751,4 @@ def contact_manage(contact_id):
             flash('Contact deleted successfully', 'success')
             return redirect(url_for('contacts'))
 
-    return render_template('contact_manage.html', contact=contact, contact_bookings=contact_bookings, user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('contact_manage.html', contact=contact, contact_bookings=contact_bookings, days=contact.rented_days, money=contact.money_spent, bookings_number=len(contact_bookings), user_name=current_user.username if current_user.is_authenticated else None)
