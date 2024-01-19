@@ -56,12 +56,17 @@
 <div class="row">
     <div class="col">
         <label for="bookings_number" class="form-label">Bookings number</label>
-        <input type="text" class="form-control" id="bookings_number" name="bookings_number" value="{{ contact.id }}" readonly>
+        <input type="text" class="form-control" id="bookings_number" name="bookings_number" value="{{ bookings_number }}" readonly>
     </div>
 
     <div class="col">
         <label for="days_rented" class="form-label">Days Rented</label>
-        <input type="text" class="form-control" id="days_rented" name="days_rented" value="{{ contact.id }}" readonly>
+        <input type="text" class="form-control" id="days_rented" name="days_rented" value="{{ days }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="money_spent" class="form-label">Money Spent</label>
+        <input type="text" class="form-control" id="money_spent" name="money_spent" value="{{ money }}" readonly>
     </div>
 
 </div>
