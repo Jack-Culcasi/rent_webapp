@@ -28,3 +28,25 @@ input[readonly] {
     border: 1px solid #ddd; /* Add a border for a clear boundary */
     cursor: not-allowed; /* Change cursor to indicate it's not editable */
   }
+
+.notice-board {
+    max-height: 200px; /* Set a maximum height for the notice board */
+    overflow-y: auto; /* Add vertical scroll bar if content exceeds the max height */
+    border: 1px solid #ccc; /* Add a border for visual separation */
+    padding: 10px; /* Add padding for better styling */
+    margin-bottom: 20px; /* Add some margin to separate from other elements */
+}
+
+.notice-board h3 {
+    margin-top: 0; /* Remove default margin for the heading */
+}
+
+.notice-list {
+    list-style: none; /* Remove default list styles */
+    padding: 0; /* Remove default padding for the list */
+    margin: 0; /* Remove default margin for the list */
+}
+
+.notice-list li {
+    margin-bottom: 5px; /* Add some margin between list items */
+}
