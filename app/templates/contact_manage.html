@@ -51,4 +51,62 @@
     </div>
 </form>
 
+<h2>Statistics</h2>
+
+<div class="row">
+    <div class="col">
+        <label for="bookings_number" class="form-label">Bookings number</label>
+        <input type="text" class="form-control" id="bookings_number" name="bookings_number" value="{{ contact.id }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="days_rented" class="form-label">Days Rented</label>
+        <input type="text" class="form-control" id="days_rented" name="days_rented" value="{{ contact.id }}" readonly>
+    </div>
+
+</div>
+
+<h2>Bookings</h2>
+
+<form action="{{ url_for('bookings_manage') }}" method="POST">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Plate</th>
+                <th>Model</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Actions</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in contact_bookings %}
+                <tr>
+                    <td>{{ booking.car.plate }}</td>
+                    <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}">Manage</button>
+                    </td>
+                    <td>
+                        {% if booking.note %}
+                            <span class="note-tooltip">
+                                Note
+                                <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                            </span>
+                        {% else %}
+                            <!-- Display nothing if there is no note -->
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
 {% endblock %}
