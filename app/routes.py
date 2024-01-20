@@ -556,8 +556,7 @@ def bookings_view():
 def bookings_manage():
     current_date = datetime.utcnow()
     booking_id = request.args.get('booking_id')
-    contact = None
-    
+
     # Retrieve active bookings
     user_bookings = Booking.query.filter(
         (Booking.user_id == current_user.id) &
@@ -566,11 +565,13 @@ def bookings_manage():
 
     if booking_id:
         selected_booking = Booking.query.filter_by(id=booking_id).first()
+        contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
         if selected_booking.is_expired():
             flash(f'Booking with ID {selected_booking.id} is no longer active, you can only delete it', 'error')
             return redirect(url_for('bookings_history'))
     else:
         selected_booking = None
+        contact = None
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
@@ -578,7 +579,7 @@ def bookings_manage():
             selected_booking = Booking.query.filter_by(id=booking_id).first()
             contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
         
-        if request.form.get('action') == 'delete':
+        if request.form.get('action') == 'delete' or 'delete' in request.form:
             booking_id = request.form.get('booking_id')
             # Modify the query to eagerly load the 'car' relationship
             selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
@@ -596,6 +597,7 @@ def bookings_manage():
 
             if selected_booking:
                 contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+                print(f'Manage button pressed, contact: {contact}')
             else:
                 flash('Selected booking not found.', 'error')            
 
@@ -629,7 +631,7 @@ def bookings_manage():
 
             else:
                 flash('Booking not found. Amendment failed.', 'error')
-
+                
     return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
@@ -745,6 +747,15 @@ def contacts():
             # Process the form data for booking a contact
             contact_id = request.form.get('book_contact')
             return redirect(url_for('overview', contact_id=contact_id))
+        
+        elif 'delete_contact' in request.form:
+            # Handle deletion logic
+            contact_id = request.form.get('delete_contact')
+            contact = Contacts.query.get_or_404(contact_id)
+            db.session.delete(contact)
+            db.session.commit()
+            flash('Contact deleted successfully', 'success')
+            return redirect(url_for('contacts'))
 
         return redirect(url_for('contacts'))
 
