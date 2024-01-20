@@ -5,6 +5,7 @@
   <!-- Include jQuery library and external sorting script -->
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
@@ -51,6 +52,9 @@
               <!-- Add hidden input for booking ID -->
               <input type="hidden" name="booking_id" value="{{ booking.id }}">
               <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}">Manage</button>
+        </td>
+        <td>
+          <button type="submit" class="btn btn-primary" name="delete" style="margin-top: 20px;" onclick="return confirm('Are you sure you want to delete this booking?');">Delete</button>
         </td>
       </tr>
       {% endfor %}

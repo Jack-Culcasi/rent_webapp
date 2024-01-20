@@ -10,26 +10,30 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <div class="row">
-<!-- First Notice Board: Upcoming Bookings -->
-<div class="notice-board" style="margin-top: -10px;">
-    <h3>Upcoming Bookings:</h3>
-    <p>Bookings expiring or starting in a week:</p>
-    <ul class="notice-list">
-        {% for booking in upcoming_bookings %}
-            <li>{{ booking.car.model }} - {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
-        {% endfor %}
-    </ul>
-</div>
+    <!-- First Notice Board: Upcoming Bookings -->
+    <div class="col-md-6">
+        <div class="notice-board" style="margin-top: -10px;">
+            <h3>Upcoming Bookings:</h3>
+            <p>Bookings expiring or starting in a week:</p>
+            <ul class="notice-list">
+                {% for booking in upcoming_bookings %}
+                    <li>{{ booking.car.model }} - {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 
-<!-- Second Notice Board: Expiring Insurances, MOTs, and Road Taxes -->
-<div class="notice-board" style="margin-top: -10px;">
-    <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
-    <ul class="notice-list">
-        {% for car in cars_expiring_soon %}
-            <li>{{ car.model }} - Insurance, MOT, and Road Tax expiring soon</li>
-        {% endfor %}
-    </ul>
-</div>
+    <!-- Second Notice Board: Expiring Insurances, MOTs, and Road Taxes -->
+    <div class="col-md-6">
+        <div class="notice-board" style="margin-top: -10px;">
+            <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
+            <ul class="notice-list">
+                {% for car in cars_expiring_soon %}
+                    <li>{{ car.model }} - Insurance, MOT, and Road Tax expiring soon</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 <div class="row">
     <form action="{{ url_for('garage_manage') }}" method="get">
