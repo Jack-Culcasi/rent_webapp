@@ -353,18 +353,23 @@ def overview(): # Booking
     for old_booking in old_bookings:
         Booking.remove_booking(old_booking.id)
 
-    # Fetch upcoming bookings (expiring or starting in a week)
-    upcoming_bookings = Booking.query.filter(
+    # Fetch bookings about to finish    
+    bookings_about_to_finish = Booking.query.filter(
         (Booking.user_id == current_user.id) &
-        ((Booking.end_datetime <= (datetime.now() + timedelta(weeks=1))) | (Booking.start_datetime <= (datetime.now() + timedelta(weeks=1))))
-    ).all()
+        ((Booking.end_datetime >= datetime.now().date()) & (Booking.end_datetime <= (datetime.now().date() + timedelta(weeks=1))))).all()
+    
+    # Fetch bookings about to start    
+    bookings_about_to_start = Booking.query.filter(
+        (Booking.user_id == current_user.id) &
+        ((Booking.start_datetime >= datetime.now().date()) & (Booking.start_datetime <= (datetime.now().date() + timedelta(weeks=1))))).all()
 
     # Fetch cars with expiring insurance, MOT, and road tax in a month
+    in_four_weeks = datetime.now() + timedelta(weeks=4)
     cars_expiring_soon = Car.query.filter(
         (Car.user_id == current_user.id) &
-        ((Car.insurance_expiry_date <= (datetime.now() + timedelta(weeks=4))) |
-        (Car.mot_expiry_date <= (datetime.now() + timedelta(weeks=4))) |
-        (Car.road_tax_expiry_date <= (datetime.now() + timedelta(weeks=4))))
+        ((Car.insurance_expiry_date <= in_four_weeks) |
+        (Car.mot_expiry_date <= in_four_weeks) |
+        (Car.road_tax_expiry_date <= in_four_weeks))
     ).all()
 
     # Render the template with the new data
@@ -377,7 +382,9 @@ def overview(): # Booking
                             user_contacts=user_contacts,
                             contact=contact,
                             user_name=current_user.username if current_user.is_authenticated else None,
-                            upcoming_bookings=upcoming_bookings,
+                            bookings_about_to_start=bookings_about_to_start,
+                            bookings_about_to_finish=bookings_about_to_finish,
+                            in_four_weeks=in_four_weeks,
                             cars_expiring_soon=cars_expiring_soon)
 
 @app.route('/search_contacts', methods=['GET', 'POST'])
