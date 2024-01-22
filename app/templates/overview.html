@@ -11,30 +11,62 @@
 
 <div class="row">
     <!-- First Notice Board: Upcoming Bookings -->
-    <div class="col-md-6">
-        <div class="notice-board" style="margin-top: -10px;">
-            <h3>Upcoming Bookings:</h3>
-            <p>Bookings expiring or starting in a week:</p>
+    <div class="col-md-6" style="width: 400px; margin-top: -50px;">
+        <h3>Bookings about to finish:</h3>
+        <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
-                {% for booking in upcoming_bookings %}
-                    <li>{{ booking.car.model }} - {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
+                {% for booking in bookings_about_to_finish %}
+                <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">   
+                    <li>{{ booking.car.model }} {{ booking.car.plate }} - ends on {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
                 {% endfor %}
+                </a>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-6" style="width: 400px; margin-top: -50px;">
+        <h3>Bookings about to start:</h3>
+        <div class="notice-board" style="margin-top: -10px; height: 100px;">
+            <ul class="notice-list">
+                {% for booking in bookings_about_to_start %}
+                <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">
+                    <li>{{ booking.car.model }} {{ booking.car.plate }} - starts on {{ booking.start_datetime.strftime("%b %d %H:%M") }}</li>
+                {% endfor %}
+                </a>
             </ul>
         </div>
     </div>
 
     <!-- Second Notice Board: Expiring Insurances, MOTs, and Road Taxes -->
-    <div class="col-md-6">
-        <div class="notice-board" style="margin-top: -10px;">
-            <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
+    <div class="col-md-6" style="width: 500px; margin-top: -50px;">
+        <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
+        <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
                 {% for car in cars_expiring_soon %}
-                    <li>{{ car.model }} - Insurance, MOT, and Road Tax expiring soon</li>
+                    <a href="{{ url_for('garage_car', car_plate=car.plate ) }}" style="color: rgb(0, 0, 0);">
+                        <li>
+                            {{ car.model }} ({{ car.plate }}) - 
+                            {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %}
+                                Insurance expiries on {{ car.insurance_expiry_date.strftime("%b %d") }}
+                            {% endif %}
+                            {% if car.mot_expiry_date and car.mot_expiry_date <= in_four_weeks %}
+                                {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %} <br> {% endif %}
+                                MOT expiries on {{ car.mot_expiry_date.strftime("%b %d") }}
+                            {% endif %}
+                            {% if car.road_tax_expiry_date and car.road_tax_expiry_date <= in_four_weeks %}
+                                {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks or car.mot_expiry_date and car.mot_expiry_date <= in_four_weeks %}
+                                    <br> 
+                                {% endif %}
+                                Road Tax expiries on {{ car.road_tax_expiry_date.strftime("%b %d") }}
+                            {% endif %}
+                        </li>
+                    </a>
                 {% endfor %}
             </ul>
         </div>
     </div>
 </div>
+
 <div class="row">
     <form action="{{ url_for('garage_manage') }}" method="get">
         <button type="submit">Add/Delete Car</button>
