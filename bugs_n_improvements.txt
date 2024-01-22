@@ -6,7 +6,7 @@
 
 #   Improvements:
 
-- Dark mode button too big
+- Dark mode button too big, sorting algo not always working
 
 - Improve Admin Dashboard, aggiungere contatti per user
 
@@ -22,4 +22,4 @@
 
 - add car-s km when bookings
 
-- implementare contatti con bookings
+- implement possibility to add car costs
