@@ -421,6 +421,13 @@ def search_contacts():
                     search_query = request.form.get('search_name')
                     contacts = Contacts.search(search_query, current_user.id)  # Adjust the current_user_id accordingly
                     return render_template('search_results.html', contacts=contacts)
+    
+@app.route('/renew', methods=['GET', 'POST'])
+@login_required
+def renew():
+    car_plate = request.args.get('car_plate')
+
+    return render_template('renew.html', car_plate=car_plate, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
