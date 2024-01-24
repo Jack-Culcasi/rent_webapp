@@ -106,7 +106,7 @@
 
 {% if car_object %}
 
-<form method="POST" action="{{ url_for('garage_manage', car_plate=car_object.plate) }}">
+<form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
 
   <div class="row"> 
 
