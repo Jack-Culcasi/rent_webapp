@@ -22,8 +22,9 @@
 <!-- Add Car Section -->
 <form method="POST" action="{{ url_for('garage_manage') }}">
   <header id="header">
-  <h2>Add Car</h2>
+    <h2>Add or Delete Car</h2>
   </header>
+  
   <div class="row">
     <!-- Input fields for adding a car -->
     <div class="col">
@@ -50,16 +51,16 @@
       <label for="Cc" class="form-label">Cc</label>
       <input type="text" class="form-control" id="Cc" name="Cc">
     </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;">Add Car</button>
   </div>
-  <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Car</button>
+  
 </form>
 
 <!-- Delete Car Section -->
-<header id="header">
-  <h2>Delete Car</h2>
-</header>
+<h2 style="margin-top: -30px;">Delete Car</h2>
+
 <form action="/search" method="POST">
-  <div class="row">
+  <div class="row" style="margin-top: -20px;">
     <!-- Dropdown for search type -->
     <div class="col">
       <label for="search_type" class="form-label">Search by</label>
@@ -91,8 +92,9 @@
         {% endfor %}
       </select>
     </div>
+    <button type="submit" class="btn btn-danger" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;">Search</button>
   </div>
-  <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Search</button>
+  
 </form>
 
 {% if search_query or cars %}
@@ -135,5 +137,32 @@
     <p>No results found.</p>
   {% endif %}
 {% endif %}
-    
+
+<header id="header">
+  <h2 style="margin-top: -50px;">Add Cost to a Car</h2>
+</header>
+
+<div class="row">
+
+  <div class="col">
+
+    <label for="select_cost" class="form-label">Select Cost</label>
+      <select class="form-select" id="select_cost" name="select_cost">
+        <option value="insurance">Insurance</option>
+        <option value="mot">MOT</option>
+        <option value="road_tax">Road Tax</option>
+        <option value="other">Other</option>
+       </select>
+
+  </div>
+
+  <div class="col">
+
+    <label for="search_type" class="form-label">Cost Amount</label>
+    <input type="text" class="form-control" id="search_query" name="search_query">
+
+  </div>
+
+</div>
+
 {% endblock %}
