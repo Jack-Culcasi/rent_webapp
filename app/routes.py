@@ -192,10 +192,12 @@ def garage_manage(): # Add Car
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     user_cars = current_user.garage.all()
+    current_page = request.form.get('source_page', default='garage_manage')
+
     if request.method == 'POST':
         search_query = request.form.get('search_query')
         search_type = request.form.get('search_type')
-        select_car = request.form.get('select_car')
+        select_car = request.form.get('select_car') # Plate
 
         # Perform search based on both search type and selected car
         if search_type and search_query:
@@ -207,7 +209,32 @@ def search():
             # No valid search parameters provided
             filtered_cars = []
 
-        return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+        if current_page == 'garage_manage':
+            return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+        elif current_page == 'garage_car':
+            if select_car != "blank":
+                current_datetime = datetime.utcnow()
+                # Retrieve active bookings for a given car
+                car_active_bookings = Booking.query.filter(
+                    (Booking.car_plate == select_car) &
+                    (Booking.end_datetime > current_datetime)
+                ).all()
+
+                # Retrieve past bookings for a given car
+                car_past_bookings = Booking.query.filter(
+                    (Booking.car_plate == select_car) &
+                    (Booking.end_datetime <= current_datetime)
+                ).all()
+
+                car = Car.query.filter_by(plate=select_car).first()
+                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+                                        car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                        user_name=current_user.username if current_user.is_authenticated else None)
+            return render_template('garage_car.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+        else:
+            pass
+            # Handle other pages if needed
+            #return render_template('default_template.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
     
     else:
         # Render the search page template for a GET request
@@ -467,18 +494,18 @@ def garage_car():
                         car_fuel = request.form['car_fuel']
                         car_year = request.form['car_year']
                         car_cc = request.form['car_cc']
-                        road_tax_expiry_date_str = request.form['road_tax_expiry_date']
-                        mot_expiry_date_str = request.form['mot_expiry_date']
-                        insurance_expiry_date_str = request.form['insurance_expiry_date']
+
+                        #road_tax_expiry_date_str = request.form['road_tax_expiry_date']
+                        #mot_expiry_date_str = request.form['mot_expiry_date']
+                        #insurance_expiry_date_str = request.form['insurance_expiry_date']
 
                         # Convert date strings to datetime objects
-                        road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
-                        mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
-                        insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
+                        #road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
+                        #mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
+                        #insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
 
                         # Call the amend_car method
-                        selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc, 
-                                               road_tax_expiry_date, mot_expiry_date, insurance_expiry_date)
+                        selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc)
 
                         flash('Car amended successfully!', 'success')
                         return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
@@ -604,7 +631,6 @@ def bookings_manage():
 
             if selected_booking:
                 contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
-                print(f'Manage button pressed, contact: {contact}')
             else:
                 flash('Selected booking not found.', 'error')            
 
