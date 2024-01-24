@@ -20,29 +20,126 @@
 
 <h2>Search for a Car</h2>
 
-<form action="/garage_car" method="POST">
-    <div class="row">
-      <!-- Dropdown for search type -->
-      <div class="col">
-        <select class="form-select" id="plate" name="plate">
-            {% for car in user_cars %}
-            <option value="{{ car.plate }}">{{ car.plate }} - {{ car.make }} - {{ car.model }} - {{ car.year }}</option>
-            {% endfor %}
-        </select>
-      </div>
-      <!-- Input field for search query -->
+<form action="/search" method="POST">
+  <div class="row" style="margin-top: -20px;">
+    <!-- Dropdown for search type -->
+    <div class="col">
+      <label for="search_type" class="form-label">Search by</label>
+      <select class="form-select" id="search_type" name="search_type">
+        <option value="plate">Plate</option>
+        <option value="make">Make</option>
+        <option value="model">Model</option>
+        <option value="fuel">Fuel</option>
+        <option value="year">Year</option>
+        <option value="cc">Cc</option>
+      </select>
     </div>
-    <button type="submit" class="btn btn-danger" style="margin-top: 20px;">Manage</button>
-  </form>
+    <!-- Input field for search query -->
+    <div class="col">
+      <label for="search_type" class="form-label hidden-label">Search Query</label>
+      <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+    </div>
+    <!-- "Or" text -->
+    <div class="col">
+      <p style="text-align: center; margin-top: 3em;">Or</p>
+    </div>
+    <!-- Dropdown for selecting a car -->
+    <div class="col">
+      <label for="select_car" class="form-label">Select a Car</label>
+      <select class="form-select" id="select_car" name="select_car">
+        <option value="blank">Select a car...</option>
+        {% for car in user_cars %}
+        <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }} - {{ car.year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <input type="hidden" name="source_page" value="garage_car">
+    <button type="submit" class="btn btn-danger" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;">Search</button>
+  </div>
+  
+</form>
+
+{% if search_query or cars %}
+  {% if cars %}
+    <!-- Display search results in a table -->
+    <h3>Search Results:</h3>
+    <table class="table" id="carTable">
+      <thead>
+        <tr>
+          <th scope="col">Plate</th>
+          <th scope="col">Make</th>
+          <th scope="col">Model</th>
+          <th scope="col">Fuel</th>
+          <th scope="col">Year</th>
+          <th scope="col">Cc</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for car in cars %}
+          <tr>
+            <td>{{ car.plate }}</td>
+            <td>{{ car.make }}</td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.fuel }}</td>
+            <td>{{ car.year }}</td>
+            <td>{{ car.cc }}</td>
+            <td>
+              <!-- Button to manage a car -->
+              <form action="/garage_car" method="POST">
+                <input type="hidden" name="plate" value="{{ car.plate }}">
+                <button type="submit" class="btn btn-danger">Manage</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endif %}
 
 <header id="header" style="padding: 0;">
     <h2>Manage Car</h2>
 </header>
 
 {% if car_object %}
+
+<form method="POST" action="{{ url_for('garage_manage', car_plate=car_object.plate) }}">
+
+  <div class="row"> 
+
+    <!-- Road Tax Expiry Date -->
+    <div class="col">
+      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
+      <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
+                                                      value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}" readonly>
+    </div>
+
+    <!-- MOT Expiry Date -->
+    <div class="col">
+      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
+      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" 
+                                                        value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}" readonly>
+    </div>
+
+    <!-- Insurance Expiry Date -->
+    <div class="col">
+      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
+      <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" 
+                                              value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}" readonly>
+    </div>
+
+    <button type="submit" style="margin-top: 30px; width: 120px; padding-left: 0px; margin-left: 20px;">Renew</button>
+
+  </div>
+
+</form>
+
   <form method="POST" action="{{ url_for('garage_car') }}" id="manageForm">
 
-    <div class="row">      
+    <div class="row" style="margin-top: -20px;">      
 
       <!-- Make Input -->
       <div class="col">
@@ -73,25 +170,6 @@
         <label for="car_cc" class="form-label">CC</label>
         <input type="text" class="form-control" id="car_cc" name="car_cc" value="{{ car_object.cc }}">
       </div>
-
-      <!-- Road Tax Expiry Date -->
-    <div class="col">
-      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
-      <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
-                                                            value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}">
-    </div>
-
-    <!-- MOT Expiry Date -->
-    <div class="col">
-      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
-      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}">
-    </div>
-    
-    <!-- Insurance Expiry Date -->
-    <div class="col">
-      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
-      <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}">
-    </div>
     
     </div>
 
