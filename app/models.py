@@ -119,8 +119,7 @@ class Car(db.Model):
 
         return filtered_cars
     
-    def amend_car(self, car_plate, car_make, car_model, car_fuel, car_year, car_cc, 
-                                               road_tax_expiry_date, mot_expiry_date, insurance_expiry_date):
+    def amend_car(self, car_plate, car_make, car_model, car_fuel, car_year, car_cc): #mancano road tax etc..
         try:
             self.plate = car_plate
             self.make = car_make
@@ -128,9 +127,9 @@ class Car(db.Model):
             self.year = car_year
             self.fuel = car_fuel
             self.cc = car_cc
-            self.road_tax_expiry_date = road_tax_expiry_date
-            self.mot_expiry_date = mot_expiry_date
-            self.insurance_expiry_date = insurance_expiry_date
+            #self.road_tax_expiry_date = road_tax_expiry_date
+            #self.mot_expiry_date = mot_expiry_date
+            #self.insurance_expiry_date = insurance_expiry_date
 
             db.session.commit()
             return True
