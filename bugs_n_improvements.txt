@@ -6,7 +6,7 @@
 
 #   Improvements:
 
-- Dark mode button too big, sorting algo not always working
+- Dark mode button too big, sorting algo not always working, delete button different colour and icon
 
 - Improve Admin Dashboard, aggiungere contatti per user
 
