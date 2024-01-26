@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -15,30 +16,135 @@
     {% endif %}
 {% endfor %}
 
-<form method="POST" action="{{ url_for('renew')}}">
+<div class="row"> 
 
-    <div class="row">
+    <div class="col">
+
+        <label for="car" class="form-label">Car</label>
+        <input type="text" class="form-control" value="{{car_object.model}} - {{car_object.plate}}" readonly>
+
+    </div>
+
+    <!-- Road Tax Expiry Date -->
+    <div class="col">
+      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
+      <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
+                                                      value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}" readonly>
+    </div>
+
+    <!-- MOT Expiry Date -->
+    <div class="col">
+      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
+      <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" 
+                                                        value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}" readonly>
+    </div>
+
+    <!-- Insurance Expiry Date -->
+    <div class="col">
+      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
+      <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" 
+                                              value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}" readonly>
+    </div>
+
+  </div>
+
+  <form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
+
+    <div class="row" style="margin-top: 20px;">
 
         <div class="col">
     
         <label for="select_cost" class="form-label">Renewal</label>
             <select class="form-select" id="select_cost" name="select_cost">
-            <option value="insurance">Insurance</option>
-            <option value="mot">MOT</option>
-            <option value="road_tax">Road Tax</option>
-            <option value="other">Other</option>
+                <option value="insurance">Insurance</option>
+                <option value="mot">MOT</option>
+                <option value="road_tax">Road Tax</option>
+                <option value="other">Other</option>
             </select>
     
         </div>
-    
+
         <div class="col">
-    
-            <label for="search_type" class="form-label">Cost Amount</label>
-            <input type="text" class="form-control" id="search_query" name="search_query">
-    
+
+
+            <label type="hidden" class="form-label hidden-label">Button</label>
+            <button type="submit">Select</button>
+
         </div>
     
     </div>
 
 </form>
+
+{% if option %}
+
+    {% if option == 'insurance' %}
+    <div class="row">
+        <div class="col">
+
+            <label for="insurance_expiry_date" class="form-label">New Insurance Expiry Date</label>
+            <input type="date" class="form-control" name="insurance_expiry_date">
+
+        </div>
+
+        <div class="col">
+
+            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <input type="text" class="form-control" name="cost_amount">
+
+        </div>
+    </div>
+    {% endif %}
+    {% if option == 'mot' %}
+    <div class="row">
+        <div class="col">
+
+            <label for="mot_expiry_date" class="form-label">New MOT Expiry Date</label>
+            <input type="date" class="form-control" name="mot_expiry_date">
+
+        </div>
+
+        <div class="col">
+
+            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <input type="text" class="form-control" name="cost_amount">
+            
+        </div>
+    </div>
+    {% endif %}
+    {% if option == 'road_tax' %}
+    <div class="row">
+        <div class="col">
+
+            <label for="road_tax_expiry_date" class="form-label">New Road Tax Expiry Date</label>
+            <input type="date" class="form-control" name="road_tax_expiry_date">
+
+        </div>
+
+        <div class="col">
+
+            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <input type="text" class="form-control" name="cost_amount">
+            
+        </div>
+    {% endif %}
+    {% if option == 'other' %}
+    <h3>Other costs</h3>
+    <div class="row">
+    <div class="col">
+        <label for="note" class="form-label">Description</label>
+        <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
+        <p id="character-count">0/160</p>
+    </div>  
+    <div class="col">
+
+        <label for="cost_amount" class="form-label">Cost Amount</label>
+        <input type="text" class="form-control" name="cost_amount">
+        
+    </div>
+    </div>
+    {% endif %}
+
+{% endif %}
+<button type="submit">Add Cost</button>
 {% endblock %}
