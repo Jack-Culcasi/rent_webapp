@@ -137,7 +137,7 @@
 
 </form>
 
-  <form method="POST" action="{{ url_for('garage_car') }}" id="manageForm">
+  <form method="POST" action="{{ url_for('garage_car') }}" id="manageForm" style="margin: 0 0 0em 0 !important;">
 
     <div class="row" style="margin-top: -20px;">      
 
@@ -180,10 +180,10 @@
     <input type="hidden" name="action" id="action" value="">
 
     <!-- Amend Button with Confirmation -->
-    <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmAmend('car')">Amend</button>
+    <button type="button" class="btn btn-primary" onclick="confirmAmend('car')">Amend</button>
 
     <!-- Delete Button with Confirmation -->
-    <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmDelete('car')">Delete</button>
+    <button type="button" class="btn btn-primary btn-delete" onclick="confirmDelete('car')"><i class="fas fa-trash-alt"></i></button>
 
   </form>
 
@@ -318,7 +318,7 @@
         <td>
             <!-- Add hidden input for booking ID -->
             <input type="hidden" name="action" id='action' value="{{ booking.id }}">
-            <button type="submit" class="btn btn-danger" name="delete_car" value="{{ booking.id }}">Delete</button>
+            <button type="submit" class="btn btn-danger btn-delete" name="delete_car" value="{{ booking.id }}"><i class="fas fa-trash-alt"></i></button>
       </td>
     </tr>
     {% endfor %}

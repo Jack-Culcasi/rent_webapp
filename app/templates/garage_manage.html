@@ -126,7 +126,7 @@
               <!-- Button to delete a car -->
               <form action="/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
                 <input type="hidden" name="car_plate" value="{{ car.plate }}">
-                <button type="submit" class="btn btn-danger">Delete</button>
+                <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
           </tr>

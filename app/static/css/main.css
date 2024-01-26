@@ -1008,7 +1008,7 @@ header.main > :last-child {
 
 /* Form */
 form {
-  margin: 0 0 2em 0; }
+  margin: 0 0 0em 0; }
 
 label {
   color: #3d4449;
@@ -2309,13 +2309,13 @@ button,
 
 /* Dark mode styles */
 body.dark-mode {
-  background-color: #161616; /* Set your dark mode background color */
+  background-color: #161616dc; /* Set your dark mode background color */
   color: #fff; /* Set your dark mode text color */
 }
 
 /* Dark mode styles for the navbar */
 body.dark-mode #sidebar {
-  background-color: #0a0a0a; /* Set your dark mode navbar background color */
+  background-color: #0e0e0e; /* Set your dark mode navbar background color */
   color: #fff; /* Set your dark mode navbar text color */
 }
 
@@ -2342,4 +2342,15 @@ body.dark-mode table th  {
 
 body.dark-mode select option {
   color: #000; /* Set a different text color for dropdown menu options in dark mode */
+}
+
+body.dark-mode a:link,
+body.dark-mode a:visited {
+  color: #f56a6a !important ;/* Set your desired orange color for links */
+}
+
+/* Add a class to target the delete buttons specifically */
+.btn-delete {
+  background-color: rgba(255, 86, 86, 0.2); /* Semi-transparent red background */
+  color: #ff5b5b !important;
 }
