@@ -86,7 +86,7 @@
             <td>{{ car.cc }}</td>
             <td>
               <!-- Button to manage a car -->
-              <form action="/garage_car" method="POST">
+              <form action="/garage_car" method="POST" style="margin-bottom: auto;">
                 <input type="hidden" name="plate" value="{{ car.plate }}">
                 <button type="submit" class="btn btn-danger">Manage</button>
               </form>
@@ -183,7 +183,7 @@
     <button type="button" class="btn btn-primary" onclick="confirmAmend('car')">Amend</button>
 
     <!-- Delete Button with Confirmation -->
-    <button type="button" class="btn btn-primary btn-delete" onclick="confirmDelete('car')"><i class="fas fa-trash-alt"></i></button>
+    <button type="button" class="btn btn-primary btn-delete" style="margin-top: 20px; margin-bottom: 10px;" onclick="confirmDelete('car')"><i class="fas fa-trash-alt"></i></button>
 
   </form>
 
