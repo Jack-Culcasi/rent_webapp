@@ -67,7 +67,14 @@ class User(UserMixin, db.Model):
             db.session.rollback()
             return False
         
-        
+class Renewal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    car_id = db.Column(db.String(8), db.ForeignKey('car.plate'))
+    renewal_type = db.Column(db.String(50))  # e.g., 'MOT', 'Insurance'
+    renewal_date = db.Column(db.Date) # Actual date when renewing
+    renewal_expiry = db.Column(db.Date)
+    renewal_cost = db.Column(db.Float)
+    description = db.Column(db.String(160))
     
 class Car(db.Model):
     plate = db.Column(db.String(8), primary_key=True, index=True, unique=True)
@@ -86,6 +93,28 @@ class Car(db.Model):
     mot_expiry_date = db.Column(db.DateTime)
     road_tax_cost = db.Column(db.Float, default=0, index=True)
     road_tax_expiry_date = db.Column(db.DateTime)
+    renewal = db.relationship('Renewal', backref='car', lazy='dynamic')
+
+    def add_renewal(self, renewal_type, renewal_date, renewal_cost, current_datetime, description=None):
+        renewal = Renewal(
+            car_id=self.plate,
+            renewal_type=renewal_type,
+            renewal_date=current_datetime,
+            renewal_expiry=renewal_date,
+            renewal_cost=renewal_cost,
+            description=description
+        )
+        db.session.add(renewal)
+        db.session.commit()
+
+        if renewal_type == 'insurance':
+            self.insurance_expiry_date = renewal_date
+            self.insurance_cost += renewal_cost
+
+    def get_renewal(self, renewal_type=None):
+        if renewal_type:
+            return Renewal.query.filter_by(car_id=self.plate, renewal_type=renewal_type).all()
+        return Renewal.query.filter_by(car_id=self.plate).all()
 
     @classmethod
     def search(cls, search_query, search_type, current_user_id):
