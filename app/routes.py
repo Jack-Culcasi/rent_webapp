@@ -426,8 +426,14 @@ def search_contacts():
 @login_required
 def renew():
     car_plate = request.args.get('car_plate')
+    car_object = Car.query.filter_by(plate=car_plate).first()
 
-    return render_template('renew.html', car_plate=car_plate, user_name=current_user.username if current_user.is_authenticated else None)
+    if 'select_cost' in request.form:
+        selected_option = request.form['select_cost']
+        return render_template('renew.html', option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+        
+
+    return render_template('renew.html', car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
