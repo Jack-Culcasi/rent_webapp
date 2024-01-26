@@ -78,6 +78,7 @@
 
 {% if option %}
 
+<form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
     {% if option == 'insurance' %}
     <div class="row">
         <div class="col">
@@ -91,9 +92,15 @@
 
             <label for="cost_amount" class="form-label">Cost Amount</label>
             <input type="text" class="form-control" name="cost_amount">
+            <input type="hidden" name="option" value="{{ option }}">
 
         </div>
     </div>
+    <div class="col">
+        <label for="note" class="form-label">Note</label>
+        <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
+        <p id="character-count">0/160</p>
+    </div>  
     {% endif %}
     {% if option == 'mot' %}
     <div class="row">
@@ -145,6 +152,52 @@
     </div>
     {% endif %}
 
+    <button type="submit">Add Cost</button>
+</form>
 {% endif %}
-<button type="submit">Add Cost</button>
+
+<form action="{{ url_for('renew') }}" method="POST">
+    <table class="table">
+      <thead>
+        <tr>
+          <!-- Define sortable columns with clickable links -->
+          <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_type">Renewal Type</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_date">Date of Renewal</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="new_expiry_date">New Expiry Date</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_cost">Cost</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
+          <th scope="col"><a>Actions</a></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Iterate through user_bookings and display booking data in rows -->
+        {% for renewal in renewals %}
+        <tr>
+            <!-- Display booking data with associated sorting attribute -->
+            <td data-sort="id">{{ renewal.id }}</td>
+            <td data-sort="renewal_type">{{ renewal.renewal_type }}</td>
+            <td data-sort="renewal_date">{{ renewal.renewal_date }}</td>
+            <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d %H:%M") }}</td>
+            <td data-sort="renewal_cost">{{ renewal.renewal_cost }}</td>
+            <td data-sort="note">
+              {% if renewal.description %}
+              <span class="note-tooltip">
+                  Note
+                  <div class="tooltip" data-toggle="tooltip" title="{{ renewal.description }}">{{ renewal.description }}</div>
+              </span>
+          {% else %}
+              <!-- Display nothing if there is no note -->
+          {% endif %}
+            </td>
+            <td>
+                <!-- Add hidden input for booking ID -->
+                
+          </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    </form>
+
 {% endblock %}
