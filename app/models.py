@@ -110,6 +110,20 @@ class Car(db.Model):
         if renewal_type == 'insurance':
             self.insurance_expiry_date = renewal_date
             self.insurance_cost += renewal_cost
+            print(self.insurance_expiry_date, renewal_date)
+    
+    def delete_renewal(self, renewal_id):
+        renewal = Renewal.query.filter_by(car_id=self.plate, id=renewal_id).first()
+        try:
+            db.session.delete(renewal)
+            db.session.commit()
+        except SQLAlchemyError as e:
+            print(f"Error finding the renewal: {str(e)}")
+        return True
+        
+        
+
+        
 
     def get_renewal(self, renewal_type=None):
         if renewal_type:
@@ -156,9 +170,6 @@ class Car(db.Model):
             self.year = car_year
             self.fuel = car_fuel
             self.cc = car_cc
-            #self.road_tax_expiry_date = road_tax_expiry_date
-            #self.mot_expiry_date = mot_expiry_date
-            #self.insurance_expiry_date = insurance_expiry_date
 
             db.session.commit()
             return True
