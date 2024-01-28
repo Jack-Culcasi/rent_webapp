@@ -156,7 +156,7 @@
 </form>
 {% endif %}
 
-<form action="{{ url_for('renew') }}" method="POST">
+<form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
     <table class="table">
       <thead>
         <tr>
@@ -191,8 +191,8 @@
           {% endif %}
             </td>
             <td>
-                <!-- Add hidden input for booking ID -->
-                
+                <input type="hidden" name="delete" value="{{ renewal.id }}">
+                <button type="submit" class="btn btn-primary btn-delete"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
         {% endfor %}

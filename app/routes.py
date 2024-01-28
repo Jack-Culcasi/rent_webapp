@@ -429,12 +429,13 @@ def renew():
     car_object = Car.query.filter_by(plate=car_plate).first()
     car_renewals = car_object.renewal.all()
     current_datetime = datetime.utcnow()
+    print(car_object)
 
     if 'select_cost' in request.form:
         selected_option = request.form['select_cost']
         return render_template('renew.html', renewals=car_renewals, option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
     
-    if 'cost_amount' in request.form:
+    elif 'cost_amount' in request.form:
         cost_amount = int(request.form['cost_amount'])
         option = request.form['option']
         insurance_expiry_date_str = request.form['insurance_expiry_date']
@@ -453,6 +454,11 @@ def renew():
                         #mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
                         #insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
         
+    elif 'delete' in request.form:
+        renewal_id = request.form['delete']
+        car_object.delete_renewal(renewal_id)
+        flash('Renewal correctly deleted!', 'success')
+        return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
     return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
