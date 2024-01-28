@@ -45,7 +45,7 @@
                 {% for car in cars_expiring_soon %}
                     <a href="{{ url_for('garage_car', car_plate=car.plate ) }}" style="color: rgb(0, 0, 0);">
                         <li>
-                            {{ car.model }} ({{ car.plate }}) - 
+                            >>> {{ car.model }} ({{ car.plate }}) - 
                             {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %}
                                 Insurance expiries on {{ car.insurance_expiry_date.strftime("%b %d") }}
                             {% endif %}
