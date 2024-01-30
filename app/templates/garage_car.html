@@ -213,6 +213,15 @@
       <input type="text" class="form-control" id="car_cost" name="car_cost" value="{{ car_object.car_cost }}" readonly>
     </div>
 
+    <!-- Car profit -->
+    <div class="col">
+      <label for="profit" class="form-label">Profit</label>
+      <input type="text" class="form-control" id="profit" name="profit" value="{{ car_object.money - car_object.car_cost }}" readonly>
+    </div>
+
+  </div>
+  <div class="row">   
+
     <!-- Insurance Cost -->
     <div class="col">
       <label for="insurance_cost" class="form-label">Insurance Cost</label>
@@ -229,6 +238,13 @@
     <div class="col">
       <label for="road_tax_cost" class="form-label">Road Tax Cost</label>
       <input type="text" class="form-control" id="road_tax_cost" name="road_tax_cost" value="{{ car_object.road_tax_cost }}" readonly>
+    </div>
+
+    <!-- Other Cost -->
+    <div class="col">
+      <label for="other" class="form-label">Other</label>
+      <input type="text" class="form-control" id="other" name="other" value="{{ car_object.car_cost - (car_object.insurance_cost +
+                                                                                car_object.mot_cost + car_object.road_tax_cost) }}" readonly>
     </div>
 
 </div>
