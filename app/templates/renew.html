@@ -2,6 +2,12 @@
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<div class="row">
+    <form method="POST" action="{{ url_for('garage_car', car_plate=car_object.plate) }}">
+        <button type="submit">Back to Car</button>
+        <input type="hidden" class="form-control" value="{{car_object.plate}}">
+    </form>
+</div>
 
 <!-- Flash Messages -->
 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -115,9 +121,15 @@
 
             <label for="cost_amount" class="form-label">Cost Amount</label>
             <input type="text" class="form-control" name="cost_amount">
+            <input type="hidden" name="option" value="{{ option }}">
             
         </div>
     </div>
+    <div class="col">
+        <label for="note" class="form-label">Note</label>
+        <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
+        <p id="character-count">0/160</p>
+    </div>  
     {% endif %}
     {% if option == 'road_tax' %}
     <div class="row">
@@ -132,8 +144,15 @@
 
             <label for="cost_amount" class="form-label">Cost Amount</label>
             <input type="text" class="form-control" name="cost_amount">
+            <input type="hidden" name="option" value="{{ option }}">
             
         </div>
+    </div>
+    <div class="col">
+        <label for="note" class="form-label">Note</label>
+        <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
+        <p id="character-count">0/160</p>
+    </div>  
     {% endif %}
     {% if option == 'other' %}
     <h3>Other costs</h3>
@@ -147,14 +166,18 @@
 
         <label for="cost_amount" class="form-label">Cost Amount</label>
         <input type="text" class="form-control" name="cost_amount">
+        <input type="hidden" name="option" value="{{ option }}">
+        <input type="hidden" name="other" value="True">
         
     </div>
-    </div>
+    </div> 
     {% endif %}
 
     <button type="submit">Add Cost</button>
 </form>
 {% endif %}
+
+<h3>Costs Breakdown</h3>
 
 <form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
     <table class="table">
@@ -176,9 +199,9 @@
         <tr>
             <!-- Display booking data with associated sorting attribute -->
             <td data-sort="id">{{ renewal.id }}</td>
-            <td data-sort="renewal_type">{{ renewal.renewal_type }}</td>
+            <td data-sort="renewal_type">{{ renewal.renewal_type.capitalize() }}</td>
             <td data-sort="renewal_date">{{ renewal.renewal_date }}</td>
-            <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d %H:%M") }}</td>
+            <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d") }}</td>
             <td data-sort="renewal_cost">{{ renewal.renewal_cost }}</td>
             <td data-sort="note">
               {% if renewal.description %}
@@ -192,7 +215,7 @@
             </td>
             <td>
                 <input type="hidden" name="delete" value="{{ renewal.id }}">
-                <button type="submit" class="btn btn-primary btn-delete"><i class="fas fa-trash-alt"></i></button>
+                <button type="submit" class="btn btn-primary btn-delete" onclick="return confirm('Are you sure you want to delete this {{ renewal.renewal_type.capitalize() }} record?');"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>
         {% endfor %}
