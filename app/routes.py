@@ -427,25 +427,54 @@ def search_contacts():
 def renew():
     car_plate = request.args.get('car_plate')
     car_object = Car.query.filter_by(plate=car_plate).first()
-    car_renewals = car_object.renewal.all()
     current_datetime = datetime.utcnow()
-    print(car_object)
 
     if 'select_cost' in request.form:
         selected_option = request.form['select_cost']
-        return render_template('renew.html', renewals=car_renewals, option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+        return render_template('renew.html', renewals=car_object.renewal.all(), option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
     
     elif 'cost_amount' in request.form:
         cost_amount = int(request.form['cost_amount'])
         option = request.form['option']
-        insurance_expiry_date_str = request.form['insurance_expiry_date']
-        insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
-        note = request.form['note']
-        
-        car_object.add_renewal(renewal_type=option, renewal_date=insurance_expiry_date, renewal_cost=cost_amount, current_datetime=current_datetime, description=note)
-        flash(f'{option.capitalize()} expiry date has been updated!', 'success')
 
-    #road_tax_expiry_date_str = request.form['road_tax_expiry_date']
+        # Fetch the forms
+        insurance_expiry_date_str = request.form.get('insurance_expiry_date')
+        road_tax_expiry_date_str = request.form.get('road_tax_expiry_date')
+        mot_expiry_date_str = request.form.get('mot_expiry_date')
+        other = request.form.get('other')
+        note = request.form['note']
+
+        # Convert date strings to datetime objects
+        road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
+        mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
+        insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
+        
+        # Create a variable to pass to car_object.add_renewal
+        if road_tax_expiry_date_str:
+            new_expiry_date = road_tax_expiry_date
+        elif mot_expiry_date:
+            new_expiry_date = mot_expiry_date
+        elif insurance_expiry_date:
+            new_expiry_date = insurance_expiry_date
+        elif other:
+            new_expiry_date = current_datetime
+    
+        car_object.add_renewal(renewal_type=option, renewal_date=new_expiry_date, renewal_cost=cost_amount, current_datetime=current_datetime, description=note)
+        flash(f'{option.capitalize()} expiry date has been updated!', 'success')
+        car_renewals = car_object.renewal.all()
+
+    elif 'delete' in request.form:
+        renewal_id = request.form['delete']
+        car_object.delete_renewal(renewal_id)
+        flash('Renewal correctly deleted!', 'success')
+        car_renewals = car_object.renewal.all()
+
+    else:
+        car_renewals = car_object.renewal.all()
+
+    return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+
+#road_tax_expiry_date_str = request.form['road_tax_expiry_date']
                         #mot_expiry_date_str = request.form['mot_expiry_date']
                         #insurance_expiry_date_str = request.form['insurance_expiry_date']
 
@@ -453,14 +482,6 @@ def renew():
                         #road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
                         #mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
                         #insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
-        
-    elif 'delete' in request.form:
-        renewal_id = request.form['delete']
-        car_object.delete_renewal(renewal_id)
-        flash('Renewal correctly deleted!', 'success')
-        return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
-
-    return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
