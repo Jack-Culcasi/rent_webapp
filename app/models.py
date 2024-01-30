@@ -71,7 +71,7 @@ class Renewal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.String(8), db.ForeignKey('car.plate'))
     renewal_type = db.Column(db.String(50))  # e.g., 'MOT', 'Insurance'
-    renewal_date = db.Column(db.Date) # Actual date when renewing
+    renewal_date = db.Column(db.Date) # New expiry date
     renewal_expiry = db.Column(db.Date)
     renewal_cost = db.Column(db.Float)
     description = db.Column(db.String(160))
@@ -85,7 +85,7 @@ class Car(db.Model):
     cc = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     days = db.Column(db.Integer, default=0, index=True)
-    money = db.Column(db.Integer, default=0, index=True)
+    money = db.Column(db.Integer, default=0, index=True) # Referred as 'revenue'
     car_cost = db.Column(db.Integer, default=0, index=True)
     insurance_cost = db.Column(db.Float, default=0, index=True)
     insurance_expiry_date = db.Column(db.DateTime)
@@ -110,7 +110,24 @@ class Car(db.Model):
         if renewal_type == 'insurance':
             self.insurance_expiry_date = renewal_date
             self.insurance_cost += renewal_cost
-            print(self.insurance_expiry_date, renewal_date)
+            self.car_cost += renewal_cost
+            db.session.commit()
+
+        if renewal_type == 'mot':
+            self.mot_expiry_date = renewal_date
+            self.mot_cost += renewal_cost
+            self.car_cost += renewal_cost
+            db.session.commit()
+
+        if renewal_type == 'road_tax':
+            self.road_tax_expiry_date = renewal_date
+            self.road_tax_cost += renewal_cost
+            self.car_cost += renewal_cost
+            db.session.commit()
+
+        if renewal_type == 'other':
+            self.car_cost += renewal_cost
+            db.session.commit()
     
     def delete_renewal(self, renewal_id):
         renewal = Renewal.query.filter_by(car_id=self.plate, id=renewal_id).first()
