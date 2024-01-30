@@ -47,17 +47,17 @@
                         <li>
                             >>> {{ car.model }} ({{ car.plate }}) - 
                             {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %}
-                                Insurance expiries on {{ car.insurance_expiry_date.strftime("%b %d") }}
+                                Insurance expires on {{ car.insurance_expiry_date.strftime("%b %d") }}
                             {% endif %}
                             {% if car.mot_expiry_date and car.mot_expiry_date <= in_four_weeks %}
                                 {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %} <br> {% endif %}
-                                MOT expiries on {{ car.mot_expiry_date.strftime("%b %d") }}
+                                MOT expires on {{ car.mot_expiry_date.strftime("%b %d") }}
                             {% endif %}
                             {% if car.road_tax_expiry_date and car.road_tax_expiry_date <= in_four_weeks %}
                                 {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks or car.mot_expiry_date and car.mot_expiry_date <= in_four_weeks %}
                                     <br> 
                                 {% endif %}
-                                Road Tax expiries on {{ car.road_tax_expiry_date.strftime("%b %d") }}
+                                Road Tax expires on {{ car.road_tax_expiry_date.strftime("%b %d") }}
                             {% endif %}
                         </li>
                     </a>
