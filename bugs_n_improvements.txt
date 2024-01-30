@@ -6,22 +6,18 @@
 
 #   Improvements:
 
-- Dark mode button too big, sorting algo not always working, delete button different colour and icon
+- Dark mode button too big, sorting algo not always working
 
-- Improve Admin Dashboard, aggiungere contatti per user
+- Improve Admin Dashboard, aggiungere contatti e renewal per user
 
 - Add Email support (autentication etc...)
 
 - add quotes section
-
-- add bacheca con scandeze
 
 - remove all deletation logic
 
 - add contract/backup
 
 - add car-s km when bookings
-
-- implement possibility to add car costs
 
 - add search form for car when booking
