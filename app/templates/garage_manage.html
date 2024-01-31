@@ -124,7 +124,7 @@
             <td>{{ car.cc }}</td>
             <td>
               <!-- Button to delete a car -->
-              <form action="/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
+              <form action="/delete" style="margin: 0" method="POST" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
                 <input type="hidden" name="car_plate" value="{{ car.plate }}">
                 <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>
               </form>
@@ -137,32 +137,5 @@
     <p>No results found.</p>
   {% endif %}
 {% endif %}
-
-<header id="header">
-  <h2 style="margin-top: -50px;">Add Cost to a Car</h2>
-</header>
-
-<div class="row">
-
-  <div class="col">
-
-    <label for="select_cost" class="form-label">Select Cost</label>
-      <select class="form-select" id="select_cost" name="select_cost">
-        <option value="insurance">Insurance</option>
-        <option value="mot">MOT</option>
-        <option value="road_tax">Road Tax</option>
-        <option value="other">Other</option>
-       </select>
-
-  </div>
-
-  <div class="col">
-
-    <label for="search_type" class="form-label">Cost Amount</label>
-    <input type="text" class="form-control" id="search_query" name="search_query">
-
-  </div>
-
-</div>
 
 {% endblock %}
