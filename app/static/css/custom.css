@@ -50,3 +50,43 @@ input[readonly] {
 .notice-list li {
     margin-bottom: 5px; /* Add some margin between list items */
 }
+
+/* Custom styles for the toggle switch */
+.form-check-input[type="checkbox"].custom-switch {
+    height: 0;
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+}
+
+.form-check-label.custom-switch {
+    display: inline-block;
+    cursor: pointer;
+    width: 60px;
+    height: 24px;
+    position: relative;
+    background-color: #ccc;
+    border-radius: 17px;
+    transition: background-color 0.4s;
+}
+
+.form-check-label.custom-switch::before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #fff;
+    top: -1px;
+    left: 4px;
+    transition: left 0.4s;
+}
+
+.form-check-input[type="checkbox"].custom-switch:checked + .form-check-label::before {
+    left: calc(100% - 30px);
+}
+
+.form-check-input[type="checkbox"].custom-switch:checked + .form-check-label {
+    background-color: #ffffffdc;
+}

@@ -10,6 +10,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
 		<link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/custom.css')}}"/>
 	</head>
 	<body class="is-preload">
 
@@ -34,7 +35,11 @@
 							
 							<h3>Welcome {{ user_name }}!</h3>
 							<!-- Dark Mode Button -->
-							<button type="button" class="btn" id="darkModeToggle" style="width: 100%;">Dark Mode Off</button>
+							<div class="form-check form-switch">
+								<label class="form-label">Dark Mode</label>
+								<input class="form-check-input custom-switch" type="checkbox" id="darkModeToggle">
+								<label class="form-check-label custom-switch" for="darkModeToggle"></label>
+							</div>
 														
 							<!-- Menu -->
 								<nav id="menu">
