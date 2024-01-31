@@ -41,13 +41,20 @@
             <!-- Add hidden input for Car plate -->
             <input type="hidden" name="car_plate" value="{{ car.plate }}">
             <button type="submit" class="btn btn-danger" name="garage_car" value="{{ car.plate }}">Manage</button>
+          </form>
         </td>
         <td>
+          <!-- Button to delete a car -->
+          <form action="/delete" method="POST" style="margin: 0" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
+            <input type="hidden" name="car_plate" value="{{ car.plate }}">
+            <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
   </tbody>
 </table>
-</form>
+
 {% endblock %}
 
 
