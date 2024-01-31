@@ -9,8 +9,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-SKPIwo0Ji6ZI0r1UZVABK0K7MUOBELNvfTStofIj9VRYPWJCFMz1h5z9fYvh6eH4VdTP/zlp9l5TXGzPnl4z2w==" crossorigin="anonymous" />
     </head>
 
-    <h5>Bookings older than 3 months are automatically deleted</h5>
-
     <!-- Flash Messages -->
     {% for category, message in get_flashed_messages(with_categories=true) %}
         {% if category == 'success' %}
