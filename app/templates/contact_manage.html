@@ -82,6 +82,7 @@
                 <th>Model</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Price</th>
                 <th>Actions</th>
                 <th>Comment</th>
             </tr>
@@ -93,6 +94,7 @@
                     <td>{{ booking.car.model }}</td>
                     <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.money }}</td>
                     <td>
                         <!-- Add hidden input for booking ID -->
                         <input type="hidden" name="booking_id" value="{{ booking.id }}">
