@@ -57,6 +57,12 @@ class User(UserMixin, db.Model):
             for car in cars_to_remove:
                 Car.delete_car(car.plate)
 
+            # Step 3: Delete all user's contacts
+            contacts_to_remove = Contacts.query.filter_by(user_id=self.id).all()
+            for contact in contacts_to_remove:
+                db.session.delete(contact)
+                db.session.commit()
+
             # Step 3: Delete the user itself
             db.session.delete(self)
             db.session.commit()
@@ -136,11 +142,7 @@ class Car(db.Model):
             db.session.commit()
         except SQLAlchemyError as e:
             print(f"Error finding the renewal: {str(e)}")
-        return True
-        
-        
-
-        
+        return True        
 
     def get_renewal(self, renewal_type=None):
         if renewal_type:
@@ -207,17 +209,6 @@ class Car(db.Model):
             print(f"Error removing car: {str(e)}")
             db.session.rollback()
             return False
-
-    # Reset days and money for every car at the beginning of every year
-    @classmethod
-    def reset_parameters(cls):
-        today = datetime.now()
-        if today.month == 1 and today.day == 1:
-            for car in Car.query.all():
-                car.days = 0
-                car.money = 0
-
-            db.session.commit()
 
     def __repr__(self):
         return f'<Car: {self.plate}, {self.make}, {self.model}, {self.cc}, {self.fuel}, {self.year}>'

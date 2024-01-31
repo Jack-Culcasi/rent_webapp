@@ -94,7 +94,6 @@ def profile():
             user_to_delete = User.query.get(current_user.id)
             if user_to_delete:
                 user_to_delete.delete_user()
-                db.session.commit()
                 flash('User succefully deleted!', 'success')
                 return redirect(url_for('login'))
             else:
@@ -139,7 +138,6 @@ def user(username):
             user_to_delete = User.query.get(user_id)
             if user_to_delete:
                 user_to_delete.delete_user()
-                db.session.commit()
                 flash('User succefully deleted!', 'success')
                 return redirect(url_for('users_list'))
             else:
@@ -253,8 +251,7 @@ def delete_car():
                 Booking.remove_booking(booking.id)
 
             # Delete the car
-            db.session.delete(car)
-            db.session.commit()
+            Car.delete_car(car_plate)
             flash('Car deleted successfully.', 'success')
         else:
             flash('Car not found.', 'error')
@@ -266,8 +263,6 @@ def delete_car():
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
 def overview(): # Booking
-    # Check if it is the first of the year, if it is it resets car.days and car.money
-    Car.reset_parameters()
     contact_id = request.args.get('contact_id')
     contact = None
     if contact_id:
@@ -368,17 +363,6 @@ def overview(): # Booking
 
     # Filter out booked cars from available cars
     available_cars = [car for car in user_cars if car.plate not in booked_car_plates]
-
-    # Check and deletes bookings older than 3 months
-    three_months_ago = datetime.now() - timedelta(days=3 * 30)
-    old_bookings = Booking.query.filter(
-        (Booking.user_id == current_user.id) &
-        (Booking.end_datetime < three_months_ago)
-    ).all()
-    
-    # Delete the old booking
-    for old_booking in old_bookings:
-        Booking.remove_booking(old_booking.id)
 
     # Fetch bookings about to finish    
     bookings_about_to_finish = Booking.query.filter(
@@ -580,8 +564,7 @@ def garage_car():
                             Booking.remove_booking(booking.id)
 
                         # Delete the car
-                        db.session.delete(selected_car)
-                        db.session.commit()
+                        Car.delete_car(car_plate)
                         flash('Car deleted successfully.', 'success')
 
                     except ValueError as e:
