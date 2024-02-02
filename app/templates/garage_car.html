@@ -190,31 +190,37 @@
   <div class="row">     
 
     <!-- Plate Input -->
-    <div class="col">
+    <div class="col-2">
       <label for="car_plate" class="form-label">Plate</label>
       <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ car_object.plate }}" readonly>
     </div>
 
+    <!-- Car km -->
+    <div class="col-2">
+      <label for="km" class="form-label">Km</label>
+      <input type="text" class="form-control" id="km" name="km" value="{{ car_object.km }}" readonly>
+    </div>
+
     <!-- Days Booked -->
-    <div class="col">
+    <div class="col-2">
       <label for="days" class="form-label">Days Booked</label>
       <input type="text" class="form-control" id="days" name="days" value="{{ car_object.days }}" readonly>
     </div>
 
     <!-- Car revenue -->
-    <div class="col">
+    <div class="col-2">
       <label for="money" class="form-label">Revenue</label>
       <input type="text" class="form-control" id="money" name="money" value="{{ car_object.money }}" readonly>
     </div>
 
     <!-- Car cost -->
-    <div class="col">
+    <div class="col-2">
       <label for="car_cost" class="form-label">Cost</label>
       <input type="text" class="form-control" id="car_cost" name="car_cost" value="{{ car_object.car_cost }}" readonly>
     </div>
 
     <!-- Car profit -->
-    <div class="col">
+    <div class="col-2">
       <label for="profit" class="form-label">Profit</label>
       <input type="text" class="form-control" id="profit" name="profit" value="{{ car_object.money - car_object.car_cost }}" readonly>
     </div>
@@ -223,25 +229,25 @@
   <div class="row">   
 
     <!-- Insurance Cost -->
-    <div class="col">
+    <div class="col-2">
       <label for="insurance_cost" class="form-label">Insurance Cost</label>
       <input type="text" class="form-control" id="insurance_cost" name="insurance_cost" value="{{ car_object.insurance_cost }}" readonly>
     </div>
 
     <!-- MOT Cost -->
-    <div class="col">
+    <div class="col-2">
       <label for="mot_cost" class="form-label">MOT Cost</label>
       <input type="text" class="form-control" id="mot_cost" name="mot_cost" value="{{ car_object.mot_cost }}" readonly>
     </div>
 
     <!-- Road Tax Cost -->
-    <div class="col">
+    <div class="col-2">
       <label for="road_tax_cost" class="form-label">Road Tax Cost</label>
       <input type="text" class="form-control" id="road_tax_cost" name="road_tax_cost" value="{{ car_object.road_tax_cost }}" readonly>
     </div>
 
     <!-- Other Cost -->
-    <div class="col">
+    <div class="col-2">
       <label for="other" class="form-label">Other</label>
       <input type="text" class="form-control" id="other" name="other" value="{{ car_object.car_cost - (car_object.insurance_cost +
                                                                                 car_object.mot_cost + car_object.road_tax_cost) }}" readonly>

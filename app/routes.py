@@ -273,6 +273,7 @@ def overview(): # Booking
             if 'book' in request.form:
                 car_plate = request.form.get('car_selection')
                 price = int(request.form.get('Price'))
+                km = int(request.form.get('km'))
                 start_date = request.form.get('start_date')
                 end_date = request.form.get('end_date')
                 start_time = request.form.get('start_time')
@@ -310,7 +311,7 @@ def overview(): # Booking
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
-                    car_plate, price, start_datetime, end_datetime, contact_id, current_user.id, note
+                    car_plate, price, start_datetime, end_datetime, contact_id, current_user.id, note, km
                 )
                 
                 if booking is None:

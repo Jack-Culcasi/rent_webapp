@@ -61,6 +61,11 @@
                 </div>
 
                 <div class="col">
+                    <label for="km" class="form-label">Km</label>
+                    <input type="text" class="form-control" id="km" name="km" value="{{ selected_booking.km }}" readonly>
+                </div>
+
+                <div class="col">
                     <label for="client" class="form-label">Client</label>
                     {% if contact %}
                         <a href="{{ url_for('contact_manage', contact_id=contact.id) }}">
