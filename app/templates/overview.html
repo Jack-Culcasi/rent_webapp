@@ -10,8 +10,23 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
 <div class="row">
+    <form action="{{ url_for('garage_manage') }}" method="get">
+        <button type="submit">Add Car</button>
+    </form>
+    <form action="{{ url_for('garage_car') }}" method="get">
+        <button type="submit">Manage Car</button>
+    </form>
+    <form action="{{ url_for('bookings_manage') }}" method="get">
+        <button type="submit">Manage Booking</button>
+    </form>
+    <form action="{{ url_for('calendar') }}" method="get">
+        <button type="submit">Calendar View</button>
+    </form>
+</div>
+
+<div class="row">
     <!-- First Notice Board: Upcoming Bookings -->
-    <div class="col-md-6" style="width: 400px; margin-top: -50px;">
+    <div class="col-md-6" style="width: 400px;">
         <h3>Bookings about to finish:</h3>
         <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
@@ -24,7 +39,7 @@
         </div>
     </div>
 
-    <div class="col-md-6" style="width: 400px; margin-top: -50px;">
+    <div class="col-md-6" style="width: 400px;">
         <h3>Bookings about to start:</h3>
         <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
@@ -38,7 +53,7 @@
     </div>
 
     <!-- Second Notice Board: Expiring Insurances, MOTs, and Road Taxes -->
-    <div class="col-md-6" style="width: 500px; margin-top: -50px;">
+    <div class="col-md-6" style="width: 500px;">
         <h3>Expiring Insurances, MOTs, and Road Taxes:</h3>
         <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
@@ -65,21 +80,6 @@
             </ul>
         </div>
     </div>
-</div>
-
-<div class="row">
-    <form action="{{ url_for('garage_manage') }}" method="get">
-        <button type="submit">Add Car</button>
-    </form>
-    <form action="{{ url_for('garage_car') }}" method="get">
-        <button type="submit">Manage Car</button>
-    </form>
-    <form action="{{ url_for('bookings_manage') }}" method="get">
-        <button type="submit">Manage Booking</button>
-    </form>
-    <form action="{{ url_for('calendar') }}" method="get">
-        <button type="submit">Calendar View</button>
-    </form>
 </div>
 
 
@@ -177,13 +177,13 @@
 
         <!-- Km Input -->
         <div class="col">
-            <label for="km" class="form-label">Car's Km</label>
+            <label for="km" class="form-label">Car's {{ current_user.measurement_unit }}</label>
             <input type="text" class="form-control" id="km" name="km" size="4" value="0">
           </div>
 
         <!-- Price Input -->
         <div class="col">
-            <label for="Price" class="form-label">Price</label>
+            <label for="Price" class="form-label">Price {{ current_user.currency }}</label>
             <input type="text" class="form-control" id="Price" name="Price" size="4" value="0">
           </div>
 
