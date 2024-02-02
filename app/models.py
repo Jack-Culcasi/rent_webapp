@@ -18,6 +18,9 @@ class User(UserMixin, db.Model):
     garage = db.relationship('Car', backref='owner', lazy='dynamic')
     contacts = db.relationship('Contacts', backref='owner', lazy='dynamic')
     role = db.Column(db.String(20), default='user')  
+    currency = db.Column(db.String(1), default='€')
+    measurement_unit = db.Column(db.String(5), default='Km')
+    language = db.Column(db.String(2), default='en')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -44,6 +47,13 @@ class User(UserMixin, db.Model):
         for booking in Booking.query.filter_by(user_id=self.id).all():
             total_revenue += booking.money
         return total_revenue
+    
+    def change_preferences(self, currency, measurement_unit, language):
+        self.currency = currency
+        self.measurement_unit = measurement_unit
+        self.language = language
+
+        db.session.commit()
     
     def delete_user(self):
         try:
