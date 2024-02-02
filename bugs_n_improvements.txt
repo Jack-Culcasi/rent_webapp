@@ -6,7 +6,7 @@
 
 #   Improvements:
 
-- Dark mode button too big, sorting algo not always working, add icons instead of written buttons
+- sorting algo not always working, add icons instead of written buttons, Dark mode changes labels??
 
 - Improve Admin Dashboard, aggiungere contatti e renewal per user
 
@@ -14,10 +14,8 @@
 
 - add quotes section
 
-- remove all deletation logic
-
 - add contract/backup
 
-- add car-s km when bookings
-
 - add search form for car when booking
+
+- add personalised choices such as currency, language, miles/km etc, high/low season
