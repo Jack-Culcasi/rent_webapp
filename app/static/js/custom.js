@@ -66,15 +66,10 @@ function toggleDarkMode() {
     // Toggle dark mode class on the body
     body.classList.toggle('dark-mode');
 
-    // Update label text based on dark mode state
-    var label = document.querySelector('.form-label');
+    // Store dark mode preference in localStorage
     if (body.classList.contains('dark-mode')) {
-        label.textContent = 'Dark Mode On';
-        // Store dark mode preference in localStorage
         localStorage.setItem('darkMode', 'on');
     } else {
-        label.textContent = 'Dark Mode Off';
-        // Remove dark mode preference from localStorage
         localStorage.removeItem('darkMode');
     }
 }
@@ -87,10 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set dark mode based on the stored preference
     if (darkMode === 'on') {
         body.classList.add('dark-mode');
-        // Update label text
-        document.querySelector('.form-label').textContent = 'Dark Mode On';
-        // Update checkbox state
-        document.getElementById('darkModeToggle').checked = true;
     }
 });
 
