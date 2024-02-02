@@ -100,6 +100,7 @@ class Car(db.Model):
     road_tax_cost = db.Column(db.Float, default=0, index=True)
     road_tax_expiry_date = db.Column(db.DateTime)
     renewal = db.relationship('Renewal', backref='car', lazy='dynamic')
+    km = db.Column(db.Integer, default=0, index=True)
 
     def add_renewal(self, renewal_type, renewal_date, renewal_cost, current_datetime, description=None):
         renewal = Renewal(
@@ -221,13 +222,14 @@ class Booking(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     note = db.Column(db.String(160))
     money = db.Column(db.Integer, default=0, index=True)
+    km = db.Column(db.Integer, default=0, index=True) # Car's kilometres when booking
     
     # Add a reference to the Car model for easier access
     car = db.relationship('Car', backref='bookings', lazy=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id', name='booking_contacts_id'), nullable=True)
 
     @staticmethod
-    def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note):
+    def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note, km=0):
         # Check if the selected car and contact exist
         car = Car.query.filter_by(plate=car_plate).first()
         contact = Contacts.query.filter_by(id=contact_id).first()
@@ -258,15 +260,19 @@ class Booking(db.Model):
                 user_id=user_id,
                 note=note,
                 money=price,
-                contact_id=contact_id
+                contact_id=contact_id,
+                km=km
             )
 
             db.session.add(booking)
+            car.km += (booking.km - car.km)
             car.days += booking_duration
             contact.rented_days += booking_duration
             car.money += price
             contact.money_spent += price
             db.session.commit()
+
+            print(f'Car Km: {car.km}, booking km: {booking.km}')
 
             return booking, None, None
         except SQLAlchemyError as e:
