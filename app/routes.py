@@ -41,7 +41,13 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('overview'))
+        
+        # Log in the new user
+        login_user(user)
+        
+        # Redirect the user to the profile page with a message
+        flash('Please update your preferences', 'info')
+        return redirect(url_for('profile'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/logout')
@@ -52,6 +58,7 @@ def logout():
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile(): 
+    current_datetime = datetime.utcnow()
     if request.method == 'POST':
         if 'username' in request.form:
             new_username = request.form.get('username')
@@ -97,10 +104,17 @@ def profile():
                 flash('User succefully deleted!', 'success')
                 return redirect(url_for('login'))
             else:
-                return flash('User not found!', 'error')          
-        return render_template('user.html', page='users_page', user=user) 
+                return flash('User not found!', 'error')  
 
-    return render_template('profile.html', title='Profile', page='profile', user=current_user, 
+        elif 'currency' in request.form:
+            currency = request.form.get('currency')
+            language = request.form.get('language')
+            unit = request.form.get('unit')
+
+            current_user.change_preferences(currency, unit, language)
+            flash('Preferences updated!', 'success')
+
+    return render_template('profile.html', title='Profile', page='profile', user=current_user, current_datetime=current_datetime, 
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -263,6 +277,7 @@ def delete_car():
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
 def overview(): # Booking
+    print(current_user.currency)
     contact_id = request.args.get('contact_id')
     contact = None
     if contact_id:
