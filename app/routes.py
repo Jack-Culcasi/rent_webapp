@@ -399,7 +399,7 @@ def overview(): # Booking
     ).all()
 
     # Render the template with the new data
-    return render_template('overview.html',
+    return render_template('overview.html' if current_user.language == 'en' else f'overview_{current_user.language}.html',
                             user_cars=user_cars,
                             available_cars=available_cars,
                             user_bookings=user_bookings,
@@ -464,15 +464,6 @@ def renew():
         car_renewals = car_object.renewal.all()
 
     return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
-
-#road_tax_expiry_date_str = request.form['road_tax_expiry_date']
-                        #mot_expiry_date_str = request.form['mot_expiry_date']
-                        #insurance_expiry_date_str = request.form['insurance_expiry_date']
-
-                        # Convert date strings to datetime objects
-                        #road_tax_expiry_date = datetime.strptime(road_tax_expiry_date_str, '%Y-%m-%d') if road_tax_expiry_date_str else None
-                        #mot_expiry_date = datetime.strptime(mot_expiry_date_str, '%Y-%m-%d') if mot_expiry_date_str else None
-                        #insurance_expiry_date = datetime.strptime(insurance_expiry_date_str, '%Y-%m-%d') if insurance_expiry_date_str else None
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
@@ -624,7 +615,8 @@ def bookings_view():
         (Booking.end_datetime > current_date)
     ).all()
 
-    return render_template('bookings_view.html', user_bookings=active_bookings, page='bookings_view',
+    return render_template('bookings_view.html' if current_user.language == 'en' else f'bookings_view_{current_user.language}.html',
+                           user_bookings=active_bookings, page='bookings_view',
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_manage', methods=['GET', 'POST'])
@@ -707,7 +699,8 @@ def bookings_manage():
             else:
                 flash('Booking not found. Amendment failed.', 'error')
                 
-    return render_template('bookings_manage.html', page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact,
+    return render_template('bookings_manage.html' if current_user.language == 'en' else f'bookings_manage_{current_user.language}.html',
+                           page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
@@ -764,7 +757,8 @@ def bookings_history():
             return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history', bookings=searched_booking,
                                    user_name=current_user.username if current_user.is_authenticated else None)
 
-    return render_template('bookings_history.html', user_bookings=expired_bookings, page='bookings_history',
+    return render_template('bookings_history.html' if current_user.language == 'en' else f'bookings_history_{current_user.language}.html',
+                        user_bookings=expired_bookings, page='bookings_history',
                            user_name=current_user.username if current_user.is_authenticated else None)
 
                                                                                 # Calendar
@@ -787,7 +781,8 @@ def calendar():
     ).all()
 
     user_cars = current_user.garage.all()
-    return render_template('calendar.html', cars=user_cars, bookings=user_bookings, current_month=current_month, current_day=current_day,
+    return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html',
+                            cars=user_cars, bookings=user_bookings, current_month=current_month, current_day=current_day,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/contacts', methods=['GET', 'POST'])
@@ -834,7 +829,8 @@ def contacts():
 
         return redirect(url_for('contacts'))
 
-    return render_template('contacts.html', user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('contacts.html' if current_user.language == 'en' else f'contacts_{current_user.language}.html', 
+                           user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
 
     
 @app.route('/contact/<int:contact_id>', methods=['GET', 'POST'])
@@ -862,4 +858,6 @@ def contact_manage(contact_id):
             flash('Contact deleted successfully', 'success')
             return redirect(url_for('contacts'))
 
-    return render_template('contact_manage.html', contact=contact, contact_bookings=contact_bookings, days=contact.rented_days, money=contact.money_spent, bookings_number=len(contact_bookings), user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('contact_manage.html' if current_user.language == 'en' else f'contact_manage_{current_user.language}.html', 
+                           contact=contact, contact_bookings=contact_bookings, days=contact.rented_days, 
+                           money=contact.money_spent, bookings_number=len(contact_bookings), user_name=current_user.username if current_user.is_authenticated else None)
