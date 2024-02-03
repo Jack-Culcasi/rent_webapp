@@ -18,20 +18,20 @@
 <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
-<h2>Search for a Car</h2>
+<h2>Cerca un'auto</h2>
 
 <form action="/search" method="POST">
   <div class="row" style="margin-top: -20px;">
     <!-- Dropdown for search type -->
     <div class="col">
-      <label for="search_type" class="form-label">Search by</label>
+      <label for="search_type" class="form-label">Cerca per</label>
       <select class="form-select" id="search_type" name="search_type">
-        <option value="plate">Plate</option>
-        <option value="make">Make</option>
-        <option value="model">Model</option>
-        <option value="fuel">Fuel</option>
-        <option value="year">Year</option>
-        <option value="cc">Cc</option>
+        <option value="plate">Targa</option>
+        <option value="make">Marchio</option>
+        <option value="model">Modello</option>
+        <option value="fuel">Carburante</option>
+        <option value="year">Anno</option>
+        <option value="cc">Cilindrata</option>
       </select>
     </div>
     <!-- Input field for search query -->
@@ -41,13 +41,13 @@
     </div>
     <!-- "Or" text -->
     <div class="col">
-      <p style="text-align: center; margin-top: 3em;">Or</p>
+      <p style="text-align: center; margin-top: 3em;">oppure</p>
     </div>
     <!-- Dropdown for selecting a car -->
     <div class="col">
-      <label for="select_car" class="form-label">Select a Car</label>
+      <label type="hidden" class="form-label hidden-label">Seleziona un'auto</label>
       <select class="form-select" id="select_car" name="select_car">
-        <option value="blank">Select a car...</option>
+        <option value="blank">Seleziona un'auto...</option>
         {% for car in user_cars %}
         <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }} - {{ car.year }}</option>
         {% endfor %}
@@ -62,17 +62,17 @@
 {% if search_query or cars %}
   {% if cars %}
     <!-- Display search results in a table -->
-    <h3>Search Results:</h3>
+    <h3>Risultati</h3>
     <table class="table" id="carTable">
       <thead>
         <tr>
-          <th scope="col">Plate</th>
-          <th scope="col">Make</th>
-          <th scope="col">Model</th>
-          <th scope="col">Fuel</th>
-          <th scope="col">Year</th>
-          <th scope="col">Cc</th>
-          <th scope="col">Actions</th>
+          <th scope="col">Targa</th>
+          <th scope="col">Marchio</th>
+          <th scope="col">Modello</th>
+          <th scope="col">Carburante</th>
+          <th scope="col">Anno</th>
+          <th scope="col">Cilindrata</th>
+          <th scope="col">Azioni</th>
         </tr>
       </thead>
       <tbody>
@@ -96,12 +96,12 @@
       </tbody>
     </table>
   {% else %}
-    <p>No results found.</p>
+    <p>Nessun risultato trovato.</p>
   {% endif %}
 {% endif %}
 
 <header id="header" style="padding: 0;">
-    <h2>Manage Car</h2>
+    <h2>Gestisci l'auto</h2>
 </header>
 
 {% if car_object %}
@@ -112,21 +112,21 @@
 
     <!-- Road Tax Expiry Date -->
     <div class="col">
-      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
+      <label for="road_tax_expiry_date" class="form-label">Scadenza bollo</label>
       <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
                                                       value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}" readonly>
     </div>
 
     <!-- MOT Expiry Date -->
     <div class="col">
-      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
+      <label for="mot_expiry_date" class="form-label">Scadenza revisione</label>
       <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" 
                                                         value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}" readonly>
     </div>
 
     <!-- Insurance Expiry Date -->
     <div class="col">
-      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
+      <label for="insurance_expiry_date" class="form-label">Scadenza assicurazione</label>
       <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" 
                                               value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}" readonly>
     </div>
@@ -143,31 +143,31 @@
 
       <!-- Make Input -->
       <div class="col">
-        <label for="car_make" class="form-label">Make</label>
+        <label for="car_make" class="form-label">Marchio</label>
         <input type="text" class="form-control" id="car_make" name="car_make" value="{{ car_object.make }}">
       </div>
 
       <!-- Model Input -->
       <div class="col">
-        <label for="car_model" class="form-label">Model</label>
+        <label for="car_model" class="form-label">Modello</label>
         <input type="text" class="form-control" id="car_model" name="car_model" value="{{ car_object.model }}">
       </div>
 
       <!-- Fuel Input -->
       <div class="col">
-        <label for="car_fuel" class="form-label">Fuel</label>
+        <label for="car_fuel" class="form-label">Carburante</label>
         <input type="text" class="form-control" id="car_fuel" name="car_fuel" value="{{ car_object.fuel }}">
       </div>
 
       <!-- Year Input -->
       <div class="col">
-        <label for="car_year" class="form-label">Year</label>
+        <label for="car_year" class="form-label">Anno</label>
         <input type="text" class="form-control" id="car_year" name="car_year" value="{{ car_object.year }}">
       </div>
 
       <!-- CC Input -->
       <div class="col">
-        <label for="car_cc" class="form-label">CC</label>
+        <label for="car_cc" class="form-label">Cilindrata</label>
         <input type="text" class="form-control" id="car_cc" name="car_cc" value="{{ car_object.cc }}">
       </div>
     
@@ -191,37 +191,37 @@
 
     <!-- Plate Input -->
     <div class="col-2">
-      <label for="car_plate" class="form-label">Plate</label>
+      <label for="car_plate" class="form-label">Targa</label>
       <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ car_object.plate }}" readonly>
     </div>
 
     <!-- Car km -->
     <div class="col-2">
-      <label for="km" class="form-label">Km</label>
+      <label for="km" class="form-label">{{ current_user.measurement_unit.capitalize() }}</label>
       <input type="text" class="form-control" id="km" name="km" value="{{ car_object.km }}" readonly>
     </div>
 
     <!-- Days Booked -->
     <div class="col-2">
-      <label for="days" class="form-label">Days Booked</label>
+      <label for="days" class="form-label">Giorni prenotati</label>
       <input type="text" class="form-control" id="days" name="days" value="{{ car_object.days }}" readonly>
     </div>
 
     <!-- Car revenue -->
     <div class="col-2">
-      <label for="money" class="form-label">Revenue</label>
+      <label for="money" class="form-label">Ricavo</label>
       <input type="text" class="form-control" id="money" name="money" value="{{ car_object.money }}" readonly>
     </div>
 
     <!-- Car cost -->
     <div class="col-2">
-      <label for="car_cost" class="form-label">Cost</label>
+      <label for="car_cost" class="form-label">Costo</label>
       <input type="text" class="form-control" id="car_cost" name="car_cost" value="{{ car_object.car_cost }}" readonly>
     </div>
 
     <!-- Car profit -->
     <div class="col-2">
-      <label for="profit" class="form-label">Profit</label>
+      <label for="profit" class="form-label">Profitto</label>
       <input type="text" class="form-control" id="profit" name="profit" value="{{ car_object.money - car_object.car_cost }}" readonly>
     </div>
 
@@ -230,25 +230,25 @@
 
     <!-- Insurance Cost -->
     <div class="col-2">
-      <label for="insurance_cost" class="form-label">Insurance Cost</label>
+      <label for="insurance_cost" class="form-label">Costo assicurazione</label>
       <input type="text" class="form-control" id="insurance_cost" name="insurance_cost" value="{{ car_object.insurance_cost }}" readonly>
     </div>
 
     <!-- MOT Cost -->
     <div class="col-2">
-      <label for="mot_cost" class="form-label">MOT Cost</label>
+      <label for="mot_cost" class="form-label">Costo revisione</label>
       <input type="text" class="form-control" id="mot_cost" name="mot_cost" value="{{ car_object.mot_cost }}" readonly>
     </div>
 
     <!-- Road Tax Cost -->
     <div class="col-2">
-      <label for="road_tax_cost" class="form-label">Road Tax Cost</label>
+      <label for="road_tax_cost" class="form-label">Costo bollo</label>
       <input type="text" class="form-control" id="road_tax_cost" name="road_tax_cost" value="{{ car_object.road_tax_cost }}" readonly>
     </div>
 
     <!-- Other Cost -->
     <div class="col-2">
-      <label for="other" class="form-label">Other</label>
+      <label for="other" class="form-label">Altri costi</label>
       <input type="text" class="form-control" id="other" name="other" value="{{ car_object.car_cost - (car_object.insurance_cost +
                                                                                 car_object.mot_cost + car_object.road_tax_cost) }}" readonly>
     </div>
@@ -256,19 +256,19 @@
 </div>
   
 
-<h2>Active Bookings</h2>
+<h2>Prenotazioni attive</h2>
 <form action="{{ url_for('bookings_manage') }}" method="POST">
 <table class="table" id="bookingTable">
   <thead>
     <tr>
       <!-- Define sortable columns with clickable links -->
       <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Start</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">End</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Inizio</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">Fine</a></th>
       <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
-      <th scope="col"><a>Actions</a></th>
+      <th scope="col"><a>Azioni</a></th>
     </tr>
   </thead>
   <tbody>
@@ -284,7 +284,7 @@
         <td data-sort="note">
           {% if booking.note %}
           <span class="note-tooltip">
-              Note
+              Nota
               <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
           </span>
       {% else %}
@@ -302,19 +302,19 @@
 </table>
 </form>
 
-<h2>Past Bookings</h2>
+<h2>Prenotazioni passate</h2>
 <form action="{{ url_for('bookings_history') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this booking?');">
 <table class="table" id="bookingTable">
   <thead>
     <tr>
       <!-- Define sortable columns with clickable links -->
       <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Start</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">End</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Inizio</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">Fine</a></th>
       <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
-      <th scope="col"><a>Actions</a></th>
+      <th scope="col"><a>Azioni</a></th>
     </tr>
   </thead>
   <tbody>
@@ -330,7 +330,7 @@
         <td data-sort="note">
           {% if booking.note %}
           <span class="note-tooltip">
-              Note
+              Nota
               <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
           </span>
       {% else %}
