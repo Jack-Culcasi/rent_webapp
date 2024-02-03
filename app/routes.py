@@ -187,24 +187,25 @@ def garage_manage(): # Add Car
 
        if existing_car is not None:
            flash('A car with this plate already exists in the database', 'error')
-           return redirect(url_for('garage_manage'))
+           return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
 
        new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)
 
        db.session.add(new_car)
        db.session.commit()
        flash('Car added successfully', 'success')
-       return redirect(url_for('garage_manage'))
+       return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
     else:
        # Render the form for a GET request
-       return render_template('garage_manage.html', title='Add Car', page="garage_manage", user_cars=user_cars,
+       return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html', 
+                              title='Add Car', page="garage_manage", user_cars=user_cars,
                               user_name=current_user.username if current_user.is_authenticated else None)
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     user_cars = current_user.garage.all()
-    current_page = request.form.get('source_page', default='garage_manage')
+    current_page = request.form.get('source_page', default='garage_manage' if current_user.language == 'en' else f'garage_manage_{current_user.language}')
 
     if request.method == 'POST':
         search_query = request.form.get('search_query')
@@ -221,8 +222,9 @@ def search():
             # No valid search parameters provided
             filtered_cars = []
 
-        if current_page == 'garage_manage':
-            return render_template('garage_manage.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+        if current_page == 'garage_manage' or current_page == f'garage_manage_{current_user.language}':
+            return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html', 
+                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
         elif current_page == 'garage_car':
             if select_car != "blank":
                 current_datetime = datetime.utcnow()
@@ -239,10 +241,12 @@ def search():
                 ).all()
 
                 car = Car.query.filter_by(plate=select_car).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+                return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                        title='Car', page="garage_car", user_cars=user_cars,
                                         car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings,
                                         user_name=current_user.username if current_user.is_authenticated else None)
-            return render_template('garage_car.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+            return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
         else:
             pass
             # Handle other pages if needed
@@ -250,7 +254,7 @@ def search():
     
     else:
         # Render the search page template for a GET request
-        return render_template('garage_manage.html')
+        return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
     
 @app.route('/delete', methods=['POST'])
 def delete_car():
@@ -487,7 +491,8 @@ def garage_car():
                 ).all()
 
                 selected_car = Car.query.filter_by(plate=car_plate).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                       title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
                                         active_bookings=car_active_bookings, past_bookings=car_past_bookings,
                                         user_name=current_user.username if current_user.is_authenticated else None)
 
@@ -509,7 +514,8 @@ def garage_car():
                 ).all()
 
                 car = Car.query.filter_by(plate=car_plate).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+                return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                        title='Car', page="garage_car", user_cars=user_cars,
                                         car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings,
                                         user_name=current_user.username if current_user.is_authenticated else None)
             
@@ -542,9 +548,10 @@ def garage_car():
                         selected_car.amend_car(car_plate, car_make, car_model, car_fuel, car_year, car_cc)
 
                         flash('Car amended successfully!', 'success')
-                        return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
-                                        active_bookings=car_active_bookings, past_bookings=car_past_bookings,
-                                        user_name=current_user.username if current_user.is_authenticated else None)
+                        return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                                title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                                                active_bookings=car_active_bookings, past_bookings=car_past_bookings,
+                                                user_name=current_user.username if current_user.is_authenticated else None)
 
                     except ValueError as e:
                         flash(str(e), 'error')  # Handle any parsing errors
@@ -587,7 +594,8 @@ def garage_car():
                 ).all()
 
                 selected_car = Car.query.filter_by(plate=car_plate).first()
-                return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
+                return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                                        title='Car', page="garage_car", user_cars=user_cars, car_object=selected_car,
                                         active_bookings=car_active_bookings, past_bookings=car_past_bookings,
                                         user_name=current_user.username if current_user.is_authenticated else None)
                 
@@ -598,7 +606,8 @@ def garage_car():
             flash(f'Error: {str(e)}', 'error')
             print(f'Error: {str(e)}')
 
-    return render_template('garage_car.html', title='Car', page="garage_car", user_cars=user_cars,
+    return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
+                           title='Car', page="garage_car", user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
                                                                                 # Bookings 
