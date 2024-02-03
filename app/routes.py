@@ -59,6 +59,8 @@ def logout():
 @login_required
 def profile(): 
     current_datetime = datetime.utcnow()
+    time_difference = current_datetime - current_user.registration_date
+    one_minute = timedelta(minutes=1)
     if request.method == 'POST':
         if 'username' in request.form:
             new_username = request.form.get('username')
@@ -114,7 +116,9 @@ def profile():
             current_user.change_preferences(currency, unit, language)
             flash('Preferences updated!', 'success')
 
-    return render_template('profile.html', title='Profile', page='profile', user=current_user, current_datetime=current_datetime, 
+    return render_template('profile.html' if current_user.language == 'en' else f'profile_{current_user.language}.html', 
+                           time_difference=time_difference, one_minute=one_minute, title='Profile', page='profile', 
+                           user=current_user, current_datetime=current_datetime, 
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -166,7 +170,8 @@ def user(username):
 @login_required
 def garage_view():
     user_cars = current_user.garage.all()
-    return render_template('garage_view.html', title='Garage', 
+    return render_template('garage_view.html' if current_user.language == 'en' else f'garage_view_{current_user.language}.html', 
+                           title='Garage', 
                            page="garage_view", user_cars=user_cars, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_manage', methods=['GET', 'POST'])
@@ -426,7 +431,8 @@ def renew():
 
     if 'select_cost' in request.form:
         selected_option = request.form['select_cost']
-        return render_template('renew.html', renewals=car_object.renewal.all(), option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+        return render_template('renew.html' if current_user.language == 'en' else f'renew_{current_user.language}.html', 
+                               renewals=car_object.renewal.all(), option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
     
     elif 'cost_amount' in request.form:
         cost_amount = int(request.form['cost_amount'])
@@ -467,7 +473,8 @@ def renew():
     else:
         car_renewals = car_object.renewal.all()
 
-    return render_template('renew.html', renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+    return render_template('renew.html' if current_user.language == 'en' else f'renew_{current_user.language}.html', 
+                           renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
 @login_required
@@ -815,7 +822,9 @@ def contacts():
             search_type = request.form.get('search_type')
             search_query = request.form.get('search_query')
             search_results = Contacts.search_contacts(search_type, search_query, current_user.id)
-            return render_template('contacts.html', user_contacts=user_contacts, search_query=search_query, search_results=search_results, user_name=current_user.username if current_user.is_authenticated else None)
+            return render_template('contacts.html' if current_user.language == 'en' else f'contacts_{current_user.language}.html', 
+                                   user_contacts=user_contacts, search_query=search_query, search_results=search_results, 
+                                   user_name=current_user.username if current_user.is_authenticated else None)
         
         elif 'manage_contact' in request.form:
             # Process the form data for managing a contact
