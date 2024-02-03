@@ -54,7 +54,7 @@
       </select>
     </div>
     <input type="hidden" name="source_page" value="garage_car">
-    <button type="submit" class="btn btn-danger" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;">Search</button>
+    <button type="submit" class="btn btn-danger" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;"><i class="fa-solid fa-magnifying-glass"></i></button>
   </div>
   
 </form>
@@ -88,7 +88,7 @@
               <!-- Button to manage a car -->
               <form action="/garage_car" method="POST" style="margin-bottom: auto;">
                 <input type="hidden" name="plate" value="{{ car.plate }}">
-                <button type="submit" class="btn btn-danger">Manage</button>
+                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-wrench"></i></button>
               </form>
             </td>
           </tr>
@@ -131,7 +131,7 @@
                                               value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}" readonly>
     </div>
 
-    <button type="submit" style="margin-top: 30px; width: 120px; padding-left: 0px; margin-left: 20px;">Renew</button>
+    <button type="submit" style="margin-top: 30px; width: 70px; padding-left: 0px; margin-left: 20px;"><i class="fa-solid fa-pen"></i></button>
 
   </div>
 
@@ -180,7 +180,7 @@
     <input type="hidden" name="action" id="action" value="">
 
     <!-- Amend Button with Confirmation -->
-    <button type="button" class="btn btn-primary" onclick="confirmAmend('car')">Amend</button>
+    <button type="button" class="btn btn-primary" onclick="confirmAmend('car')"><i class="fa-solid fa-pen"></i></button>
 
     <!-- Delete Button with Confirmation -->
     <button type="button" class="btn btn-primary btn-delete" style="margin-top: 20px; margin-bottom: 10px;" onclick="confirmDelete('car')"><i class="fas fa-trash-alt"></i></button>

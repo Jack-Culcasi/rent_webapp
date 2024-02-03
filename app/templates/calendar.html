@@ -6,16 +6,16 @@
 
     <div class="row">
         <form action="{{ url_for('garage_manage') }}" method="get">
-            <button type="submit">Add Car</button>
+            <button type="submit" title="Add or Delete a Car" style="width: 75px;"><i class="fa-solid fa-car" style="margin-left: -15px;"> +/-</i></button>
         </form>
         <form action="{{ url_for('garage_car') }}" method="get">
-            <button type="submit">Manage Car</button>
+            <button type="submit" title="Manage a Car"><i class="fa-solid fa-car"></i></button>
         </form>
         <form action="{{ url_for('bookings_manage') }}" method="get">
-            <button type="submit">Manage Booking</button>
+            <button type="submit" title="Manage Bookings"><i class="fa-solid fa-book-open"></i></button>
         </form>
         <form action="{{ url_for('overview') }}" method="get">
-            <button type="submit">Overview</button>
+            <button type="submit" title="Calendar View"><i class="fa-solid fa-left-long"></i></button>
         </form>
     </div>
 

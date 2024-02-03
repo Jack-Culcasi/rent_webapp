@@ -1,10 +1,13 @@
 {% extends "index.html" %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 <div class="row">
     <form method="POST" action="{{ url_for('garage_car', car_plate=car_object.plate) }}">
-        <button type="submit">Back to Car</button>
+        <button type="submit"><i class="fa-solid fa-left-long"></i></button>
         <input type="hidden" class="form-control" value="{{car_object.plate}}">
     </form>
 </div>
@@ -200,8 +203,8 @@
             <!-- Display booking data with associated sorting attribute -->
             <td data-sort="id">{{ renewal.id }}</td>
             <td data-sort="renewal_type">{{ renewal.renewal_type.capitalize() }}</td>
-            <td data-sort="renewal_date">{{ renewal.renewal_date }}</td>
-            <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d") }}</td>
+            <td data-sort="renewal_date">{{ renewal.renewal_date.strftime("%b %d %Y") }}</td>
+            <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d %Y") }}</td>
             <td data-sort="renewal_cost">{{ renewal.renewal_cost }}</td>
             <td data-sort="note">
               {% if renewal.description %}
