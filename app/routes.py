@@ -271,13 +271,12 @@ def delete_car():
             flash('Car not found.', 'error')
     else:
         flash('Invalid request.', 'error')
-    return redirect(url_for('search'))
+    return redirect(url_for('garage_view'))
 
 @app.route('/')
 @app.route('/overview', methods=['GET', 'POST'])
 @login_required
 def overview(): # Booking
-    print(current_user.currency)
     contact_id = request.args.get('contact_id')
     contact = None
     if contact_id:
