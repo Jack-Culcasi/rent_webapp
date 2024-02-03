@@ -6,7 +6,7 @@
 
 #   Improvements:
 
-- sorting algo not always working, add icons instead of written buttons, Dark mode changes labels??
+- sorting algo not always working
 
 - Improve Admin Dashboard, aggiungere contatti e renewal per user
 
