@@ -37,7 +37,7 @@
                 <td>{{ user.user_revenue() }}</td>
                 <td>
                     <form action="{{ url_for('user', username=user.username) }}" method="get">
-                        <button type="submit">Manage</button>
+                        <button type="submit"><i class="fa-solid fa-wrench"></i></button>
                     </form>
                 </td>
             </tr>
