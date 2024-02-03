@@ -1,0 +1,121 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<h2>Gestisci contatto</h2>
+
+<form method="POST" onsubmit="return confirm('Are you sure you want to proceed?');">
+    <div class="row">
+        <div class="col">
+            <label for="id" class="form-label">ID</label>
+            <input type="text" class="form-control" id="id" name="id" value="{{ contact.id }}" readonly>
+        </div>
+        <div class="col">
+            <label for="full_name" class="form-label">Nome completo</label>
+            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ contact.full_name }}">
+        </div>
+        <div class="col">
+            <label for="dob" class="form-label">Data di nascita</label>
+            <input type="text" class="form-control" id="dob" name="dob" value="{{ contact.dob }}">
+        </div>
+        <div class="col">
+            <label for="driver_licence_n" class="form-label">Numero patente</label>
+            <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n" value="{{ contact.driver_licence_n }}">
+        </div>
+        <div class="col">
+            <label for="telephone" class="form-label">Telefono</label>
+            <input type="text" class="form-control" id="telephone" name="telephone" value="{{ contact.telephone }}">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <button type="submit" class="btn btn-primary" name="action" value="amend"><i class="fa-solid fa-pen"></i></button>
+            <button type="submit" class="btn btn-danger btn-delete" name="action" value="delete"><i class="fas fa-trash-alt"></i></button>
+        </div>
+    </div>
+</form>
+
+<h2>Statistiche</h2>
+
+<div class="row">
+    <div class="col">
+        <label for="bookings_number" class="form-label">Numero prenotazioni</label>
+        <input type="text" class="form-control" id="bookings_number" name="bookings_number" value="{{ bookings_number }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="days_rented" class="form-label">Giorni noleggiati</label>
+        <input type="text" class="form-control" id="days_rented" name="days_rented" value="{{ days }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="money_spent" class="form-label">Soldi spesi</label>
+        <input type="text" class="form-control" id="money_spent" name="money_spent" value="{{ money }}" readonly>
+    </div>
+
+</div>
+
+<h2>Prenotazioni</h2>
+
+<form action="{{ url_for('bookings_manage') }}" method="POST">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Targa</th>
+                <th>Modello</th>
+                <th>{{ current_user.measurement_unit.capitalize() }}</th>
+                <th>Inizio</th>
+                <th>Fine</th>
+                <th>Prezzo</th>
+                <th>Azioni</th>
+                <th>Commento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in contact_bookings %}
+                <tr>
+                    <td>{{ booking.car.plate }}</td>
+                    <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.km }}</td>
+                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.money }}</td>
+                    <td>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}"><i class="fa-solid fa-wrench"></i></button>
+                    </td>
+                    <td>
+                        {% if booking.note %}
+                            <span class="note-tooltip">
+                                Nota
+                                <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                            </span>
+                        {% else %}
+                            <!-- Display nothing if there is no note -->
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+{% endblock %}

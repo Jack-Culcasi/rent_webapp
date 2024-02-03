@@ -1,0 +1,74 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+    <div class="row">
+        <form action="{{ url_for('garage_manage') }}" method="get">
+            <button type="submit" title="Add or Delete a Car" style="width: 75px;"><i class="fa-solid fa-car" style="margin-left: -15px;"> +/-</i></button>
+        </form>
+        <form action="{{ url_for('garage_car') }}" method="get">
+            <button type="submit" title="Manage a Car"><i class="fa-solid fa-car"></i></button>
+        </form>
+        <form action="{{ url_for('bookings_manage') }}" method="get">
+            <button type="submit" title="Manage Bookings"><i class="fa-solid fa-book-open"></i></button>
+        </form>
+        <form action="{{ url_for('overview') }}" method="get">
+            <button type="submit" title="Calendar View"><i class="fa-solid fa-left-long"></i></button>
+        </form>
+    </div>
+
+    <!-- Flash Messages -->
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        {% if category == 'success' %}
+            <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% elif category == 'error' %}
+            <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Display current month -->
+    <div class="current-month">
+        <h3>{{ current_day }} {{ current_month }}</h3>
+    </div>
+
+    <table class="calendar">
+        <tr>
+            <th>Auto</th>
+            {% for day in range(1, days_in_month + 1) %}
+                {% if day == current_day %}
+                    <th class="current-day">{{ day }}</th>
+                {% else %}
+                    <th>{{ day }}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% for car in cars %}
+            <tr>
+                <td><a href="{{ url_for('garage_car', car_plate=car.plate ) }}">{{ car.model }} - {{ car.plate }}</a></td>
+                {% for day in range(1, days_in_month + 1) %}
+                    {% set ns = namespace(bookings_on_day=0, booked=false) %}
+                    {% for booking in bookings %}
+                        {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
+                            {% set ns.booked = true %}
+                            {% set ns.bookings_on_day = ns.bookings_on_day + 1 %}
+                            <td class="{% if ns.booked and ns.bookings_on_day > 1 %}" style="background-color: #ffc66d;"{% endif %} booked" 
+                                title="Booking ID: {{ booking.id }}&#10;Data inizio: {{ booking.start_datetime }}&#10;Data fine: {{ booking.end_datetime }}&#10;Nota: {{ booking.note }}">
+                                <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">{{ booking.id }}</a>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not ns.booked %}
+                        <td class=""></td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <head>
+        <!-- Include jQuery library and external sorting script -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-SKPIwo0Ji6ZI0r1UZVABK0K7MUOBELNvfTStofIj9VRYPWJCFMz1h5z9fYvh6eH4VdTP/zlp9l5TXGzPnl4z2w==" crossorigin="anonymous" />
+    </head>
+
+    <!-- Flash Messages -->
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        {% if category == 'success' %}
+            <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% elif category == 'error' %}
+            <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <form action="{{ url_for('bookings_history') }}" method="POST">
+        <header id="header">
+            <h2>Cerca prenotazioni passate</h2>
+        </header>
+
+        <div class="row">
+            <!-- Start Date Input -->
+            <div class="col">
+                <label for="start_date" class="form-label">Dal</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+
+            <!-- End Date Input -->
+            <div class="col">
+                <label for="end_date" class="form-label">Al</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+            <!-- Search Button -->
+        <!-- Hidden input field for the action -->
+        <input type="hidden" name="search" id="search" value="">
+        <button type="submit" name="search" class="btn btn-danger" style="margin-top: 35px; margin-left: 20px; width: 60px;"><i class="fa-solid fa-magnifying-glass" style="margin-right: 20px;"></i></button>
+        </div>
+        
+    </form>
+
+    {% if bookings %}
+        <form action="{{ url_for('bookings_history') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+            <table class="table" id="bookingTable">
+                <thead>
+                    <tr>
+                        <!-- Define sortable columns with clickable links -->
+                        <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="km">{{ current_user.measurement_unit }}</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Inizio</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">Fine</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
+                        <th scope="col"><a>Azioni</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iterate through user_bookings and display booking data in rows -->
+                    {% for booking in bookings %}
+                        <tr>
+                            <!-- Display booking data with associated sorting attribute -->
+                            <td data-sort="id">{{ booking.id }}</td>
+                            <td data-sort="plate">{{ booking.car.plate }}</td>
+                            <td data-sort="model">{{ booking.car.model }}</td>
+                            <td data-sort="km">{{ booking.km }}</td>
+                            <td data-sort="start_datetime">{{ booking.start_datetime.strftime("%b %d %H:%M") }}</td>
+                            <td data-sort="end_datetime">{{ booking.end_datetime.strftime("%b %d %H:%M") }}</td>
+                            <td data-sort="note">
+                                {% if booking.note %}
+                                    <span class="note-tooltip">
+                                        Nota
+                                        <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                                    </span>
+                                {% else %}
+                                    <!-- Display nothing if there is no note -->
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- Add hidden input for booking ID -->
+                                <input type="hidden" name="action" id='action' value="{{ booking.id }}">
+                                <button type="submit" class="btn btn-danger btn-delete" name="delete" value="{{ booking.id }}"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    {% endif %}
+
+    <header id="header">
+        <h2>Prenotazioni passate</h2>
+    </header>
+
+    <!-- Display a table for booking data with sortable columns -->
+    <form action="{{ url_for('bookings_history') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+        <table class="table" id="bookingTable">
+            <thead>
+                <tr>
+                    <!-- Define sortable columns with clickable links -->
+                        <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="km">{{ current_user.measurement_unit }}</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Inizio</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">Fine</a></th>
+                        <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
+                        <th scope="col"><a>Azioni</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterate through user_bookings and display booking data in rows -->
+                {% for booking in user_bookings %}
+                    <tr>
+                        <!-- Display booking data with associated sorting attribute -->
+                        <td data-sort="id">{{ booking.id }}</td>
+                        <td data-sort="plate">{{ booking.car.plate }}</td>
+                        <td data-sort="model">{{ booking.car.model }}</td>
+                        <td data-sort="start_datetime">{{ booking.start_datetime.strftime("%b %d %H:%M") }}</td>
+                        <td data-sort="end_datetime">{{ booking.end_datetime.strftime("%b %d %H:%M") }}</td>
+                        <td data-sort="note">
+                            {% if booking.note %}
+                                <span class="note-tooltip">
+                                    Nota
+                                    <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                                </span>
+                            {% else %}
+                                <!-- Display nothing if there is no note -->
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- Add hidden input for booking ID -->
+                            <input type="hidden" name="action" id='action' value="{{ booking.id }}">
+                            <button type="submit" class="btn btn-danger btn-delete" name="delete" value="{{ booking.id }}"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+{% endblock %}

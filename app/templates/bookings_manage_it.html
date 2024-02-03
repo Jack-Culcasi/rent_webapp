@@ -1,0 +1,127 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <!-- Flash Messages -->
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        {% if category == 'success' %}
+            <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% elif category == 'error' %}
+            <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+    <h2>Cerca una prenotazione attiva</h2>
+
+    <form action="/bookings_manage" method="POST">
+        <div class="row">
+            <!-- Dropdown for search type -->
+            <div class="col">
+                <select class="form-select" id="search_type" name="search_type">
+                    {% for booking in user_bookings %}
+                        <option value="{{ booking.id }}">{{ booking.id }} - {{ booking.car.plate }} - {{booking.car.model}} - 
+                            {{ booking.start_datetime.strftime("%b %d %H:%M") }} to {{ booking.end_datetime.strftime("%b %d %H:%M") }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-danger" style="width: 5%; margin-left: 20px;"><i class="fa-solid fa-magnifying-glass" style="margin-right: 18px;"></i></button>
+        </div>
+        
+    </form>
+
+    <header id="header">
+        <h2>Gestisci prenotazione</h2>
+    </header>
+
+    {% if selected_booking %}
+        <form method="POST" action="{{ url_for('bookings_manage') }}" id="manageForm">
+
+            <div class="row">
+
+                <div class="col">
+                    <label for="booking_id" class="form-label">ID Prenotazione</label>
+                    <input type="text" class="form-control" id="booking_id" name="booking_id" value="{{ selected_booking.id }}" readonly>
+                </div>
+
+                <div class="col">
+                    <label for="car_plate" class="form-label">Targa</label>
+                    <input type="text" class="form-control" id="car_plate" name="car_plate" value="{{ selected_booking.car_plate }}" readonly>
+                </div>
+
+                <div class="col">
+                    <label for="price" class="form-label">Prezzo</label>
+                    <input type="text" class="form-control" id="price" name="price" value="{{ selected_booking.money }}" readonly>
+                </div>
+
+                <div class="col">
+                    <label for="km" class="form-label">{{ current_user.measurement_unit.capitalize() }}</label>
+                    <input type="text" class="form-control" id="km" name="km" value="{{ selected_booking.km }}" readonly>
+                </div>
+
+                <div class="col">
+                    <label for="client" class="form-label">Cliente</label>
+                    {% if contact %}
+                        <a href="{{ url_for('contact_manage', contact_id=contact.id) }}">
+                            <p>{{ contact.full_name }}</p>
+                        </a>
+                    {% else %}
+                        <input type="text" class="form-control" id="price" name="price" value="" readonly>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <!-- Start Date Input -->
+                <div class="col">
+                    <label for="start_date" class="form-label">Dal</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" required value="{{ selected_booking.start_datetime.strftime('%Y-%m-%d') }}">
+                </div>
+
+                <!-- End Date Input -->
+                <div class="col">
+                    <label for="end_date" class="form-label">Al</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" required value="{{ selected_booking.end_datetime.strftime('%Y-%m-%d') }}">
+                </div>
+
+                <!-- Start Time Input -->
+                <div class="col">
+                    <label for="start_time" class="form-label">Data inizio</label>
+                    <input type="time" class="form-control" id="start_time" name="start_time" required value="{{ selected_booking.start_datetime.strftime('%H:%M') }}">
+                </div>
+
+                <!-- End Time Input -->
+                <div class="col">
+                    <label for="end_time" class="form-label">Data fine</label>
+                    <input type="time" class="form-control" id="end_time" name="end_time" required value="{{ selected_booking.end_datetime.strftime('%H:%M') }}">
+                </div>
+
+                <!-- Note Input -->
+                <div class="col">
+                    <label for="note" class="form-label">Nota</label>
+                    <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;">{{ selected_booking.note }}</textarea>
+                    <p id="character-count">0/160</p>
+                </div>
+            </div>
+
+            <!-- Hidden input field for the action -->
+            <input type="hidden" name="action" id="action" value="">
+
+            <!-- Amend Button with Confirmation -->
+            <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmAmend('booking')"><i class="fa-solid fa-pen"></i></button>
+
+            <!-- Delete Button with Confirmation -->
+            <button type="button" class="btn btn-primary btn-delete" style="margin-top: 20px;" onclick="confirmDelete('booking')"><i class="fas fa-trash-alt"></i></button>
+
+        </form>
+    {% endif %}
+{% endblock %}
