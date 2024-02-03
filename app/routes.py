@@ -412,14 +412,6 @@ def overview(): # Booking
                             bookings_about_to_finish=bookings_about_to_finish,
                             in_four_weeks=in_four_weeks,
                             cars_expiring_soon=cars_expiring_soon)
-
-@app.route('/search_contacts', methods=['GET', 'POST'])
-@login_required
-def search_contacts():
-    if 'search_name' in request.form:
-                    search_query = request.form.get('search_name')
-                    contacts = Contacts.search(search_query, current_user.id)  # Adjust the current_user_id accordingly
-                    return render_template('search_results.html', contacts=contacts)
     
 @app.route('/renew', methods=['GET', 'POST'])
 @login_required
