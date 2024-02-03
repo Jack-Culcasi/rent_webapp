@@ -275,14 +275,12 @@ class Booking(db.Model):
             )
 
             db.session.add(booking)
-            car.km += (booking.km - car.km)
+            car.km = booking.km
             car.days += booking_duration
             contact.rented_days += booking_duration
             car.money += price
             contact.money_spent += price
             db.session.commit()
-
-            print(f'Car Km: {car.km}, booking km: {booking.km}')
 
             return booking, None, None
         except SQLAlchemyError as e:
