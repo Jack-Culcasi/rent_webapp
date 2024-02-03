@@ -163,7 +163,7 @@
     </div> 
     {% endif %}
 
-    <div class="row">
+    <div class="row" style="margin-top: 0px;">
 
         <!-- Car Selection Dropdown -->
         <div class="col">
@@ -214,7 +214,7 @@
     </div>
 
         <!-- Note Input -->
-        <div class="col">
+        <div class="col" style="margin-top: 10px;">
             <label for="note" class="form-label">Note</label>
             <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;"></textarea>
             <p id="character-count">0/160</p>
@@ -258,6 +258,7 @@
             <tr>
                 <th>Plate</th>
                 <th>Model</th>
+                <th>{{ current_user.measurement_unit.capitalize() }}</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>Actions</th>
@@ -269,6 +270,7 @@
                 <tr>
                     <td>{{ booking.car.plate }}</td>
                     <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.km }}</td>
                     <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>

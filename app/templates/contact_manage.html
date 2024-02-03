@@ -80,6 +80,7 @@
             <tr>
                 <th>Plate</th>
                 <th>Model</th>
+                <th>{{ current_user.measurement_unit.capitalize() }}</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>Price</th>
@@ -92,6 +93,7 @@
                 <tr>
                     <td>{{ booking.car.plate }}</td>
                     <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.km }}</td>
                     <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.money }}</td>
