@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Rent WebApp</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
+		<link rel="stylesheet" href="{{url_for('static', filename='css/custom.css')}}"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Banner -->
+								<section id="banner">
+									<div class="content">
+										{% block content %} {% endblock %}
+								</section>
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+							
+							<h3>Benvenuto {{ user_name.capitalize() }}!</h3>
+							<!-- Dark Mode Button -->
+							<div class="form-check form-switch">
+								<label class="form-label">Modalità notte</label>
+								<input class="form-check-input custom-switch" type="checkbox" id="darkModeToggle">
+								<label class="form-check-label custom-switch" for="darkModeToggle"></label>
+							</div>
+														
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										{% if current_user.is_anonymous %}
+										<li><a href="{{ url_for('login') }}">Accedi</a></li>
+										{% else %}
+										<li><a href="{{ url_for('overview') }}">Panoramica</a></li>
+										<li><a href="{{ url_for('contacts') }}">Contatti</a></li>
+										<li>
+											<span class="opener {% if page == 'garage_view' or page == 'garage_manage' or page == 'garage_car' %}active{% endif %}">Garage</span>
+											<ul>
+												<li><a href="{{ url_for('garage_view') }}">Vedi Garage</a></li>
+												<li><a href="{{ url_for('garage_manage') }}">Gestisci Garage</a></li>
+												<li><a href="{{ url_for('garage_car') }}">Gestisci Auto</a></li>
+											</ul>
+										</li>
+										<li>
+											<span class="opener {% if page == 'bookings_view' or page == 'bookings_manage' or page == 'bookings_history' %}active{% endif %}">Prenotazioni</span>
+											<ul>
+												<li><a href="{{ url_for('bookings_view') }}">Vedi Prenotazioni</a></li>												
+												<li><a href="{{ url_for('bookings_manage') }}">Gestisci Prenotazioni</a></li>
+												<li><a href="{{ url_for('bookings_history') }}">Storico</a></li>
+											</ul>
+										</li>
+										<li><a href="{{ url_for('calendar') }}">Calendario</a></li>
+										<li><a href="{{ url_for('profile') }}">Profilo</a></li>
+										{% if current_user.username == 'admin' and current_user.role == 'admin' %}
+										<li>
+											<span class="opener {% if page == 'admin' or page == 'users_list' %}active{% endif %}">Admin Dashboard</span>
+											<ul>
+												<li><a href="{{ url_for('admin') }}">Overview</a></li>
+												<li><a href="{{ url_for('users_list') }}">Users List</a></li>
+											</ul>
+										</li>
+										{% endif %}
+										<li><a href="{{ url_for('logout') }}">Esci</a></li>
+										{% endif %}
+									</ul>
+								</nav>
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p>If you are having troubles or just want to suggest something please get in touch by writing at:</p>
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; Rent Web Application. All rights reserved. Design: <a href="https://html5up.net">HTML5 UP</a>. Modified by Giacomo Culcasi</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+		<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/breakpoints.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	</body>
+</html>

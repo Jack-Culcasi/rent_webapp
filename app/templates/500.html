@@ -1,4 +1,8 @@
-{% extends "index.html" %}
+{% if current_user.language == 'en' %}
+    {% extends "index.html" %}
+{% else %}
+    {% extends "index_" + current_user.language + ".html" %}
+{% endif %}
 
 {% block content %}
     <h1>Oops! an unexpected error has occurred</h1>

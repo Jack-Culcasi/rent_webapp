@@ -33,28 +33,28 @@
 
     <div class="col">
 
-        <label for="car" class="form-label">Car</label>
+        <label for="car" class="form-label">Auto</label>
         <input type="text" class="form-control" value="{{car_object.model}} - {{car_object.plate}}" readonly>
 
     </div>
 
     <!-- Road Tax Expiry Date -->
     <div class="col">
-      <label for="road_tax_expiry_date" class="form-label">Road Tax Expiry Date</label>
+      <label for="road_tax_expiry_date" class="form-label">Scadenza bollo</label>
       <input type="date" class="form-control" id="road_tax_expiry_date" name="road_tax_expiry_date" 
                                                       value="{{ car_object.road_tax_expiry_date.strftime('%Y-%m-%d') if car_object.road_tax_expiry_date else None }}" readonly>
     </div>
 
     <!-- MOT Expiry Date -->
     <div class="col">
-      <label for="mot_expiry_date" class="form-label">MOT Expiry Date</label>
+      <label for="mot_expiry_date" class="form-label">Scadenza revisione</label>
       <input type="date" class="form-control" id="mot_expiry_date" name="mot_expiry_date" 
                                                         value="{{ car_object.mot_expiry_date.strftime('%Y-%m-%d') if car_object.mot_expiry_date else None }}" readonly>
     </div>
 
     <!-- Insurance Expiry Date -->
     <div class="col">
-      <label for="insurance_expiry_date" class="form-label">Insurance Expiry Date</label>
+      <label for="insurance_expiry_date" class="form-label">Scadenza assicurazione</label>
       <input type="date" class="form-control" id="insurance_expiry_date" name="insurance_expiry_date" 
                                               value="{{ car_object.insurance_expiry_date.strftime('%Y-%m-%d') if car_object.insurance_expiry_date else None }}" readonly>
     </div>
@@ -67,12 +67,12 @@
 
         <div class="col">
     
-        <label for="select_cost" class="form-label">Renewal</label>
+        <label for="select_cost" class="form-label">Rinnovo</label>
             <select class="form-select" id="select_cost" name="select_cost">
-                <option value="insurance">Insurance</option>
-                <option value="mot">MOT</option>
-                <option value="road_tax">Road Tax</option>
-                <option value="other">Other</option>
+                <option value="insurance">Assicurazione</option>
+                <option value="mot">Revisione</option>
+                <option value="road_tax">Bollo</option>
+                <option value="other">Altro</option>
             </select>
     
         </div>
@@ -96,21 +96,21 @@
     <div class="row">
         <div class="col">
 
-            <label for="insurance_expiry_date" class="form-label">New Insurance Expiry Date</label>
+            <label for="insurance_expiry_date" class="form-label">Nuova Scadenza assicurazione</label>
             <input type="date" class="form-control" name="insurance_expiry_date">
 
         </div>
 
         <div class="col">
 
-            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <label for="cost_amount" class="form-label">Costo</label>
             <input type="text" class="form-control" name="cost_amount">
             <input type="hidden" name="option" value="{{ option }}">
 
         </div>
     </div>
     <div class="col">
-        <label for="note" class="form-label">Note</label>
+        <label for="note" class="form-label">Nota</label>
         <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
         <p id="character-count">0/160</p>
     </div>  
@@ -119,21 +119,21 @@
     <div class="row">
         <div class="col">
 
-            <label for="mot_expiry_date" class="form-label">New MOT Expiry Date</label>
+            <label for="mot_expiry_date" class="form-label">Nuova scadenza revisione</label>
             <input type="date" class="form-control" name="mot_expiry_date">
 
         </div>
 
         <div class="col">
 
-            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <label for="cost_amount" class="form-label">Costo</label>
             <input type="text" class="form-control" name="cost_amount">
             <input type="hidden" name="option" value="{{ option }}">
             
         </div>
     </div>
     <div class="col">
-        <label for="note" class="form-label">Note</label>
+        <label for="note" class="form-label">Nota</label>
         <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
         <p id="character-count">0/160</p>
     </div>  
@@ -142,36 +142,36 @@
     <div class="row">
         <div class="col">
 
-            <label for="road_tax_expiry_date" class="form-label">New Road Tax Expiry Date</label>
+            <label for="road_tax_expiry_date" class="form-label">Nuova scadenza bollo</label>
             <input type="date" class="form-control" name="road_tax_expiry_date">
 
         </div>
 
         <div class="col">
 
-            <label for="cost_amount" class="form-label">Cost Amount</label>
+            <label for="cost_amount" class="form-label">Costo</label>
             <input type="text" class="form-control" name="cost_amount">
             <input type="hidden" name="option" value="{{ option }}">
             
         </div>
     </div>
     <div class="col">
-        <label for="note" class="form-label">Note</label>
+        <label for="note" class="form-label">Nota</label>
         <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
         <p id="character-count">0/160</p>
     </div>  
     {% endif %}
     {% if option == 'other' %}
-    <h3>Other costs</h3>
+    <h3>Altri costi</h3>
     <div class="row">
     <div class="col">
-        <label for="note" class="form-label">Description</label>
+        <label for="note" class="form-label">Descrizione</label>
         <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 410px; height: 80px;"></textarea>
         <p id="character-count">0/160</p>
     </div>  
     <div class="col">
 
-        <label for="cost_amount" class="form-label">Cost Amount</label>
+        <label for="cost_amount" class="form-label">Costo</label>
         <input type="text" class="form-control" name="cost_amount">
         <input type="hidden" name="option" value="{{ option }}">
         <input type="hidden" name="other" value="True">
@@ -184,7 +184,7 @@
 </form>
 {% endif %}
 
-<h3>Costs Breakdown</h3>
+<h3>Storico costi auto</h3>
 
 <form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
     <table class="table">
@@ -192,10 +192,10 @@
         <tr>
           <!-- Define sortable columns with clickable links -->
           <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
-          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_type">Renewal Type</a></th>
-          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_date">Date of Renewal</a></th>
-          <th scope="col"><a href="#" class="sort-link" data-sort="new_expiry_date">New Expiry Date</a></th>
-          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_cost">Cost</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_type">Tipologia rinnovo</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_date">Data rinnovo</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="new_expiry_date">Nuova scadenza</a></th>
+          <th scope="col"><a href="#" class="sort-link" data-sort="renewal_cost">Costo</a></th>
           <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
           <th scope="col"><a>Actions</a></th>
         </tr>

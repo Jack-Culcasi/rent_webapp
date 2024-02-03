@@ -21,13 +21,13 @@
     <thead>
       <tr>
         <!-- Define sortable columns with clickable links -->
-        <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="make">Make</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="fuel">Fuel</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="year">Year</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Cc</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Actions</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="make">Marchio</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="fuel">Carburante</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="year">Anno</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Cilindrata</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="cc">Azioni</a></th>
       </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@
         </td>
         <td>
           <!-- Button to delete a car -->
-          <form action="/delete" method="POST" style="margin: 0; margin-left: -130px;" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
+          <form action="/delete" method="POST" style="margin: 0; margin-left: -100px;" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
             <input type="hidden" name="car_plate" value="{{ car.plate }}">
             <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>
           </form>
