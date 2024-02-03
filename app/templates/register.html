@@ -1,8 +1,4 @@
-{% if current_user.language == 'en' %}
-    {% extends "index.html" %}
-{% else %}
-    {% extends "index_" + current_user.language + ".html" %}
-{% endif %}
+{% extends "index.html" %}
 
 {% block content %}
     <form action="" method="post" style="width: 30%; margin: 0 auto;">
