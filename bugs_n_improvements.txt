@@ -18,4 +18,4 @@
 
 - add search form for car when booking
 
-- add personalised choices such as currency, language, miles/km etc, high/low season
+- add personalised choice high/low season
