@@ -1,10 +1,12 @@
 #Flask imports
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
 from sqlalchemy import and_, or_
 import calendar as cal
+import pandas as pd
+import io
 
 # Local imports
 from app import app, db
@@ -120,6 +122,50 @@ def profile():
                            time_difference=time_difference, one_minute=one_minute, title='Profile', page='profile', 
                            user=current_user, current_datetime=current_datetime, 
                            user_name=current_user.username if current_user.is_authenticated else None)
+
+
+@app.route('/download', methods=['POST'])
+@login_required
+def download_file():
+    current_date = datetime.utcnow()
+    report_type = request.form.get('reportType')
+
+    if report_type == 'cars':
+        cars = Car.query.filter_by(user_id=current_user.id).all()
+        cars_data = [{'Plate': car.plate, 'Make': car.make, 'Model': car.model, f'{current_user.measurement_unit}': car.km,
+                      'Fuel': car.fuel, 'Year': car.year, 'CC': car.cc, 'Days rented': car.days, 'Revenue': car.money, 'Costs': car.car_cost, 
+                      'Insurance expiry': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
+                      'MOT expiry': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
+                      'Road Tax expiry': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
+                     for car in cars]
+        cars_df = pd.DataFrame(cars_data)
+        output = io.BytesIO()
+        cars_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name='cars_data.xlsx',
+            as_attachment=True
+        )
+    elif report_type == 'bookings':
+        # Retrieve active bookings
+        active_bookings = Booking.query.filter(
+            (Booking.user_id == current_user.id) &
+            (Booking.end_datetime > current_date)
+        ).all()
+
+        bookings_data = [{'Booking ID': booking.id, 'Car Plate': booking.car.plate, 'Car Model': booking.car.model, f'{current_user.measurement_unit}': booking.km,
+                          'Price': booking.money, 'Start Date': booking.start_datetime.strftime('%d-%m %H:%M'), 'End Date': booking.end_datetime.strftime('%d-%m %H:%M'),
+                          'Note': booking.note} for booking in active_bookings]
+        bookings_df = pd.DataFrame(bookings_data)
+        output = io.BytesIO()
+        bookings_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name='bookings_data.xlsx',
+            as_attachment=True
+        )
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
