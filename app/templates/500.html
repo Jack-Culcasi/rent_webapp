@@ -1,7 +1,11 @@
-{% if current_user.language == 'en' %}
-    {% extends "index.html" %}
+{% if current_user.is_authenticated %}
+    {% if current_user.language == 'en' %}
+        {% extends "index.html" %}
+    {% else %}
+        {% extends "index_" + current_user.language + ".html" %}
+    {% endif %}
 {% else %}
-    {% extends "index_" + current_user.language + ".html" %}
+    {% extends "index.html" %}
 {% endif %}
 
 {% block content %}
