@@ -192,14 +192,16 @@ def garage_manage(): # Add Car
 
        if existing_car is not None:
            flash('A car with this plate already exists in the database', 'error')
-           return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
+           return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html',
+                              user_name=current_user.username if current_user.is_authenticated else None)
 
        new_car = Car(plate=plate, make=make, model=model, fuel=fuel, year=year, cc=cc, user_id=current_user.id)
 
        db.session.add(new_car)
        db.session.commit()
        flash('Car added successfully', 'success')
-       return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
+       return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html',
+                              user_name=current_user.username if current_user.is_authenticated else None)
     else:
        # Render the form for a GET request
        return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html', 
@@ -229,7 +231,8 @@ def search():
 
         if current_page == 'garage_manage' or current_page == f'garage_manage_{current_user.language}':
             return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html', 
-                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars,
+                                   user_name=current_user.username if current_user.is_authenticated else None)
         elif current_page == 'garage_car':
             if select_car != "blank":
                 current_datetime = datetime.utcnow()
@@ -251,7 +254,8 @@ def search():
                                         car_object=car, active_bookings=car_active_bookings, past_bookings=car_past_bookings,
                                         user_name=current_user.username if current_user.is_authenticated else None)
             return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
-                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars,
+                                   user_name=current_user.username if current_user.is_authenticated else None)
         else:
             pass
             # Handle other pages if needed
@@ -259,7 +263,8 @@ def search():
     
     else:
         # Render the search page template for a GET request
-        return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html')
+        return render_template('garage_manage.html' if current_user.language == 'en' else f'garage_manage_{current_user.language}.html',
+                               user_name=current_user.username if current_user.is_authenticated else None)
     
 @app.route('/delete', methods=['POST'])
 def delete_car():
@@ -432,7 +437,8 @@ def renew():
     if 'select_cost' in request.form:
         selected_option = request.form['select_cost']
         return render_template('renew.html' if current_user.language == 'en' else f'renew_{current_user.language}.html', 
-                               renewals=car_object.renewal.all(), option=selected_option, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
+                               renewals=car_object.renewal.all(), option=selected_option, car_object=car_object, 
+                               user_name=current_user.username if current_user.is_authenticated else None)
     
     elif 'cost_amount' in request.form:
         cost_amount = int(request.form['cost_amount'])
