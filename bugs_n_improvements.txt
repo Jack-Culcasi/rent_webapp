@@ -19,3 +19,11 @@
 - add search form for car when booking
 
 - add personalised choice high/low season
+
+- aggiungere gruppi (tipo baia)
+- aggiungere possibilità backup/download
+- in booking mettere ora inizio dopo data inizio, same for fine
+- sistemare calendario, se prenotazioni si accavallano la data della seconda è spostata di un giorno
+- grafica sballata in altri schermi
+- "Plase update preferred currency, language and unit of measurement!" rimane
+- contacts manage non funziona sempre da /contacts
