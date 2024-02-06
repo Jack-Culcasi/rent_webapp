@@ -3,27 +3,23 @@
 - Unique Constraint when adding the same car to different users (SOLVED, kinda, different users will not be able to add the same plate)
 
 - Calendar View does not work properly, new boxes are created based on the booking in the past compared to the current day!
+- sistemare calendario, se prenotazioni si accavallano la data della seconda è spostata di un giorno
 
 #   Improvements:
 
 - sorting algo not always working
 
-- Improve Admin Dashboard, aggiungere contatti e renewal per user
+- Improve   Admin Dashboard, aggiungere contatti e renewal per user,
+            download section, aggiungere diversi tipi di report (scheda auto etc)
 
 - Add Email support (autentication etc...)
 
-- add quotes section
+- add quotes section - add personalised choice high/low season
 
 - add contract/backup
 
 - add search form for car when booking
 
-- add personalised choice high/low season
-
 - aggiungere gruppi (tipo baia)
-- aggiungere possibilità backup/download
-- in booking mettere ora inizio dopo data inizio, same for fine
-- sistemare calendario, se prenotazioni si accavallano la data della seconda è spostata di un giorno
+
 - grafica sballata in altri schermi
-- "Plase update preferred currency, language and unit of measurement!" rimane
-- contacts manage non funziona sempre da /contacts
