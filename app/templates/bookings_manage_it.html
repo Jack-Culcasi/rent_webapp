@@ -70,6 +70,9 @@
                     <input type="text" class="form-control" id="km" name="km" value="{{ selected_booking.km }}" readonly>
                 </div>
 
+            </div>
+
+                <div class="row" style="margin-top: 20px;">
                 <div class="col">
                     <label for="client" class="form-label">Cliente</label>
                     {% if contact %}
@@ -81,6 +84,17 @@
                     {% endif %}
                 </div>
 
+                <div class="col">
+                    <label for="group" class="form-label">Gruppo</label>
+                    {% if group %}
+                        <a href="{{ url_for('group_manage', group_id=group.id) }}">
+                            <p>{{ group.name }}</p>
+                        </a>
+                    {% else %}
+                        <input type="text" class="form-control" id="price" name="price" value="" readonly>
+                    {% endif %}
+                </div>
+            
             </div>
 
             <div class="row">
