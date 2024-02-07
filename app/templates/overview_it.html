@@ -155,13 +155,11 @@
             <input type="text" class="form-control" id="telephone" name="telephone">
         </div>
 
-        <div class="col-2" style="margin-left: -70px;">
-            <p style="text-align: center; margin-top: 3em;">oppure</p>
-        </div>
+        <p style="margin-top: 3em;">oppure</p>
 
-        <div class="col" style="margin-left: -70px;">
+        <div class="col-2">
             <a href="{{ url_for('contacts')}}">            
-                <p style="margin-top: 52px;">Cerca contatto esistente</p>
+                <p style="margin-top: 30px;">Cerca contatto esistente</p>
             </a>
         </div>   
         
@@ -185,6 +183,20 @@
             <label for="km" class="form-label">{{ current_user.measurement_unit.capitalize() }}</label>
             <input type="text" class="form-control" id="km" name="km" size="4" value="0">
           </div>
+
+        <!-- Group Selection Dropdown -->
+        <div class="col">
+            <label for="group_selection" class="form-label">Seleziona gruppo</label>
+            <select class="form-select" id="group_selection" name="group_selection">
+                <option value="blank">Seleziona gruppo...</option>
+                {% for group in user_groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 20px;">
 
         <!-- Price Input -->
         <div class="col">
@@ -266,6 +278,7 @@
                 <th>{{ current_user.measurement_unit.capitalize() }}</th>
                 <th>Inizio</th>
                 <th>Fine</th>
+                <th>Gruppo</th>
                 <th>Azioni</th>
                 <th>Commento</th>
             </tr>
@@ -278,6 +291,11 @@
                     <td>{{ booking.km }}</td>
                     <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>
+                        {% if booking.group %}
+                            <a href="{{ url_for('group_manage', group_id=booking.group.id) }}">{{ booking.group.name }}</a>
+                        {% endif %}
+                    </td>
                     <td>
                         <!-- Add hidden input for booking ID -->
                         <input type="hidden" name="booking_id" value="{{ booking.id }}">

@@ -137,29 +137,27 @@
     <div class="row">
 
         <!-- Input fields for adding a contact -->
-        <div class="col">
+        <div class="col-2">
             <label for="full_name" class="form-label">Full name</label>
             <input type="text" class="form-control" id="full_name" name="full_name">
         </div>
-        <div class="col">
+        <div class="col-2">
             <label for="dob" class="form-label">Date of Birth</label>
             <input type="text" class="form-control" id="dob" name="dob">
         </div>
-        <div class="col">
+        <div class="col-2">
             <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
             <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
         </div>
-        <div class="col">
+        <div class="col-2">
             <label for="telephone" class="form-label">Telephone</label>
             <input type="text" class="form-control" id="telephone" name="telephone">
         </div>
 
-        <div class="col">
-            <p style="text-align: center; margin-top: 3em;">Or</p>
-        </div>
+        <p style="margin-top: 3em;">Or</p>
 
-        <div class="col">
-            <a href="{{ url_for('contacts')}}">            
+        <div class="col-2">    
+            <a href="{{ url_for('contacts')}}">        
                 <p style="margin-top: 50px;">Search Existing Contact</p>
             </a>
         </div>   
@@ -185,11 +183,26 @@
             <input type="text" class="form-control" id="km" name="km" size="4" value="0">
           </div>
 
+        <!-- Group Selection Dropdown -->
+        <div class="col">
+            <label for="group_selection" class="form-label">Select Group</label>
+            <select class="form-select" id="group_selection" name="group_selection">
+                <option value="blank">Select group...</option>
+                {% for group in user_groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <!-- Price Input -->
         <div class="col">
             <label for="Price" class="form-label">Price {{ current_user.currency }}</label>
             <input type="text" class="form-control" id="Price" name="Price" size="4" value="0">
           </div>
+
+    </div>
+
+    <div class="row" style="margin-top: 20px;">
 
         <!-- Start Date Input -->
         <div class="col">
@@ -265,6 +278,7 @@
                 <th>{{ current_user.measurement_unit.capitalize() }}</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Group</th>
                 <th>Actions</th>
                 <th>Comment</th>
             </tr>
@@ -277,6 +291,11 @@
                     <td>{{ booking.km }}</td>
                     <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
                     <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>
+                        {% if booking.group %}
+                            <a href="{{ url_for('group_manage', group_id=booking.group.id) }}">{{ booking.group.name }}</a>
+                        {% endif %}
+                    </td>
                     <td>
                         <!-- Add hidden input for booking ID -->
                         <input type="hidden" name="booking_id" value="{{ booking.id }}">
