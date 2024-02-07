@@ -1,0 +1,152 @@
+{% if current_user.language == 'en' %}
+    {% extends "index.html" %}
+{% else %}
+    {% extends "index_" + current_user.language + ".html" %}
+{% endif %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<!-- Add Contact Section -->
+<form method="POST" action="{{ url_for('groups') }}">
+    <header id="header">
+    <h2>Add Group</h2>
+    </header>
+    <div class="row">
+      <!-- Input fields for adding a group -->
+      <div class="col">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name">
+      </div>
+
+      <div class="col">
+        <label for="telephone" class="form-label">Telephone</label>
+        <input type="text" class="form-control" id="telephone" name="telephone">
+      </div>
+
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;"><i class="fa-solid fa-user-group"></i>+</button>
+  </form>
+
+  
+    <h2>Search Group</h2>
+  
+
+  <form action="{{ url_for('groups') }}" method="POST">
+    <div class="row">
+      <!-- Dropdown for search type -->
+      <div class="col">
+        <label for="search_type" class="form-label">Search by</label>
+        <select class="form-select" id="search_type" name="search_type">
+          <option value="name">Name</option>
+          <option value="telephone">Telephone</option>
+          <option value="id">ID</option>
+        </select>
+      </div>
+      <!-- Input field for search query -->
+      <div class="col">
+        <label for="search_type" class="form-label hidden-label">Search Query</label>
+        <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-danger" style="margin-top: 20px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+
+  {% if search_results or search_query %}
+  {% if search_results %}
+  <form action="{{ url_for('groups') }}" method="POST">
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Telephone</th>
+                <th>Bookings number</th> 
+                <th>Revenue</th>  
+                <th>Action</th>              
+            </tr>
+        </thead>
+        <tbody>
+          {% for group in search_results %}
+                <tr>
+                    <td>{{ group.id }}</td>
+                    <td>{{ group.name }}</td>
+                    <td>{{ group.telephone }}</td>
+                    <td>{{ group.money }}</td>
+                    <td>{{ group.bookings_number }}</td>
+                    <td>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="group_id" value="{{group.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_group" value="{{ group.id }}"><i class="fa-solid fa-wrench"></i></button>
+                    </td>                   
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endif %}
+</form>
+
+
+<header id="header">
+    <h2>Groups</h2>
+</header>
+
+<table class="table" id="contactTable">
+  <thead>
+    <tr>
+      <!-- Define sortable columns with clickable links -->
+      <th scope="col"><a href="#" class="sort-link" data-sort="id">Id</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="name">Name</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="telephone">Telephone</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="bookings_number">Bookings number</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="money">Money</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="action">Actions</a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Iterate through user_contacts and display contact data in rows -->
+    {% for group in user_groups %}
+    <tr>
+        <!-- Display contact data with associated sorting attribute -->
+        <td data-sort="id">{{ group.id }}</td>
+        <td data-sort="name">{{ group.name }}</td>
+        <td data-sort="telephone">{{ group.telephone }}</td>
+        <td data-sort="bookings_number">{{ group.bookings_number }}</td>
+        <td data-sort="money">{{ group.money }}</td>
+        <td>
+          <!-- Add hidden input for contact id -->
+          <form class="table-form" action="{{ url_for('group_manage', group_id=group.id) }}" method="get">
+              <button type="submit" style="margin-right: -20px;"><i class="fa-solid fa-wrench"></i></button>
+          </form>
+      </td>
+      <form action="{{ url_for('groups') }}" method="POST">
+      <td>
+        <button type="submit" style="margin-left: -50px;" class="btn btn-danger btn-delete" name="delete_group" value="{{ group.id }}" onclick="return confirm('Are you sure you want to delete this group?');"><i class="fas fa-trash-alt"></i></button>
+      </td>
+      </form> 
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+  
+    
+{% endblock %}
