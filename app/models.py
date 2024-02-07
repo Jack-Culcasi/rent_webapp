@@ -15,8 +15,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    garage = db.relationship('Car', backref='owner', lazy='dynamic')
-    contacts = db.relationship('Contacts', backref='owner', lazy='dynamic')
+    garage = db.relationship('Car', backref='owner_garage', lazy='dynamic')
+    groups = db.relationship('Groups', backref='owner_groups', lazy='dynamic')
+    contacts = db.relationship('Contacts', backref='owner_contacts', lazy='dynamic')
     role = db.Column(db.String(20), default='user')  
     currency = db.Column(db.String(1), default='€')
     measurement_unit = db.Column(db.String(5), default='Km')
@@ -237,12 +238,18 @@ class Booking(db.Model):
     # Add a reference to the Car model for easier access
     car = db.relationship('Car', backref='bookings', lazy=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id', name='booking_contacts_id'), nullable=True)
+    
+    # Define the foreign key relationship with the Groups model
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.id', name='booking_group'), nullable=True)
+    group = db.relationship('Groups', backref='group_bookings', lazy=True)
 
     @staticmethod
-    def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note, km=0):
+    def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note, km=0, group_id=None):
         # Check if the selected car and contact exist
         car = Car.query.filter_by(plate=car_plate).first()
         contact = Contacts.query.filter_by(id=contact_id).first()
+        if group_id:
+            group = Groups.query.filter_by(id=group_id).first()
         if not car:
             raise ValueError(f'Car with plate {car_plate} not found.')
         if not contact:
@@ -271,6 +278,7 @@ class Booking(db.Model):
                 note=note,
                 money=price,
                 contact_id=contact_id,
+                group_id=group.id if group_id else None,
                 km=km
             )
 
@@ -280,6 +288,9 @@ class Booking(db.Model):
             contact.rented_days += booking_duration
             car.money += price
             contact.money_spent += price
+            if group_id:
+                group.money += price
+                group.bookings_number += 1
             db.session.commit()
 
             return booking, None, None
@@ -389,6 +400,50 @@ class Contacts(db.Model):
         elif search_type == 'dob':
             # Exact match on the 'dob' field
             return cls.dob == search_query, cls.user_id == user_id
+        elif search_type == 'id':
+            # Exact match on the 'id' field
+            return cls.id == search_query, cls.user_id == user_id
+        else:
+            # Invalid search type, return an invalid condition to produce an empty result
+            return cls.user_id == -1  # Assuming an invalid condition
+        
+class Groups(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    telephone = db.Column(db.String(20), default='/', index=True)
+    money = db.Column(db.Integer, default=0, index=True)
+    bookings_number = db.Column(db.Integer, default=0, index=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    bookings = db.relationship('Booking', backref='bookings', lazy='dynamic')
+    
+    @staticmethod
+    def add_group(name, telephone, user_id):
+        new_group = Groups(
+            name = name,
+            telephone = telephone,
+            user_id = user_id
+        )
+
+        db.session.add(new_group)
+        db.session.commit()
+
+    @classmethod
+    def search_groups(cls, search_type, search_query, user_id):
+        # Build filter conditions dynamically based on search criteria
+        filter_conditions = cls.build_filter_conditions(search_type, search_query, user_id)
+
+        # Apply filter conditions and return the search results
+        return cls.query.filter(*filter_conditions).all()
+
+    @classmethod
+    def build_filter_conditions(cls, search_type, search_query, user_id):
+        if search_type == 'name':
+            # Case-insensitive search on the 'name' field
+            return cls.name.ilike(f"%{search_query}%"), cls.user_id == user_id
+        elif search_type == 'telephone':
+            # Exact match on the 'driver_licence_n' field
+            return cls.telephone == search_query, cls.user_id == user_id
         elif search_type == 'id':
             # Exact match on the 'id' field
             return cls.id == search_query, cls.user_id == user_id
