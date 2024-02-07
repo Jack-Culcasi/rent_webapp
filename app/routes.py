@@ -11,7 +11,7 @@ import io
 # Local imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Car, Booking, Contacts
+from app.models import User, Car, Booking, Contacts, Groups
 
                                                                                 # Users Login/Logout/Profile/Admin
 
@@ -347,6 +347,7 @@ def overview(): # Booking
             if 'book' in request.form:
                 car_plate = request.form.get('car_selection')
                 price = int(request.form.get('Price'))
+                group_id = request.form.get('group_selection')
                 km = int(request.form.get('km'))
                 start_date = request.form.get('start_date')
                 end_date = request.form.get('end_date')
@@ -385,7 +386,7 @@ def overview(): # Booking
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
-                    car_plate, price, start_datetime, end_datetime, contact_id, current_user.id, note, km
+                    car_plate, price, start_datetime, end_datetime, contact_id, current_user.id, note, km, group_id
                 )
                 
                 if booking is None:
@@ -408,6 +409,7 @@ def overview(): # Booking
 
     user_cars = current_user.garage.all()
     user_contacts = current_user.contacts.all()
+    user_groups = current_user.groups.all()
 
     # To check available and booked cars
     from_date = request.form.get('from')
@@ -460,7 +462,7 @@ def overview(): # Booking
 
     # Render the template with the new data
     return render_template('overview.html' if current_user.language == 'en' else f'overview_{current_user.language}.html',
-                            user_cars=user_cars,
+                            user_cars=user_cars, user_groups=user_groups,
                             available_cars=available_cars,
                             user_bookings=user_bookings,
                             from_datetime=from_datetime.strftime('%Y-%m-%d'),
@@ -702,18 +704,21 @@ def bookings_manage():
     if booking_id:
         selected_booking = Booking.query.filter_by(id=booking_id).first()
         contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+        group = Groups.query.filter_by(id=selected_booking.group_id).first()
         if selected_booking.is_expired():
             flash(f'Booking with ID {selected_booking.id} is no longer active, you can only delete it', 'error')
             return redirect(url_for('bookings_history'))
     else:
         selected_booking = None
         contact = None
+        group = None
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
         if booking_id:
             selected_booking = Booking.query.filter_by(id=booking_id).first()
             contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+            group = Groups.query.filter_by(id=selected_booking.group_id).first()
         
         if request.form.get('action') == 'delete' or 'delete' in request.form:
             booking_id = request.form.get('booking_id')
@@ -733,6 +738,7 @@ def bookings_manage():
 
             if selected_booking:
                 contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
+                group = Groups.query.filter_by(id=selected_booking.group_id).first()
             else:
                 flash('Selected booking not found.', 'error')            
 
@@ -768,7 +774,7 @@ def bookings_manage():
                 flash('Booking not found. Amendment failed.', 'error')
                 
     return render_template('bookings_manage.html' if current_user.language == 'en' else f'bookings_manage_{current_user.language}.html',
-                           page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact,
+                           page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact, group=group,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
@@ -931,3 +937,72 @@ def contact_manage(contact_id):
     return render_template('contact_manage.html' if current_user.language == 'en' else f'contact_manage_{current_user.language}.html', 
                            contact=contact, contact_bookings=contact_bookings, days=contact.rented_days, 
                            money=contact.money_spent, bookings_number=len(contact_bookings), user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/groups', methods=['GET', 'POST'])
+@login_required
+def groups(): 
+    user_groups = current_user.groups.all()
+
+    if request.method == 'POST':
+        if 'name' in request.form:
+            # Process the form data for adding a group
+            name = request.form.get('name')
+            telephone = request.form.get('telephone')
+            print(name, telephone)
+            Groups.add_group(name, telephone, current_user.id)
+            flash('Group added successfully', 'success')
+
+        elif 'search_type' in request.form:
+            # Process the form data for searching a group
+            search_type = request.form.get('search_type')
+            search_query = request.form.get('search_query')
+            search_results = Groups.search_groups(search_type, search_query, current_user.id)
+            return render_template('groups.html' if current_user.language == 'en' else f'groups_{current_user.language}.html', 
+                                   user_groups=user_groups, search_query=search_query, search_results=search_results, 
+                                   user_name=current_user.username if current_user.is_authenticated else None)
+        
+        elif 'manage_group' in request.form:
+            # Process the form data for managing a group
+            group_id = request.form.get('manage_group')
+            return redirect(url_for('group_manage', group_id=group_id))
+        
+        elif 'delete_group' in request.form:
+            # Handle deletion logic
+            group_id = request.form.get('delete_group')
+            group = Groups.query.get_or_404(group_id)
+            db.session.delete(group)
+            db.session.commit()
+            flash('Group deleted successfully', 'success')
+            return redirect(url_for('groups'))
+
+        return redirect(url_for('groups'))
+
+    return render_template('groups.html' if current_user.language == 'en' else f'groups_{current_user.language}.html', 
+                           user_groups=user_groups, user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/groups/<int:group_id>', methods=['GET', 'POST'])
+@login_required
+def group_manage(group_id):
+    group = Groups.query.get_or_404(group_id)
+    group_bookings = group.bookings.all()    
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'amend':
+            # Handle amendment logic
+            group.name = request.form.get('name')
+            group.telephone = request.form.get('telephone')
+            db.session.commit()
+            flash('Group details amended successfully', 'success')
+
+        elif action == 'delete':
+            # Handle deletion logic
+            db.session.delete(group)
+            db.session.commit()
+            flash('Group deleted successfully', 'success')
+            return redirect(url_for('groups'))
+
+    return render_template('group_manage.html' if current_user.language == 'en' else f'group_manage_{current_user.language}.html', 
+                           group=group, group_bookings=group_bookings, money=group.money, bookings_number=group.bookings_number, 
+                           user_name=current_user.username if current_user.is_authenticated else None)
