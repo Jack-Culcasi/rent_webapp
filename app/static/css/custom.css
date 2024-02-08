@@ -7,10 +7,24 @@
     border: 1px solid #000;
     padding: 10px;
     text-align: center;
+    width: 30px;
 }
 
-.calendar .booked {
+/* Ensure that the text in the car box stays on a single line */
+.calendar td.car {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add an ellipsis (...) if the text overflows the box */
+}
+
+/* Style for a single booking */
+.calendar .booked-single {
     background-color: rgba(0, 255, 76, 0.603);
+}
+
+/* Style for multiple bookings */
+.calendar .booked-multiple {
+    background-color: rgb(255, 145, 0); /* Example color for multiple bookings */
 }
 
 .current-day {
@@ -20,6 +34,7 @@
 form.table-form {
     margin: 0;
 }
+
 
 /* Apply a specific style to read-only input fields */
 input[readonly] {
