@@ -241,7 +241,7 @@ class Booking(db.Model):
     
     # Define the foreign key relationship with the Groups model
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id', name='booking_group'), nullable=True)
-    group = db.relationship('Groups', backref='group_bookings', lazy=True)
+    group = db.relationship('Groups', back_populates='bookings', lazy=True)
 
     @staticmethod
     def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note, km=0, group_id=None):
@@ -415,7 +415,7 @@ class Groups(db.Model):
     bookings_number = db.Column(db.Integer, default=0, index=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    bookings = db.relationship('Booking', backref='bookings', lazy='dynamic')
+    bookings = db.relationship('Booking', back_populates='group', lazy='dynamic')
     
     @staticmethod
     def add_group(name, telephone, user_id):
