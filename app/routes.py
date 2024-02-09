@@ -371,19 +371,22 @@ def overview(): # Booking
                     return redirect(url_for('overview'))
 
                 if contact_id == None:
-                    # Create a new contact
-                    new_contact = Contacts(
-                    full_name=full_name,
-                    driver_licence_n=driver_licence_n,
-                    dob=dob,
-                    telephone=telephone,
-                    user_id=current_user.id
-                    )
-                    db.session.add(new_contact)
-                    db.session.commit()
+                    if full_name == '': # Skip if client's fields are empty
+                        pass
+                    else:
+                        # Create a new contact
+                        new_contact = Contacts(
+                        full_name=full_name,
+                        driver_licence_n=driver_licence_n,
+                        dob=dob,
+                        telephone=telephone,
+                        user_id=current_user.id
+                        )
+                        db.session.add(new_contact)
+                        db.session.commit()
 
-                    #Get the id of the newly created contact
-                    contact_id = new_contact.id                
+                        #Get the id of the newly created contact
+                        contact_id = new_contact.id                
 
                 # Call the create_booking method from the Booking model
                 booking, overlap_start, overlap_end = Booking.create_booking(
@@ -722,7 +725,7 @@ def bookings_manage():
             group = Groups.query.filter_by(id=selected_booking.group_id).first()
         
         if request.form.get('action') == 'delete' or 'delete' in request.form:
-            booking_id = request.form.get('booking_id')
+            booking_id = request.form.get('delete')
             # Modify the query to eagerly load the 'car' relationship
             selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
             if selected_booking:
@@ -730,7 +733,7 @@ def bookings_manage():
                 flash('Booking successfully deleted!', 'success')
 
                 # Redirect to the same page to refresh
-                return redirect(url_for('bookings_manage'))
+                return redirect(url_for('bookings_view'))
 
         # Handles the "Manage" buttons in other pages
         if request.form.get('manage_booking'):
