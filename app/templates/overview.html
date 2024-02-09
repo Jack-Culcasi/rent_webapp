@@ -187,7 +187,7 @@
         <div class="col">
             <label for="group_selection" class="form-label">Select Group</label>
             <select class="form-select" id="group_selection" name="group_selection">
-                <option value="blank">Select group...</option>
+                <option value="None">Select group...</option>
                 {% for group in user_groups %}
                     <option value="{{ group.id }}">{{ group.name }}</option>
                 {% endfor %}
