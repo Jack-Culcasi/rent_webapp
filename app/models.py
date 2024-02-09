@@ -252,8 +252,7 @@ class Booking(db.Model):
             group = Groups.query.filter_by(id=group_id).first()
         if not car:
             raise ValueError(f'Car with plate {car_plate} not found.')
-        if not contact:
-            raise ValueError(f'Contact with ID {contact_id} not found.')
+        
 
         try:
             # Check for overlapping bookings
@@ -277,17 +276,19 @@ class Booking(db.Model):
                 user_id=user_id,
                 note=note,
                 money=price,
-                contact_id=contact_id,
+                contact_id=contact_id if contact else None,
                 group_id=group.id if group else None,
                 km=km
             )
 
             db.session.add(booking)
             car.km = booking.km
-            car.days += booking_duration
-            contact.rented_days += booking_duration
+            car.days += booking_duration            
             car.money += price
-            contact.money_spent += price
+            
+            if contact:
+                contact.rented_days += booking_duration
+                contact.money_spent += price
             if group:
                 group.money += price
                 group.bookings_number += 1
