@@ -847,17 +847,34 @@ def calendar():
     first_day_of_month = current_date.replace(day=1)
     last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
     days_in_month = cal.monthrange(datetime.now().year, datetime.now().month)[1]
-
-
+    # Retrieve user's cars
+    user_cars = current_user.garage.all()  
+    # Query user's bookings
     user_bookings = Booking.query.filter(
         (Booking.user_id == current_user.id) &
-        (Booking.start_datetime <= last_day_of_month) &
-        (Booking.end_datetime >= first_day_of_month)
+        (
+            (Booking.start_datetime <= last_day_of_month) |  # Start date is within the current month
+            (Booking.end_datetime >= first_day_of_month)    # End date is within the current month
+        )
     ).all()
 
-    user_cars = current_user.garage.all()
+    # Initialize a dictionary to store booking information for each day
+    booking_data = defaultdict(lambda: defaultdict(list))
+    
+    # Populate booking data
+    for booking in user_bookings:
+        start_day = booking.start_datetime.day
+        end_day = booking.end_datetime.day
+        car_plate = booking.car_plate
+        if end_day < start_day:
+            end_day = current_date.replace(day=days_in_month).day
+        for day in range(start_day, end_day + 1):  # Include end_day in the range
+            # Check if the day is within the current month
+            if first_day_of_month <= booking.start_datetime <= last_day_of_month:
+                booking_data[day][car_plate].append(booking)  # Store booking objects
+    
     return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html',
-                            cars=user_cars, bookings=user_bookings, current_month=current_month, current_day=current_day,
+                            cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/contacts', methods=['GET', 'POST'])
@@ -1007,36 +1024,3 @@ def group_manage(group_id):
     return render_template('group_manage.html' if current_user.language == 'en' else f'group_manage_{current_user.language}.html', 
                            group=group, group_bookings=group_bookings, money=group.money, bookings_number=group.bookings_number, 
                            user_name=current_user.username if current_user.is_authenticated else None)
-
-@app.route('/calendar_copy', methods=['GET', 'POST'])
-@login_required
-def calendar_copy(): 
-    current_date = datetime.now()
-    current_day = datetime.now().day
-    current_month = datetime.now().strftime("%B %Y")
-    first_day_of_month = current_date.replace(day=1)
-    last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
-    days_in_month = cal.monthrange(datetime.now().year, datetime.now().month)[1]
-    # Retrieve user's cars
-    user_cars = current_user.garage.all()  
-    # Query user's bookings
-    user_bookings = Booking.query.filter(
-        (Booking.user_id == current_user.id) &
-        (Booking.start_datetime <= last_day_of_month) &
-        (Booking.end_datetime >= first_day_of_month)
-    ).all()
-
-    # Initialize a dictionary to store booking information for each day
-    booking_data = defaultdict(lambda: defaultdict(list))
-    
-   # Populate booking data
-    for booking in user_bookings:
-        start_day = booking.start_datetime.day
-        end_day = booking.end_datetime.day
-        car_plate = booking.car_plate
-        for day in range(start_day, end_day + 1):  # Include end_day in the range
-            booking_data[day][car_plate].append(booking)  # Store booking objects
-    
-    return render_template('calendar_copy.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html',
-                            cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
-                            days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
