@@ -40,7 +40,7 @@
     <div class="current-month">
         <h3>{{ current_day }} {{ current_month }}</h3>
     </div>
-
+    
     <table class="calendar">
         <tr>
             <th>Car</th>
@@ -54,21 +54,25 @@
         </tr>
         {% for car in cars %}
             <tr>
-                <td><a href="{{ url_for('garage_car', car_plate=car.plate ) }}">{{ car.model }} - {{ car.plate }}</a></td>
+                <td class="car"><a href="{{ url_for('garage_car', car_plate=car.plate ) }}">{{ car.model }} - {{ car.plate }}</a></td>
                 {% for day in range(1, days_in_month + 1) %}
-                    {% set ns = namespace(bookings_on_day=0, booked=false) %}
-                    {% for booking in bookings %}
-                        {% if booking.car_plate == car.plate and booking.start_datetime.day <= day <= booking.end_datetime.day %}
-                            {% set ns.booked = true %}
-                            {% set ns.bookings_on_day = ns.bookings_on_day + 1 %}
-                            <td class="{% if ns.booked and ns.bookings_on_day > 1 %}" style="background-color: #ffc66d;"{% endif %} booked" 
-                                title="Booking ID: {{ booking.id }}&#10;Start Date: {{ booking.start_datetime }}&#10;End Date: {{ booking.end_datetime }}&#10;Note: {{ booking.note }}">
-                                <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">{{ booking.id }}</a>
+                    {% if booking_data[day][car.plate] %}
+                        {% set booking = booking_data[day][car.plate] %}
+                        {% if booking | length == 1 %}
+                        <td class="booked-single" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}">
+                            <a href="{{ url_for('bookings_manage', booking_id=booking[0].id) }}">{{ booking[0].id }}</a>
+                        </td>
+                        
+                        {% elif booking | length > 1 %}
+                            <td class="booked-single" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}&#10;                            
+Booking ID: {{ booking[1].id }}&#10;Start Date: {{ booking[1].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[1].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}">
+                                M
                             </td>
+                        {% else %}
+                            <td></td>
                         {% endif %}
-                    {% endfor %}
-                    {% if not ns.booked %}
-                        <td class=""></td>
+                    {% else %}
+                        <td></td>
                     {% endif %}
                 {% endfor %}
             </tr>
