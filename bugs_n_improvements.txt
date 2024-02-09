@@ -18,7 +18,3 @@
 - add search form for car when booking
 
 - grafica sballata in altri schermi
-
-- bookings che finiscono nel mese prossimo non spuntano in calendar
-
-- bookings view does not delete bookings
