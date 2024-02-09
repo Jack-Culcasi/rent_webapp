@@ -278,7 +278,7 @@ class Booking(db.Model):
                 note=note,
                 money=price,
                 contact_id=contact_id,
-                group_id=group.id if group_id else None,
+                group_id=group.id if group else None,
                 km=km
             )
 
@@ -288,7 +288,7 @@ class Booking(db.Model):
             contact.rented_days += booking_duration
             car.money += price
             contact.money_spent += price
-            if group_id:
+            if group:
                 group.money += price
                 group.bookings_number += 1
             db.session.commit()
