@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, extract
 from collections import defaultdict
 import calendar as cal
 import pandas as pd
@@ -875,8 +875,49 @@ def calendar():
             # Check if the day is within the current month
             if first_day_of_month <= booking.start_datetime <= last_day_of_month:
                 booking_data[day][car_plate].append(booking)  # Store booking objects
+
+    if 'next_month' in request.form:
+        current_date = datetime.now() + timedelta(days=30)
+        current_month = (datetime.now() + timedelta(days=30)).strftime("%B %Y") 
+        first_day_of_month = current_date.replace(day=1)
+        last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        days_in_month = cal.monthrange(current_date.year, current_date.month)[1]
+        # Retrieve user's cars
+        user_cars = current_user.garage.all()  
+        # Query user's bookings
+        user_bookings = Booking.query.filter(
+            (Booking.user_id == current_user.id) &
+                ((extract('month', Booking.start_datetime) == last_day_of_month.month) |  # Start date is within the next month
+                (extract('month', Booking.end_datetime) == first_day_of_month.month)    # End date is within the next month
+            )
+            ).all()
+        
+        print(user_bookings)
+
+        # Initialize a dictionary to store booking information for each day
+        booking_data = defaultdict(lambda: defaultdict(list))
+        
+        # Populate booking data
+        for booking in user_bookings:
+            start_date = booking.start_datetime.date()
+            end_date = booking.end_datetime.date()
+            car_plate = booking.car_plate
+            
+            # Check if any part of the booking falls within the next month
+            if start_date <= last_day_of_month.date() and end_date >= first_day_of_month.date():
+                # Adjust start and end days if necessary
+                start_day = max(start_date.day, 1)
+                end_day = min(end_date.day, days_in_month)
+                
+                for day in range(start_day, end_day + 1):
+                    booking_data[day][car_plate].append(booking)
+
+
+        print(booking_data)
+
+    next_month = 'next_month' in request.form
     
-    return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html',
+    return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html', next_month=next_month,
                             cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
