@@ -6,8 +6,7 @@
 
 - sorting algo not always working
 
-- Improve   Admin Dashboard, aggiungere contatti e renewal per user,
-            download section, aggiungere diversi tipi di report (scheda auto etc)
+- Improve  Admin Dashboard, aggiungere diversi tipi di report (scheda auto etc)
 
 - Add Email support (autentication etc...)
 
@@ -15,6 +14,8 @@
 
 - add contract
 
-- add search form for car when booking
+- add search form for car when booking and for bookings in booking manage
 
 - grafica sballata in altri schermi
+
+- make calendar downloadable
