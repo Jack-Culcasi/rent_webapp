@@ -19,12 +19,12 @@
 
 /* Style for a single booking */
 .calendar .booked-single {
-    background-color: rgba(0, 255, 76, 0.603);
+    background-color: rgba(0, 255, 76, 0.411);
 }
 
-/* Style for multiple bookings */
-.calendar .booked-multiple {
-    background-color: rgb(255, 145, 0); /* Example color for multiple bookings */
+/* Style for first and last booking's day */
+.calendar .booked-start-finish {
+    background-color: rgba(0, 199, 60, 0.616); /* Example color for multiple bookings */
 }
 
 .current-day {
@@ -34,6 +34,34 @@
 form.table-form {
     margin: 0;
 }
+
+/* Legend */
+
+.legend {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center; /* Align items vertically */
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+    font-weight: bold; /* Optionally increase font weight */
+}
+
+.legend-text {
+    font-size: 14px;
+}
+
 
 
 /* Apply a specific style to read-only input fields */
