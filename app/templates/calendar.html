@@ -74,12 +74,18 @@
                     {% if booking_data[day][car.plate] %}
                         {% set booking = booking_data[day][car.plate] %}
                         {% if booking | length == 1 %}
+                            {% if booking[0].start_datetime.day == day or booking[0].end_datetime.day == day %}
+                        <td class="booked-start-finish" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}">
+                            <a href="{{ url_for('bookings_manage', booking_id=booking[0].id) }}">{{ booking[0].id }}</a>
+                        </td>
+                            {% else %}
                         <td class="booked-single" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}">
                             <a href="{{ url_for('bookings_manage', booking_id=booking[0].id) }}">{{ booking[0].id }}</a>
+                            {% endif %}
                         </td>
                         
                         {% elif booking | length > 1 %}
-                            <td class="booked-single" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}&#10;                            
+                            <td class="booked-start-finish" title="Booking ID: {{ booking[0].id }}&#10;Start Date: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}&#10;                            
 Booking ID: {{ booking[1].id }}&#10;Start Date: {{ booking[1].start_datetime.strftime('%d/%m, %H:%M') }}&#10;End Date: {{ booking[1].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Group: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Note: {{ booking[0].note }}{% else %}&#10;&#10;Note: {{ booking[0].note }}{% endif %}{% endif %}">
                                 M
                             </td>
@@ -93,5 +99,22 @@ Booking ID: {{ booking[1].id }}&#10;Start Date: {{ booking[1].start_datetime.str
             </tr>
         {% endfor %}
     </table>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(0, 199, 60, 0.616);"></div>
+            <div class="legend-text">Booking's start or end</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(0, 255, 76, 0.411);"></div>
+            <div class="legend-text">Booked</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: rgba(0, 199, 60, 0.616);">
+                <div class="legend-text">M</div>
+            </div>
+            <div class="legend-text">Multiple bookings</div>
+        </div>
+    </div>
 
 {% endblock %}
