@@ -36,7 +36,7 @@
             <ul class="notice-list">
                 {% for booking in bookings_about_to_finish %}
                 <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">   
-                    <li>{{ booking.car.model }} {{ booking.car.plate }} - ends on {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
+                    <li>{{ booking.id }} {{ booking.car.model }} {{ booking.car.plate }} - ends on {{ booking.end_datetime.strftime("%b %d %H:%M") }}</li>
                 {% endfor %}
                 </a>
             </ul>
@@ -49,7 +49,7 @@
             <ul class="notice-list">
                 {% for booking in bookings_about_to_start %}
                 <a href="{{ url_for('bookings_manage', booking_id=booking.id ) }}" style="color: rgb(0, 0, 0);">
-                    <li>{{ booking.car.model }} {{ booking.car.plate }} - starts on {{ booking.start_datetime.strftime("%b %d %H:%M") }}</li>
+                    <li>{{ booking.id }} {{ booking.car.model }} {{ booking.car.plate }} - starts on {{ booking.start_datetime.strftime("%b %d %H:%M") }}</li>
                 {% endfor %}
                 </a>
             </ul>
@@ -62,7 +62,7 @@
         <div class="notice-board" style="margin-top: -10px; height: 100px;">
             <ul class="notice-list">
                 {% for car in cars_expiring_soon %}
-                    <a href="{{ url_for('garage_car', car_plate=car.plate ) }}" style="color: rgb(0, 0, 0);">
+                    <a href="{{ url_for('renew', car_plate=car.plate ) }}" style="color: rgb(0, 0, 0);">
                         <li>
                             >>> {{ car.model }} ({{ car.plate }}) - 
                             {% if car.insurance_expiry_date and car.insurance_expiry_date <= in_four_weeks %}
