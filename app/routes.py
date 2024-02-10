@@ -135,21 +135,32 @@ def download_file():
 
     if report_type == 'cars':
         cars = Car.query.filter_by(user_id=current_user.id).all()
-        cars_data = [{'Plate': car.plate, 'Make': car.make, 'Model': car.model, f'{current_user.measurement_unit}': car.km,
-                      'Fuel': car.fuel, 'Year': car.year, 'CC': car.cc, 'Days rented': car.days, 'Revenue': car.money, 'Costs': car.car_cost, 
-                      'Insurance expiry': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
-                      'MOT expiry': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
-                      'Road Tax expiry': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
-                     for car in cars]
+        if current_user.language == 'it':
+            file_name = 'parco_auto.xlsx'
+            cars_data = [{'Targa': car.plate, 'Marchio': car.make, 'Modello': car.model, f'{current_user.measurement_unit}': car.km,
+                        'Carburante': car.fuel, 'Anno': car.year, 'Cilindrata': car.cc, 'Giorni noleggiati': car.days, 'Ricavo': car.money, 'Costi': car.car_cost, 
+                        'Scadenza Assicurazione': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
+                        'Scadenza Revisione': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
+                        'Scadenza Bollo': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
+                        for car in cars]
+        else:
+            file_name = 'garage_data.xlsx'
+            cars_data = [{'Plate': car.plate, 'Make': car.make, 'Model': car.model, f'{current_user.measurement_unit}': car.km,
+                        'Fuel': car.fuel, 'Year': car.year, 'CC': car.cc, 'Days rented': car.days, 'Revenue': car.money, 'Costs': car.car_cost, 
+                        'Insurance expiry': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
+                        'MOT expiry': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
+                        'Road Tax expiry': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
+                        for car in cars]
         cars_df = pd.DataFrame(cars_data)
         output = io.BytesIO()
         cars_df.to_excel(output, index=False)
         output.seek(0)
         return send_file(
             output,
-            download_name='cars_data.xlsx',
+            download_name=file_name,
             as_attachment=True
         )
+    
     elif report_type == 'bookings':
         # Retrieve active bookings
         active_bookings = Booking.query.filter(
@@ -157,8 +168,20 @@ def download_file():
             (Booking.end_datetime > current_date)
         ).all()
 
-        bookings_data = [{'Booking ID': booking.id, 'Car Plate': booking.car.plate, 'Car Model': booking.car.model, f'{current_user.measurement_unit}': booking.km,
+
+        if current_user.language == 'it':
+            file_name = 'resoconto_prenotazioni.xlsx'
+            bookings_data = [{'Prenotazione ID': booking.id, 'Targa Auto': booking.car.plate, 'Modello Auto': booking.car.model, f'{current_user.measurement_unit}': booking.km,
+                            'Prezzo': booking.money, 'Data Inizio': booking.start_datetime.strftime('%d-%m %H:%M'), 'Data Fine': booking.end_datetime.strftime('%d-%m %H:%M'),
+                             'Cliente': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
+                             'Gruppo': booking.group.name if booking.group else '', 
+                             'Nota': booking.note} for booking in active_bookings]
+        else:
+            file_name = 'bookings_data.xlsx'
+            bookings_data = [{'Booking ID': booking.id, 'Car Plate': booking.car.plate, 'Car Model': booking.car.model, f'{current_user.measurement_unit}': booking.km,
                           'Price': booking.money, 'Start Date': booking.start_datetime.strftime('%d-%m %H:%M'), 'End Date': booking.end_datetime.strftime('%d-%m %H:%M'),
+                          'Client': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
+                          'Group': booking.group.name if booking.group else '',
                           'Note': booking.note} for booking in active_bookings]
         bookings_df = pd.DataFrame(bookings_data)
         output = io.BytesIO()
@@ -166,7 +189,7 @@ def download_file():
         output.seek(0)
         return send_file(
             output,
-            download_name='bookings_data.xlsx',
+            download_name=file_name,
             as_attachment=True
         )
 
@@ -999,6 +1022,41 @@ def calendar():
     return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html', is_current_month=is_current_month,
                             cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/download_calendar', methods=['POST'])
+@login_required
+def download_calendar():
+    booking_data = request.form.get('booking_data')
+    days_in_month = request.form.get('days_in_month')
+    cars = Car.query.filter_by(user_id=current_user.id).all()
+
+    # Initialize lists to store data
+    car_data = []
+
+    # Iterate over cars and days to collect data
+    for car in cars:
+        car_row = [f"{car.model} - {car.plate}"]
+        for day in range(1, int(days_in_month) + 1):
+            if booking_data[day][car.plate]:
+                booking = booking_data[day][car.plate][0]  # Assuming only one booking per day
+                booking_info = f"Booking ID: {booking.id}\nStart Date: {booking.start_datetime.strftime('%d/%m, %H:%M')}\nEnd Date: {booking.end_datetime.strftime('%d/%m, %H:%M')}"
+                car_row.append(booking_info)
+            else:
+                car_row.append('')
+        car_data.append(car_row)
+
+    # Create DataFrame
+    calendar_df = pd.DataFrame(car_data, columns=['Car'] + [str(day) for day in range(1, days_in_month + 1)])
+    output = io.BytesIO()
+    calendar_df.to_excel(output, index=False)
+    output.seek(0)
+
+    # Return the Excel file as a response
+    return send_file(
+        output,
+        download_name='calendar.xlsx',
+        as_attachment=True
+    )
 
 @app.route('/contacts', methods=['GET', 'POST'])
 @login_required
