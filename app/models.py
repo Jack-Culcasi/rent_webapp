@@ -406,7 +406,7 @@ class Contacts(db.Model):
             return cls.id == search_query, cls.user_id == user_id
         else:
             # Invalid search type, return an invalid condition to produce an empty result
-            return cls.user_id == -1  # Assuming an invalid condition
+            return cls.user_id == -1  # Assuming an invalid condition#
         
 class Groups(db.Model):
     id = db.Column(db.Integer, primary_key=True)
