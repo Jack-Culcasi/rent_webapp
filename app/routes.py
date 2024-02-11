@@ -1018,17 +1018,81 @@ def calendar():
                 
                 for day in range(start_day, end_day + 1):
                     booking_data[day][car_plate].append(booking)
+
+    if 'calendar_download' in request.form:
+        print(request.form.get('current_date'))
+        #current_date = datetime.strptime(request.form.get('current_date'), "%B %Y")
+        current_month = datetime.now().strftime("%B %Y")
+        first_day_of_month = current_date.replace(day=1)
+        last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        days_in_month = cal.monthrange(current_date.year, current_date.month)[1]
+        cars = Car.query.filter_by(user_id=current_user.id).all()
+
+        # Retrieve user's cars
+        user_cars = current_user.garage.all()  
+        # Query user's bookings
+        user_bookings = Booking.query.filter(
+            (Booking.user_id == current_user.id) &
+            (
+                (Booking.start_datetime <= last_day_of_month) |  # Start date is within the current month
+                (Booking.end_datetime >= first_day_of_month)    # End date is within the current month
+            )
+        ).all()
+
+        # Initialize a dictionary to store booking information for each day
+        booking_data = defaultdict(lambda: defaultdict(list))
+        
+        # Populate booking data
+        for booking in user_bookings:
+            start_day = booking.start_datetime.day
+            end_day = booking.end_datetime.day
+            car_plate = booking.car_plate
+            if end_day < start_day:
+                end_day = current_date.replace(day=days_in_month).day
+            for day in range(start_day, end_day + 1):  # Include end_day in the range
+                # Check if the day is within the current month
+                if first_day_of_month <= booking.start_datetime <= last_day_of_month:
+                    booking_data[day][car_plate].append(booking)  # Store booking objects
+        
+        # Initialize lists to store data
+        car_data = []
+
+        for car in cars:
+            car_row = [f"{car.model} - {car.plate}"]
+            for day in range(1, int(days_in_month) + 1):
+                if booking_data[day][car.plate]:
+                    booking = booking_data[day][car.plate][0]  # Assuming only one booking per day
+                    booking_info = f"Booking ID: {booking.id}\nStart Date: {booking.start_datetime.strftime('%d/%m, %H:%M')}\nEnd Date: {booking.end_datetime.strftime('%d/%m, %H:%M')}"
+                    car_row.append(booking_info)
+                else:
+                    car_row.append('')
+            car_data.append(car_row)
+
+        # Create DataFrame
+        calendar_df = pd.DataFrame(car_data, columns=['Car'] + [str(day) for day in range(1, days_in_month + 1)])
+        output = io.BytesIO()
+        calendar_df.to_excel(output, index=False)
+        output.seek(0)
+
+        # Return the Excel file as a response
+        return send_file(
+            output,
+            download_name='calendar.xlsx',
+            as_attachment=True
+        )
+    
     
     return render_template('calendar.html' if current_user.language == 'en' else f'calendar_{current_user.language}.html', is_current_month=is_current_month,
                             cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/download_calendar', methods=['POST'])
+@app.route('/download_calendar', methods=['GET','POST'])
 @login_required
 def download_calendar():
-    booking_data = request.form.get('booking_data')
-    days_in_month = request.form.get('days_in_month')
+    booking_data = request.args.get('booking_data')
+    days_in_month = request.args.get('days_in_month')    
     cars = Car.query.filter_by(user_id=current_user.id).all()
+    print(type(booking_data))
 
     # Initialize lists to store data
     car_data = []

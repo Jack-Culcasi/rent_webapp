@@ -21,6 +21,10 @@
         <form action="{{ url_for('overview') }}" method="get">
             <button type="submit" title="Calendar View"><i class="fa-solid fa-left-long"></i></button>
         </form>
+        <!--<form action="{{ url_for('calendar') }}" method="POST">
+            <input type="hidden" name="current_month" value="{{ current_date }}">
+            <button type="submit" name="calendar_download" title="Download Calendar"><i class="fa fa-download"></i></button>
+        </form>-->
     </div>
 
     <!-- Flash Messages -->
