@@ -1,6 +1,6 @@
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
@@ -242,6 +242,17 @@ class Booking(db.Model):
     # Define the foreign key relationship with the Groups model
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id', name='booking_group'), nullable=True)
     group = db.relationship('Groups', back_populates='bookings', lazy=True)
+
+    def get_booking_info(self):
+        # Generate a string containing detailed booking information.
+        booking_info = f"Booking ID: {self.id}\n"
+        booking_info += f"Start Date: {self.start_datetime.strftime('%d/%m, %H:%M')}\n"
+        booking_info += f"End Date: {self.end_datetime.strftime('%d/%m, %H:%M')}\n"
+        if self.note:
+            booking_info += f"Note: {self.note}\n"
+        if self.group:
+            booking_info += f"Note: {self.group}\n"
+        return booking_info
 
     @staticmethod
     def create_booking(car_plate, price, start_datetime, end_datetime, contact_id, user_id, note, km=0, group_id=None):
