@@ -10,17 +10,24 @@
 
     <div class="row">
         <form action="{{ url_for('garage_manage') }}" method="get">
-            <button type="submit" title="Add or Delete a Car" style="width: 75px;"><i class="fa-solid fa-car" style="margin-left: -15px;"> +/-</i></button>
+            <button type="submit" title="Aggiungi o Rimuovi Auto" style="width: 75px;"><i class="fa-solid fa-car" style="margin-left: -15px;"> +/-</i></button>
         </form>
         <form action="{{ url_for('garage_car') }}" method="get">
-            <button type="submit" title="Manage a Car"><i class="fa-solid fa-car"></i></button>
+            <button type="submit" title="Gestisci Auto"><i class="fa-solid fa-car"></i></button>
         </form>
         <form action="{{ url_for('bookings_manage') }}" method="get">
-            <button type="submit" title="Manage Bookings"><i class="fa-solid fa-book-open"></i></button>
+            <button type="submit" title="Gestisci Prenotazione"><i class="fa-solid fa-book-open"></i></button>
         </form>
         <form action="{{ url_for('overview') }}" method="get">
-            <button type="submit" title="Calendar View"><i class="fa-solid fa-left-long"></i></button>
+            <button type="submit" title="Torna a Panoramica"><i class="fa-solid fa-left-long"></i></button>
         </form>
+        {% if is_current_month %}
+        <form action="{{ url_for('calendar') }}" method="POST">
+            <input type="hidden" name="current_date" value="{{ current_date }}">
+            <input type="hidden" name="current_month" value="{{ current_month }}">
+            <button type="submit" name="calendar_download" title="Scarica Calendario"><i class="fa fa-download"></i></button>
+        </form>
+        {% endif %}
     </div>
 
     <!-- Flash Messages -->

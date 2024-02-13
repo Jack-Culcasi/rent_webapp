@@ -21,10 +21,13 @@
         <form action="{{ url_for('overview') }}" method="get">
             <button type="submit" title="Calendar View"><i class="fa-solid fa-left-long"></i></button>
         </form>
+        {% if is_current_month %}
         <form action="{{ url_for('calendar') }}" method="POST">
-            <input type="hidden" name="current_month" value="{{ current_date }}">
+            <input type="hidden" name="current_date" value="{{ current_date }}">
+            <input type="hidden" name="current_month" value="{{ current_month }}">
             <button type="submit" name="calendar_download" title="Download Calendar"><i class="fa fa-download"></i></button>
         </form>
+        {% endif %}
     </div>
 
     <!-- Flash Messages -->
