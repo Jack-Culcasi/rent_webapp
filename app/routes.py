@@ -6,10 +6,13 @@ from datetime import datetime, timedelta
 from sqlalchemy import and_, or_, extract
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
+from openpyxl.comments import Comment
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 import calendar as cal
 import pandas as pd
 import io
+import openpyxl
 
 # Local imports
 from app import app, db
@@ -1021,7 +1024,7 @@ def calendar():
 
     if 'calendar_download' in request.form:
         print(request.form.get('current_date'))
-        #current_date = datetime.strptime(request.form.get('current_date'), "%B %Y")
+        # current_date = datetime.strptime(request.form.get('current_date'), "%B %Y")
         current_month = datetime.now().strftime("%B %Y")
         first_day_of_month = current_date.replace(day=1)
         last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
@@ -1029,7 +1032,7 @@ def calendar():
         cars = Car.query.filter_by(user_id=current_user.id).all()
 
         # Retrieve user's cars
-        user_cars = current_user.garage.all()  
+        user_cars = current_user.garage.all()
         # Query user's bookings
         user_bookings = Booking.query.filter(
             (Booking.user_id == current_user.id) &
@@ -1041,7 +1044,7 @@ def calendar():
 
         # Initialize a dictionary to store booking information for each day
         booking_data = defaultdict(lambda: defaultdict(list))
-        
+
         # Populate booking data
         for booking in user_bookings:
             start_day = booking.start_datetime.day
@@ -1053,7 +1056,7 @@ def calendar():
                 # Check if the day is within the current month
                 if first_day_of_month <= booking.start_datetime <= last_day_of_month:
                     booking_data[day][car_plate].append(booking)  # Store booking objects
-        
+
         # Initialize lists to store data
         car_data = []
 
@@ -1062,16 +1065,34 @@ def calendar():
             for day in range(1, int(days_in_month) + 1):
                 if booking_data[day][car.plate]:
                     booking = booking_data[day][car.plate][0]  # Assuming only one booking per day
-                    booking_info = f"Booking ID: {booking.id}\nStart Date: {booking.start_datetime.strftime('%d/%m, %H:%M')}\nEnd Date: {booking.end_datetime.strftime('%d/%m, %H:%M')}"
-                    car_row.append(booking_info)
+                    car_row.append(booking.id)
                 else:
                     car_row.append('')
             car_data.append(car_row)
 
         # Create DataFrame
         calendar_df = pd.DataFrame(car_data, columns=['Car'] + [str(day) for day in range(1, days_in_month + 1)])
+
+        # Convert DataFrame to an OpenPyXL worksheet
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        for r in dataframe_to_rows(calendar_df, index=False, header=True):
+            ws.append(r)
+
+        # Add comments to cells containing booking IDs
+        for row_index, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=2, max_col=ws.max_column)):
+            for col_index, cell in enumerate(row):
+                if cell.value:  # Check if the cell contains a booking ID
+                    booking_id = int(cell.value)
+                    booking = Booking.query.get(booking_id)  # Retrieve booking object
+                    if booking:
+                        booking_info = booking.get_booking_info()  # Get detailed booking information
+                        comment = Comment(booking_info, 'Booking Details')
+                        cell.comment = comment
+
+        # Save the workbook to a BytesIO object
         output = io.BytesIO()
-        calendar_df.to_excel(output, index=False)
+        wb.save(output)
         output.seek(0)
 
         # Return the Excel file as a response
@@ -1086,7 +1107,7 @@ def calendar():
                             cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/download_calendar', methods=['GET','POST'])
+@app.route('/download_calendar', methods=['GET','POST']) # NON IN USO
 @login_required
 def download_calendar():
     booking_data = request.args.get('booking_data')
