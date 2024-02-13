@@ -8,6 +8,7 @@ from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 from openpyxl.comments import Comment
 from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import PatternFill
 
 import calendar as cal
 import pandas as pd
@@ -1023,9 +1024,7 @@ def calendar():
                     booking_data[day][car_plate].append(booking)
 
     if 'calendar_download' in request.form:
-        print(request.form.get('current_date'))
-        # current_date = datetime.strptime(request.form.get('current_date'), "%B %Y")
-        current_month = datetime.now().strftime("%B %Y")
+        current_date = datetime.strptime(request.form.get('current_date'), "%Y-%m-%d %H:%M:%S")
         first_day_of_month = current_date.replace(day=1)
         last_day_of_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
         days_in_month = cal.monthrange(current_date.year, current_date.month)[1]
@@ -1064,8 +1063,11 @@ def calendar():
             car_row = [f"{car.model} - {car.plate}"]
             for day in range(1, int(days_in_month) + 1):
                 if booking_data[day][car.plate]:
-                    booking = booking_data[day][car.plate][0]  # Assuming only one booking per day
-                    car_row.append(booking.id)
+                    booking = booking_data[day][car.plate]  
+                    if len(booking) == 1:
+                        car_row.append(booking[0].id)
+                    if len(booking) > 1:
+                        car_row.append('M')
                 else:
                     car_row.append('')
             car_data.append(car_row)
@@ -1079,16 +1081,23 @@ def calendar():
         for r in dataframe_to_rows(calendar_df, index=False, header=True):
             ws.append(r)
 
-        # Add comments to cells containing booking IDs
+        # Add comments to cells containing booking IDs and change cell color if booked
         for row_index, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=2, max_col=ws.max_column)):
             for col_index, cell in enumerate(row):
                 if cell.value:  # Check if the cell contains a booking ID
-                    booking_id = int(cell.value)
-                    booking = Booking.query.get(booking_id)  # Retrieve booking object
-                    if booking:
-                        booking_info = booking.get_booking_info()  # Get detailed booking information
-                        comment = Comment(booking_info, 'Booking Details')
-                        cell.comment = comment
+                    if cell.value == 'M':
+                        cell.fill = PatternFill(start_color="80FF00", end_color="80FF00", fill_type="solid")  # rgba(128, 255, 0, 0.5)
+                    else:
+                        booking_id = int(cell.value)
+                        booking = Booking.query.get(booking_id)  # Retrieve booking object
+                        if booking:
+                            # Add comment with booking info
+                            booking_info = booking.get_booking_info()
+                            comment = Comment(booking_info, 'Booking Details')
+                            cell.comment = comment
+                            # Change cell color if booked to a lighter shade of green
+                            cell.fill = PatternFill(start_color="80FF00", end_color="80FF00", fill_type="solid")  # rgba(128, 255, 0, 0.5)
+                
 
         # Save the workbook to a BytesIO object
         output = io.BytesIO()
@@ -1098,7 +1107,7 @@ def calendar():
         # Return the Excel file as a response
         return send_file(
             output,
-            download_name='calendar.xlsx',
+            download_name=f'calendar_{request.form.get("current_month")}.xlsx',
             as_attachment=True
         )
     
