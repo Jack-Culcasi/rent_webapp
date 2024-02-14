@@ -1116,42 +1116,6 @@ def calendar():
                             cars=user_cars, booking_data=booking_data, current_month=current_month, current_day=current_day, current_date=current_date, datetime=datetime,
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/download_calendar', methods=['GET','POST']) # NON IN USO
-@login_required
-def download_calendar():
-    booking_data = request.args.get('booking_data')
-    days_in_month = request.args.get('days_in_month')    
-    cars = Car.query.filter_by(user_id=current_user.id).all()
-    print(type(booking_data))
-
-    # Initialize lists to store data
-    car_data = []
-
-    # Iterate over cars and days to collect data
-    for car in cars:
-        car_row = [f"{car.model} - {car.plate}"]
-        for day in range(1, int(days_in_month) + 1):
-            if booking_data[day][car.plate]:
-                booking = booking_data[day][car.plate][0]  # Assuming only one booking per day
-                booking_info = f"Booking ID: {booking.id}\nStart Date: {booking.start_datetime.strftime('%d/%m, %H:%M')}\nEnd Date: {booking.end_datetime.strftime('%d/%m, %H:%M')}"
-                car_row.append(booking_info)
-            else:
-                car_row.append('')
-        car_data.append(car_row)
-
-    # Create DataFrame
-    calendar_df = pd.DataFrame(car_data, columns=['Car'] + [str(day) for day in range(1, days_in_month + 1)])
-    output = io.BytesIO()
-    calendar_df.to_excel(output, index=False)
-    output.seek(0)
-
-    # Return the Excel file as a response
-    return send_file(
-        output,
-        download_name='calendar.xlsx',
-        as_attachment=True
-    )
-
 @app.route('/contacts', methods=['GET', 'POST'])
 @login_required
 def contacts(): 
@@ -1298,4 +1262,14 @@ def group_manage(group_id):
 
     return render_template('group_manage.html' if current_user.language == 'en' else f'group_manage_{current_user.language}.html', 
                            group=group, group_bookings=group_bookings, money=group.money, bookings_number=group.bookings_number, 
+                           user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/analytics', methods=['GET', 'POST'])
+@login_required
+def analytics():
+    report_type = request.form.get('reportType')
+    user_cars = current_user.garage.all()
+
+    return render_template('analytics.html' if current_user.language == 'en' else f'analytics_{current_user.language}.html',
+                           report_type=report_type, user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
