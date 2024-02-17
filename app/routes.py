@@ -131,72 +131,6 @@ def profile():
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 
-@app.route('/download', methods=['POST'])
-@login_required
-def download_file():
-    current_date = datetime.utcnow()
-    report_type = request.form.get('reportType')
-
-    if report_type == 'cars':
-        cars = Car.query.filter_by(user_id=current_user.id).all()
-        if current_user.language == 'it':
-            file_name = 'parco_auto.xlsx'
-            cars_data = [{'Targa': car.plate, 'Marchio': car.make, 'Modello': car.model, f'{current_user.measurement_unit}': car.km,
-                        'Carburante': car.fuel, 'Anno': car.year, 'Cilindrata': car.cc, 'Giorni noleggiati': car.days, 'Ricavo': car.money, 'Costi': car.car_cost, 
-                        'Scadenza Assicurazione': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
-                        'Scadenza Revisione': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
-                        'Scadenza Bollo': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
-                        for car in cars]
-        else:
-            file_name = 'garage_data.xlsx'
-            cars_data = [{'Plate': car.plate, 'Make': car.make, 'Model': car.model, f'{current_user.measurement_unit}': car.km,
-                        'Fuel': car.fuel, 'Year': car.year, 'CC': car.cc, 'Days rented': car.days, 'Revenue': car.money, 'Costs': car.car_cost, 
-                        'Insurance expiry': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
-                        'MOT expiry': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
-                        'Road Tax expiry': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
-                        for car in cars]
-        cars_df = pd.DataFrame(cars_data)
-        output = io.BytesIO()
-        cars_df.to_excel(output, index=False)
-        output.seek(0)
-        return send_file(
-            output,
-            download_name=file_name,
-            as_attachment=True
-        )
-    
-    elif report_type == 'bookings':
-        # Retrieve active bookings
-        active_bookings = Booking.query.filter(
-            (Booking.user_id == current_user.id) &
-            (Booking.end_datetime > current_date)
-        ).all()
-
-
-        if current_user.language == 'it':
-            file_name = 'resoconto_prenotazioni.xlsx'
-            bookings_data = [{'Prenotazione ID': booking.id, 'Targa Auto': booking.car.plate, 'Modello Auto': booking.car.model, f'{current_user.measurement_unit}': booking.km,
-                            'Prezzo': booking.money, 'Data Inizio': booking.start_datetime.strftime('%d-%m %H:%M'), 'Data Fine': booking.end_datetime.strftime('%d-%m %H:%M'),
-                             'Cliente': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
-                             'Gruppo': booking.group.name if booking.group else '', 
-                             'Nota': booking.note} for booking in active_bookings]
-        else:
-            file_name = 'bookings_data.xlsx'
-            bookings_data = [{'Booking ID': booking.id, 'Car Plate': booking.car.plate, 'Car Model': booking.car.model, f'{current_user.measurement_unit}': booking.km,
-                          'Price': booking.money, 'Start Date': booking.start_datetime.strftime('%d-%m %H:%M'), 'End Date': booking.end_datetime.strftime('%d-%m %H:%M'),
-                          'Client': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
-                          'Group': booking.group.name if booking.group else '',
-                          'Note': booking.note} for booking in active_bookings]
-        bookings_df = pd.DataFrame(bookings_data)
-        output = io.BytesIO()
-        bookings_df.to_excel(output, index=False)
-        output.seek(0)
-        return send_file(
-            output,
-            download_name=file_name,
-            as_attachment=True
-        )
-
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin(): 
@@ -289,6 +223,7 @@ def garage_manage(): # Add Car
 def search():
     user_cars = current_user.garage.all()
     current_page = request.form.get('source_page', default='garage_manage' if current_user.language == 'en' else f'garage_manage_{current_user.language}')
+    
 
     if request.method == 'POST':
         search_query = request.form.get('search_query')
@@ -332,10 +267,11 @@ def search():
             return render_template('garage_car.html' if current_user.language == 'en' else f'garage_car_{current_user.language}.html', 
                                    cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars,
                                    user_name=current_user.username if current_user.is_authenticated else None)
-        else:
-            pass
-            # Handle other pages if needed
-            #return render_template('default_template.html', cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars)
+        elif current_page == 'downloads':
+            return render_template('downloads.html' if current_user.language == 'en' else f'downloads_{current_user.language}.html', 
+                                   cars=filtered_cars, search_type=search_type, search_query=search_query, user_cars=user_cars,
+                                   single_data_button='car',
+                                   user_name=current_user.username if current_user.is_authenticated else None)
     
     else:
         # Render the search page template for a GET request
@@ -1264,12 +1200,112 @@ def group_manage(group_id):
                            group=group, group_bookings=group_bookings, money=group.money, bookings_number=group.bookings_number, 
                            user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/analytics', methods=['GET', 'POST'])
+@app.route('/downloads', methods=['GET', 'POST'])
 @login_required
-def analytics():
-    report_type = request.form.get('reportType')
+def downloads():
     user_cars = current_user.garage.all()
+    user_groups = current_user.groups.all()
+    user_contacts = current_user.contacts.all()
+    current_date = datetime.now().strftime('%d-%M-%y')    
+    alldata_button = request.form.get('allData_button')    
+    single_data_button = request.form.get('single_data_button')  
 
-    return render_template('analytics.html' if current_user.language == 'en' else f'analytics_{current_user.language}.html',
-                           report_type=report_type, user_cars=user_cars,
+    # Download all time data for: 
+    if alldata_button == 'cars':
+        if current_user.language == 'it':
+            file_name = f'parco_auto_{current_date}.xlsx'
+            cars_data = [{'Targa': car.plate, 'Marchio': car.make, 'Modello': car.model, f'{current_user.measurement_unit}': car.km,
+                        'Carburante': car.fuel, 'Anno': car.year, 'Cilindrata': car.cc, 'Giorni noleggiati': car.days, 'Ricavo': car.money, 'Costi': car.car_cost, 
+                        'Profitto': car.money-car.car_cost, 'Scadenza Assicurazione': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
+                        'Scadenza Revisione': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
+                        'Scadenza Bollo': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
+                        for car in user_cars]
+        else:
+            file_name = f'garage_data_{current_date}.xlsx'
+            cars_data = [{'Plate': car.plate, 'Make': car.make, 'Model': car.model, f'{current_user.measurement_unit}': car.km,
+                        'Fuel': car.fuel, 'Year': car.year, 'CC': car.cc, 'Days rented': car.days, 'Revenue': car.money, 'Costs': car.car_cost, 
+                        'Profit': car.money-car.car_cost, 'Insurance expiry': car.insurance_expiry_date.strftime('%d-%m-%Y') if car.insurance_expiry_date else None, 
+                        'MOT expiry': car.mot_expiry_date.strftime('%d-%m-%Y') if car.mot_expiry_date else None,
+                        'Road Tax expiry': car.road_tax_expiry_date.strftime('%d-%m-%Y') if car.road_tax_expiry_date else None}
+                        for car in user_cars]
+            
+        cars_df = pd.DataFrame(cars_data)
+        output = io.BytesIO()
+        cars_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name=file_name,
+            as_attachment=True
+        )
+    elif alldata_button == 'bookings':
+        user_bookings = Booking.query.filter_by(user_id=current_user.id).all()
+
+        if current_user.language == 'it':
+            file_name = f'resoconto_prenotazioni_{current_date}.xlsx'
+            bookings_data = [{'Prenotazione ID': booking.id, 'Targa Auto': booking.car.plate, 'Modello Auto': booking.car.model, f'{current_user.measurement_unit}': booking.km,
+                            'Prezzo': booking.money, 'Data Inizio': booking.start_datetime.strftime('%d-%m %H:%M'), 'Data Fine': booking.end_datetime.strftime('%d-%m %H:%M'),
+                            'Cliente': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
+                            'Gruppo': booking.group.name if booking.group else '', 
+                            'Nota': booking.note} for booking in user_bookings]
+        else:
+            file_name = f'bookings_data_{current_date}.xlsx'
+            bookings_data = [{'Booking ID': booking.id, 'Car Plate': booking.car.plate, 'Car Model': booking.car.model, f'{current_user.measurement_unit}': booking.km,
+                        'Price': booking.money, 'Start Date': booking.start_datetime.strftime('%d-%m %H:%M'), 'End Date': booking.end_datetime.strftime('%d-%m %H:%M'),
+                        'Client': (Contacts.query.filter_by(id=booking.contact_id).first()).full_name if booking.contact_id else '', 
+                        'Group': booking.group.name if booking.group else '',
+                        'Note': booking.note} for booking in user_bookings]
+        bookings_df = pd.DataFrame(bookings_data)
+        output = io.BytesIO()
+        bookings_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name=file_name,
+            as_attachment=True
+        )
+    elif alldata_button == 'contacts':
+        if current_user.language == 'it':
+            file_name = f'resoconto_contatti_{current_date}.xlsx'
+            contacts_data = [{'ID': contact.id, 'Nome Completo': contact.full_name, 'Numero Patente': contact.driver_licence_n,
+                            'Data Di Nascita': contact.dob, 'Telefono': contact.telephone, 'Soldi Spesi': contact.money_spent,
+                            'Giorni Noleggiati': contact.rented_days, 'Numero Noleggi': len(contact.bookings.all())  } for contact in user_contacts]
+        else:
+            file_name = f'contacts_data_{current_date}.xlsx'
+            contacts_data = [{'ID': contact.id, 'Full Name': contact.full_name, 'Driver Licence Number': contact.driver_licence_n,
+                            'Date Of Birth': contact.dob, 'Telephone': contact.telephone, 'Money Spent': contact.money_spent,
+                            'Rented Days': contact.rented_days, 'Bookings Number': len(contact.bookings.all())  } for contact in user_contacts]
+        contacts_df = pd.DataFrame(contacts_data)
+        output = io.BytesIO()
+        contacts_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name=file_name,
+            as_attachment=True
+        )
+    elif alldata_button == 'groups':
+        if current_user.language == 'it':
+            file_name = f'resoconto_gruppi_{current_date}.xlsx'
+            groups_data = [{'ID': group.id, 'Nome Gruppo': group.name, 'Telefono': group.telephone, 'Ricavo': group.money,
+                            'Numero Noleggi': group.bookings_number  } for group in user_groups]
+        else:
+            file_name = f'groups_data_{current_date}.xlsx'
+            groups_data = [{'ID': group.id, 'Group Name': group.name, 'Telephone': group.telephone, 'Revenue': group.money,
+                            'Bookings Number': group.bookings_number  } for group in user_groups]
+        groups_df = pd.DataFrame(groups_data)
+        output = io.BytesIO()
+        groups_df.to_excel(output, index=False)
+        output.seek(0)
+        return send_file(
+            output,
+            download_name=file_name,
+            as_attachment=True
+        )        
+    # Download all time data for: 
+    if single_data_button == 'car':
+        pass
+
+    return render_template('downloads.html' if current_user.language == 'en' else f'downloads_{current_user.language}.html', 
+                           page="downloads", single_data_button=single_data_button if single_data_button else None, user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
