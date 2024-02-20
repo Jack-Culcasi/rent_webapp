@@ -71,6 +71,13 @@
 											</ul>
 										</li>
 										<li><a href="{{ url_for('calendar') }}">Calendar</a></li>
+										<li>
+											<span class="opener {% if page == 'analytics' or page == 'downloads' %}active{% endif %}">Analytics</span>
+											<ul>
+												<li>Graphs</li>												
+												<li><a href="{{ url_for('downloads') }}">Download Section</a></li>
+											</ul>
+										</li>
 										<li><a href="{{ url_for('profile') }}">Profile</a></li>
 										{% if current_user.username == 'admin' and current_user.role == 'admin' %}
 										<li>
