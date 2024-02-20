@@ -46,7 +46,7 @@
     <!-- Display current month -->
 
     <div class="row" style="display: flex; align-items: center;">
-        <form action="{{ url_for('calendar') }}" method="POST" style="margin-left: 450px; margin-top: 15px;">
+        <form action="{{ url_for('calendar') }}" method="POST" style="margin-left: auto; margin-top: 15px;">
             <button type="submit" title="Previous Month" name="prev_month" value="{{ current_month }}" style="border: none; background-color: transparent; box-shadow: none;">
                 <i class="fa-solid fa-angles-left"></i>
             </button>
@@ -56,12 +56,13 @@
             <h3 style="margin-top: 0;">{{ current_day if is_current_month else '' }} {{ current_month }}</h3>
         </div>
     
-        <form action="{{ url_for('calendar') }}" method="POST" style="margin-right: 450px; margin-top: 15px;">
+        <form action="{{ url_for('calendar') }}" method="POST" style="margin-right: auto; margin-top: 15px;">
             <button type="submit" title="Next Month" name="next_month" value="{{ current_month }}" style="border: none; background-color: transparent; box-shadow: none;">
                 <i class="fa-solid fa-angles-right"></i>
             </button>
         </form>
-    </div> 
+    </div>
+    
 
     <table class="calendar">
         <tr>
