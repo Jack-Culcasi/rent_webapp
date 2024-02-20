@@ -27,23 +27,6 @@
     <button type="submit" class="btn btn-danger btn-delete" name="delete_account"><i class="fas fa-trash-alt"></i></button>
 </form>
 
-<h5>Download reports</h5>
-<form action="{{ url_for('download_file') }}" method="post">
-    <div class="row">
-        <div class="col">
-            <select class="form-select" id="reportType" name="reportType">
-                <option value="cars">Garage</option>
-                <option value="bookings">Active bookings</option>
-            </select>
-        </div>
-        <div class="col">
-            <button class="btn btn-primary" type="submit">
-                <i class="fa fa-download"></i>
-            </button>
-        </div>
-    </div>
-</form>
-
 {% if time_difference <= one_minute %}
     <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
         Plase update preferred currency, language and unit of measurement!
