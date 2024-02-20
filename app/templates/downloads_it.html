@@ -1,0 +1,126 @@
+{% if current_user.language == 'en' %}
+    {% extends "index.html" %}
+{% else %}
+    {% extends "index_" + current_user.language + ".html" %}
+{% endif %}
+
+{% block content %}
+
+ <!-- Flash Messages -->
+ {% for category, message in get_flashed_messages(with_categories=true) %}
+ {% if category == 'success' %}
+     <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+         {{ message }}
+     </div>
+ {% elif category == 'error' %}
+     <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+         {{ message }}
+     </div>
+ {% endif %} 
+{% endfor %}
+
+<label>Scarica lo storico per:</label>
+
+<form action="{{ url_for('downloads') }}" method="post">
+    <div class="btn-group" role="group" aria-label="Basic outlined example">
+        <button type="submit" name="allData_button" value="cars" class="btn btn-outline-primary">Auto</button>
+        <button type="submit" name="allData_button" value="bookings" class="btn btn-outline-primary">Prenotazioni</button>
+        <button type="submit" name="allData_button" value="contacts" class="btn btn-outline-primary">Contatti</button>
+        <button type="submit" name="allData_button" value="groups" class="btn btn-outline-primary">Gruppi</button>
+    </div>
+</form>
+
+<label>Download all bookings for single:</label>
+
+<form action="{{ url_for('downloads') }}" method="post">
+    <div class="btn-group" role="group" aria-label="Basic outlined example">
+        <button type="submit" name="single_data_button" value="car" class="btn btn-outline-primary">Car</button>
+        <button type="submit" name="single_data_button" value="contact" class="btn btn-outline-primary">Contact</button>
+        <button type="submit" name="single_data_button" value="group" class="btn btn-outline-primary">Group</button>
+    </div>
+</form>
+
+{% if single_data_button %}
+    {% if single_data_button == 'car' %}
+        <form action="/search" method="POST">
+            <div class="row" style="margin-top: -20px;">
+            <!-- Dropdown for search type -->
+            <div class="col">
+                <label for="search_type" class="form-label">Search by</label>
+                <select class="form-select" id="search_type" name="search_type">
+                <option value="plate">Plate</option>
+                <option value="make">Make</option>
+                <option value="model">Model</option>
+                <option value="fuel">Fuel</option>
+                <option value="year">Year</option>
+                <option value="cc">Cc</option>
+                </select>
+            </div>
+            <!-- Input field for search query -->
+            <div class="col">
+                <label for="search_type" class="form-label hidden-label">Search Query</label>
+                <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+            </div>
+            <!-- "Or" text -->
+            <div class="col">
+                <p style="text-align: center; margin-top: 3em;">Or</p>
+            </div>
+            <!-- Dropdown for selecting a car -->
+            <div class="col">
+                <label for="select_car" class="form-label">Select a Car</label>
+                <select class="form-select" id="select_car" name="select_car">
+                <option value="blank">Select a car...</option>
+                {% for car in user_cars %}
+                <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }} - {{ car.year }}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="source_page" value="downloads">
+            <button type="submit" class="btn btn-danger" style="margin-top: 40px; width: 120px; padding-left: 0px; margin-left: 20px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>        
+        </form>
+
+        {% if search_query or cars %}
+            {% if cars %}
+                <!-- Display search results in a table -->
+                <h3>Results</h3>
+                <table class="table" id="carTable">
+                <thead>
+                    <tr>
+                    <th scope="col">Targa</th>
+                    <th scope="col">Marchio</th>
+                    <th scope="col">Modello</th>
+                    <th scope="col">Carburante</th>
+                    <th scope="col">Anno</th>
+                    <th scope="col">Cilindrata</th>
+                    <th scope="col">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for car in cars %}
+                    <tr>
+                        <td>{{ car.plate }}</td>
+                        <td>{{ car.make }}</td>
+                        <td>{{ car.model }}</td>
+                        <td>{{ car.fuel }}</td>
+                        <td>{{ car.year }}</td>
+                        <td>{{ car.cc }}</td>
+                        <td>
+                        <!-- Button to select a car -->
+                        <form action="/garage_car" method="POST" style="margin-bottom: auto;">
+                            <input type="hidden" name="plate" value="{{ car.plate }}">
+                            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-wrench"></i></button>
+                        </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+{% endblock %}
