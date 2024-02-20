@@ -11,7 +11,7 @@
   <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
 </head>
 
-<form action="{{ url_for('garage_car') }}" method="POST">
+
 <header id="header">
   <h2>Garage</h2>
 </header>
@@ -41,19 +41,20 @@
           <td data-sort="fuel">{{ car.fuel }}</td>
           <td data-sort="year">{{ car.year }}</td>
           <td data-sort="cc">{{ car.cc }}</td>
-          <td>
-            <!-- Add hidden input for Car plate -->
+          <form action="{{ url_for('garage_car') }}" method="POST">
+          <td style="width: 20px;">            
+            <!-- Add hidden input for Car plate -->          
             <input type="hidden" name="car_plate" value="{{ car.plate }}">
             <button type="submit" class="btn btn-danger" name="garage_car" value="{{ car.plate }}"><i class="fa-solid fa-wrench"></i></button>
-          </form>
         </td>
+      </form>
+        <form action="/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
         <td>
           <!-- Button to delete a car -->
-          <form action="/delete" method="POST" style="margin: 0; margin-left: -130px;" onsubmit="return confirm('Are you sure you want to delete this car? All the bookings related to this car will be deleted too.');">
             <input type="hidden" name="car_plate" value="{{ car.plate }}">
-            <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>
-          </form>
+            <button type="submit" class="btn btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>       
         </td>
+      </form>
       </tr>
       {% endfor %}
   </tbody>
