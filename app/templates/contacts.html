@@ -122,26 +122,26 @@
 
 <table class="table" id="contactTable">
   <thead>
-    <tr>
-      <!-- Define sortable columns with clickable links -->
-      <th scope="col"><a href="#" class="sort-link" data-sort="id">Id</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="full_name">Full Name</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="dob">Date of Birth</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="driver_licence_n">Driver Licence</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="telephone">Telephone</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="action">Actions</a></th>
-    </tr>
+      <tr>
+          <!-- Define sortable columns with clickable links -->
+          <th scope="col">Id</th>
+          <th scope="col">Full Name</th>
+          <th scope="col">Date of Birth</th>
+          <th scope="col">Driver Licence</th>
+          <th scope="col">Telephone</th>
+          <th scope="col">Actions</th>
+      </tr>
   </thead>
   <tbody>
     <!-- Iterate through user_contacts and display contact data in rows -->
     {% for contact in user_contacts %}
     <tr>
         <!-- Display contact data with associated sorting attribute -->
-        <td data-sort="id">{{ contact.id }}</td>
-        <td data-sort="full_name">{{ contact.full_name }}</td>
-        <td data-sort="dob">{{ contact.dob }}</td>
-        <td data-sort="driver_licence_n">{{ contact.driver_licence_n }}</td>
-        <td data-sort="telephone">{{ contact.telephone }}</td>
+        <td>{{ contact.id }}</td>
+        <td>{{ contact.full_name }}</td>
+        <td>{{ contact.dob }}</td>
+        <td>{{ contact.driver_licence_n }}</td>
+        <td>{{ contact.telephone }}</td>
           <form class="col" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
               <td>     
                   <button type="submit" class="btn btn-link"><i class="fa-solid fa-wrench"></i></button>

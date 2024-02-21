@@ -117,48 +117,49 @@
 
 
 <header id="header">
-    <h2>Contatti</h2>
+  <h2>Contatti</h2>
 </header>
 
 <table class="table" id="contactTable">
-  <thead>
-    <tr>
-      <!-- Define sortable columns with clickable links -->
-      <th scope="col"><a href="#" class="sort-link" data-sort="id">Id</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="full_name">Nome completo</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="dob">Data di nascita</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="driver_licence_n">Numero patente</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="telephone">Telefono</a></th>
-      <th scope="col"><a href="#" class="sort-link" data-sort="action">Azioni</a></th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Iterate through user_contacts and display contact data in rows -->
-    {% for contact in user_contacts %}
-    <tr>
-        <!-- Display contact data with associated sorting attribute -->
-        <td data-sort="id">{{ contact.id }}</td>
-        <td data-sort="full_name">{{ contact.full_name }}</td>
-        <td data-sort="dob">{{ contact.dob }}</td>
-        <td data-sort="driver_licence_n">{{ contact.driver_licence_n }}</td>
-        <td data-sort="telephone">{{ contact.telephone }}</td>
-        <form class="col" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
-          <td>     
-              <button type="submit" class="btn btn-link"><i class="fa-solid fa-wrench"></i></button>
-          </td>
-      </form>
-      <form class="col" action="{{ url_for('contacts') }}" method="POST">
-          <td>
-              <button type="submit" class="btn btn-danger btn-delete" name="delete_contact" value="{{ contact.id }}" onclick="return confirm('Are you sure you want to delete this contact?');"><i class="fas fa-trash-alt"></i></button>
-          </td>
-          <td>
-              <button type="submit" class="btn btn-danger p-0" name="book_contact" value="{{ contact.id }}"><i class="fa-solid fa-book-open"></i></button>          
-          </td>
-      </form>
+<thead>
+  <tr>
+    <!-- Define sortable columns -->
+    <th scope="col">Id</th>
+    <th scope="col">Nome completo</th>
+    <th scope="col">Data di nascita</th>
+    <th scope="col">Numero patente</th>
+    <th scope="col">Telefono</th>
+    <th scope="col">Azioni</th>
   </tr>
-    {% endfor %}
+</thead>
+<tbody>
+  <!-- Iterate through user_contacts and display contact data in rows -->
+  {% for contact in user_contacts %}
+  <tr>
+      <!-- Display contact data -->
+      <td>{{ contact.id }}</td>
+      <td>{{ contact.full_name }}</td>
+      <td>{{ contact.dob }}</td>
+      <td>{{ contact.driver_licence_n }}</td>
+      <td>{{ contact.telephone }}</td>
+      <form class="col" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
+        <td>     
+            <button type="submit" class="btn btn-link"><i class="fa-solid fa-wrench"></i></button>
+        </td>
+    </form>
+    <form class="col" action="{{ url_for('contacts') }}" method="POST">
+        <td>
+            <button type="submit" class="btn btn-danger btn-delete" name="delete_contact" value="{{ contact.id }}" onclick="return confirm('Are you sure you want to delete this contact?');"><i class="fas fa-trash-alt"></i></button>
+        </td>
+        <td>
+            <button type="submit" class="btn btn-danger p-0" name="book_contact" value="{{ contact.id }}"><i class="fa-solid fa-book-open"></i></button>          
+        </td>
+    </form>
+</tr>
+  {% endfor %}
 </tbody>
 </table>
+
 
 
   
