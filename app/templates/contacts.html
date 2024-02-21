@@ -142,21 +142,21 @@
         <td data-sort="dob">{{ contact.dob }}</td>
         <td data-sort="driver_licence_n">{{ contact.driver_licence_n }}</td>
         <td data-sort="telephone">{{ contact.telephone }}</td>
-        <td>
-          <!-- Add hidden input for contact id -->
-          <form class="table-form" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
-              <button type="submit" style="margin-right: -20px;"><i class="fa-solid fa-wrench"></i></button>
+          <form class="col" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
+              <td>     
+                  <button type="submit" class="btn btn-link"><i class="fa-solid fa-wrench"></i></button>
+              </td>
           </form>
-      </td>
-      <form action="{{ url_for('contacts') }}" method="POST">
-      <td>
-        <button type="submit" style="margin-left: -50px;" class="btn btn-danger btn-delete" name="delete_contact" value="{{ contact.id }}" onclick="return confirm('Are you sure you want to delete this contact?');"><i class="fas fa-trash-alt"></i></button>
-      </td>
-      <td>
-        <button type="submit" style="margin-left: -50px;" class="btn btn-danger" name="book_contact" value="{{ contact.id }}"><i class="fa-solid fa-book-open"></i></button>
-      </td>
-      </form> 
-    </tr>
+          <form class="col" action="{{ url_for('contacts') }}" method="POST">
+              <td>
+                  <button type="submit" class="btn btn-danger btn-delete" name="delete_contact" value="{{ contact.id }}" onclick="return confirm('Are you sure you want to delete this contact?');"><i class="fas fa-trash-alt"></i></button>
+              </td>
+              <td>
+                  <button type="submit" class="btn btn-danger p-0" name="book_contact" value="{{ contact.id }}"><i class="fa-solid fa-book-open"></i></button>          
+              </td>
+          </form>
+      
+      </tr>
     {% endfor %}
 </tbody>
 </table>
