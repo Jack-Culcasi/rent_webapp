@@ -1,0 +1,36 @@
+{% if current_user.is_authenticated %}
+    {% if current_user.language == 'en' %}
+        {% extends "index.html" %}
+    {% else %}
+        {% extends "index_" + current_user.language + ".html" %}
+    {% endif %}
+{% else %}
+    {% extends "index.html" %}
+{% endif %}
+
+{% block content %}
+    
+<form method="POST" action="{{ url_for('graphs') }}">
+    <!-- Date Selector -->
+    <div class="row">
+    
+        <!-- Start Date Input -->
+        <div class="col">
+            <label for="from" class="form-label">From</label>
+            <input type="date" class="form-control" id="from" name="from" value="{{ from_datetime }}" required>
+        </div>
+    
+        <!-- End Date Input -->
+        <div class="col">
+            <label for="to" class="form-label">To</label>
+            <input type="date" class="form-control" id="to" name="to" value="{{ to_datetime }}" required>
+        </div>
+        <button type="submit" name='check' class="btn btn-primary" style="margin-top: 35px; margin-left: 20px; width: 60px;"><i class="fa-solid fa-magnifying-glass" style="margin-right: 20px;"></i></button>
+    </div>
+    
+</form> 
+
+<img src="data:image/png;base64,{{ plot_data }}" alt="Booking Durations">
+
+
+{% endblock %}
