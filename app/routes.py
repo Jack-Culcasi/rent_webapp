@@ -9,11 +9,14 @@ from dateutil.relativedelta import relativedelta
 from openpyxl.comments import Comment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import PatternFill
+from io import BytesIO
 
 import calendar as cal
 import pandas as pd
 import io
 import openpyxl
+import matplotlib.pyplot as plt
+import base64
 
 # Local imports
 from app import app, db
@@ -1309,3 +1312,81 @@ def downloads():
     return render_template('downloads.html' if current_user.language == 'en' else f'downloads_{current_user.language}.html', 
                            page="downloads", single_data_button=single_data_button if single_data_button else None, user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/graphs', methods=['GET', 'POST'])
+@login_required
+def graphs():
+    user_cars = current_user.garage.all()
+    user_contacts = current_user.contacts.all()
+    user_groups = current_user.groups.all()
+
+    # To check time frame
+    from_date = request.form.get('from')
+    to_date = request.form.get('to')
+
+    # Standard time frame if no Input of 1 month
+    if from_date == None:
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        to_date = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
+        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+    # Chosen time frame if Input    
+    else:
+        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
+        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
+        #Include the full to_datetime
+        to_datetime += timedelta(days=1)    
+
+    # Fetch all bookings for the user within the specified time range
+    user_bookings = Booking.query.filter(
+                Booking.user_id == current_user.id,
+                Booking.start_datetime >= from_datetime,
+                Booking.start_datetime <= to_datetime,
+                ).all()
+
+    # Extract the dates of bookings
+    booking_dates = [booking.start_datetime.date() for booking in user_bookings]
+
+    # Define the time frame
+    time_frame = to_datetime - from_datetime
+
+    # Create a list of all the days in the time frame
+    all_dates = [from_datetime + timedelta(days=i) for i in range(time_frame.days + 1)]
+    all_dates = [date.date() for date in all_dates]
+
+    # Count the number of bookings for each day
+    date_counts = {}
+    for date in all_dates:
+        date_counts[date] = sum(1 for booking in user_bookings if booking.start_datetime.date() == date)
+
+    # Extract dates and corresponding counts
+    dates = list(date_counts.keys())
+    counts = list(date_counts.values())
+
+    # Convert the plot data to datetime.date objects
+    dates = [date.strftime('%d') for date in dates]
+
+    # Plot the data
+    plt.plot(dates, counts, color='blue', marker='', linestyle='-')
+
+    # Customize the plot
+    plt.title('Number of Bookings per Day')
+    plt.xlabel('Day')
+    plt.ylabel('Number of Bookings')
+    plt.xticks(rotation=45, ha='right')
+
+    # Show the plot
+    plt.tight_layout()
+
+    # Save the plot to a buffer and convert to base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    plot_data = base64.b64encode(buffer.getvalue()).decode()
+    plt.close()  # Close the plot to prevent it from displaying in the console
+
+
+    return render_template('graphs.html' if current_user.language == 'en' else f'graphs_{current_user.language}.html',
+                           from_datetime=from_datetime.strftime('%Y-%m-%d'), to_datetime=to_datetime.strftime('%Y-%m-%d'),
+                           user_name=current_user.username if current_user.is_authenticated else None,
+                           plot_data=plot_data)
