@@ -4,8 +4,6 @@
 
 #   Improvements:
 
-- sorting algo not always working
-
 - Improve  Admin Dashboard, aggiungere diversi tipi di report (scheda auto etc)
 
 - Add Email support (autentication etc...)
@@ -16,6 +14,11 @@
 
 - add search form for car when booking and for bookings in booking manage
 
-- grafica sballata in altri schermi
+- Bookings che spannano su piu di un mese non vengono contati in calendar e grafici
 
-- make calendar downloadable
+- finire grafici e downloads
+
+Tutte le macchine, tutti i bookings, tutti i contatti, tutti i gruppi, tutti i bookings per: ogni macchina, contatto o gruppo.
+
+- Number of bookings within a certain time frame
+- Number 
