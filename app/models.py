@@ -4,6 +4,9 @@ from flask_login import UserMixin, current_user
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+from time import time
+import jwt
+from app import app
 
 @login.user_loader
 def load_user(id):
@@ -22,6 +25,35 @@ class User(UserMixin, db.Model):
     currency = db.Column(db.String(1), default='€')
     measurement_unit = db.Column(db.String(5), default='Km')
     language = db.Column(db.String(2), default='en')
+    is_verified = db.Column(db.Boolean, default=False)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return db.session.get(User, id)
+    
+    def get_verification_token(self, expires_in=600):
+        return jwt.encode(
+            {'verify_email': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_verification_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['verify_email']
+        except:
+            return
+        return db.session.query(User).get(id)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
