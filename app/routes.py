@@ -4,12 +4,17 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from datetime import datetime, timedelta
 from sqlalchemy import and_, or_, extract
+import sqlalchemy as sa
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 from openpyxl.comments import Comment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import PatternFill
+from flask_mail import Mail, Message
 from io import BytesIO
+from app.forms import ResetPasswordRequestForm, ResetPasswordForm
+from app.email import send_password_reset_email, send_verification_email
+from app.decorator import requires_verification
 
 import calendar as cal
 import pandas as pd
@@ -22,6 +27,8 @@ import base64
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking, Contacts, Groups
+
+mail = Mail()
 
                                                                                 # Users Login/Logout/Profile/Admin
 
@@ -52,15 +59,78 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+
+        # Send verification email
+        send_verification_email(user)
+
+        flash('Please check and confirm your email to continue!')
         
         # Log in the new user
         login_user(user)
         
-        # Redirect the user to the profile page with a message
-        flash('Please update your preferences', 'info')
-        return redirect(url_for('profile'))
+        return redirect(url_for('confirm_email'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/confirm_email', methods=['GET', 'POST']) 
+def confirm_email():
+    if current_user.is_verified:
+        return redirect(url_for('overview'))
+    else:
+        return render_template('confirm_email.html', title='Confirm Email', current_user=current_user,
+                               user_name=current_user.username if current_user.is_authenticated else None)
+    
+@app.route('/send_verification_email',  methods=['GET', 'POST']) 
+def send_verification_email_route():
+    if not current_user.is_verified:
+        send_verification_email(current_user)
+        return render_template('confirm_email.html', title='Confirm Email', current_user=current_user,
+                                user_name=current_user.username if current_user.is_authenticated else None)  
+    else:
+        return redirect(url_for('overview'))
+  
+@app.route('/confirm_email/<token>', methods=['GET'])
+def confirm_email_token(token):
+    user = User.verify_verification_token(token)
+    print('User.verify_verification_token(token)', User.verify_verification_token(token))
+    if user:
+        # Mark the user as verified
+        user.is_verified = True
+        db.session.commit()
+        flash('Your email address has been successfully verified!', 'success')
+        return redirect(url_for('profile'))  
+    else:
+        flash('Invalid or expired token. Please try again.', 'error')
+        return redirect(url_for('confirm_email'))
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            sa.select(User).where(User.email == form.email.data))
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html',
+                           title='Reset Password', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)
 
 @app.route('/logout')
 def logout():
@@ -68,7 +138,7 @@ def logout():
     return redirect(url_for('overview'))
 
 @app.route('/profile', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def profile(): 
     current_datetime = datetime.utcnow()
     time_difference = current_datetime - current_user.registration_date
@@ -135,7 +205,7 @@ def profile():
 
 
 @app.route('/admin', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def admin(): 
     if current_user.username == 'admin' and current_user.role == 'admin':
         users = User.query.all()
@@ -149,7 +219,7 @@ def admin():
         return render_template('404.html')
     
 @app.route('/users_list', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def users_list(): 
     if current_user.username == 'admin' and current_user.role == 'admin':
         users = User.query.all()
@@ -158,7 +228,7 @@ def users_list():
         return render_template('404.html')
     
 @app.route('/user/<username>', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def user(username):
     if current_user.username == 'admin' and current_user.role == 'admin':
         user = User.query.filter_by(username=username).one()
@@ -180,7 +250,7 @@ def user(username):
                                                                                 # Garage
 
 @app.route('/garage_view', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def garage_view():
     user_cars = current_user.garage.all()
     return render_template('garage_view.html' if current_user.language == 'en' else f'garage_view_{current_user.language}.html', 
@@ -188,7 +258,7 @@ def garage_view():
                            page="garage_view", user_cars=user_cars, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_manage', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def garage_manage(): # Add Car
     user_cars = current_user.garage.all()
     if request.method == 'POST':
@@ -304,7 +374,7 @@ def delete_car():
 
 @app.route('/')
 @app.route('/overview', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def overview(): # Booking
     contact_id = request.args.get('contact_id')
     contact = None
@@ -448,7 +518,7 @@ def overview(): # Booking
                             cars_expiring_soon=cars_expiring_soon)
     
 @app.route('/renew', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def renew():
     car_plate = request.args.get('car_plate')
     car_object = Car.query.filter_by(plate=car_plate).first()
@@ -503,7 +573,7 @@ def renew():
                            renewals=car_renewals, car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_car', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def garage_car():
     user_cars = current_user.garage.all()
     current_datetime = datetime.utcnow()
@@ -647,7 +717,7 @@ def garage_car():
 
 
 @app.route('/bookings_view', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def bookings_view(): 
     current_date = datetime.utcnow()
     
@@ -662,7 +732,7 @@ def bookings_view():
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_manage', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def bookings_manage():
     current_date = datetime.utcnow()
     booking_id = request.args.get('booking_id')
@@ -750,7 +820,7 @@ def bookings_manage():
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def bookings_history(): 
     current_date = datetime.utcnow()
     
@@ -810,7 +880,7 @@ def bookings_history():
                                                                                 # Calendar
 
 @app.route('/calendar', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def calendar(): 
     current_date = datetime.now()
     current_day = datetime.now().day
@@ -1056,7 +1126,7 @@ def calendar():
                             days_in_month=days_in_month, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/contacts', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def contacts(): 
     user_contacts = current_user.contacts.all()
 
@@ -1106,7 +1176,7 @@ def contacts():
 
     
 @app.route('/contact/<int:contact_id>', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def contact_manage(contact_id):
     contact = Contacts.query.get_or_404(contact_id)
     contact_bookings = contact.bookings.all()    
@@ -1135,7 +1205,7 @@ def contact_manage(contact_id):
                            money=contact.money_spent, bookings_number=len(contact_bookings), user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/groups', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def groups(): 
     user_groups = current_user.groups.all()
 
@@ -1177,7 +1247,7 @@ def groups():
                            user_groups=user_groups, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/groups/<int:group_id>', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def group_manage(group_id):
     group = Groups.query.get_or_404(group_id)
     group_bookings = group.bookings.all()    
@@ -1204,7 +1274,7 @@ def group_manage(group_id):
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/downloads', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def downloads():
     user_cars = current_user.garage.all()
     user_groups = current_user.groups.all()
@@ -1314,8 +1384,13 @@ def downloads():
                            user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/graphs', methods=['GET', 'POST'])
-@login_required
+@requires_verification
 def graphs():
+    '''msg = Message('Oggetto',
+                  sender='rentami_team@outlook.com',
+                  recipients=['giacomofculcasi@gmail.com'])
+    msg.body = 'evviva lo sticchio!'
+    mail.send(msg)'''
     user_cars = current_user.garage.all()
     user_contacts = current_user.contacts.all()
     user_groups = current_user.groups.all()
