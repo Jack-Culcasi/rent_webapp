@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<h1>Check your email</h1>
+
+<p>You should find a confirmation link in your email inbox. If you don't see it, please check your spam folder!</p> 
+<p>If you haven't received the email, you can <a href="{{ url_for('send_verification_email_route') }}">request a new confirmation link</a>.</p>
+
+{% endblock %}

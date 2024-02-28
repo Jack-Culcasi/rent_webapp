@@ -1,0 +1,11 @@
+Dear {{ user.username }},
+
+Welcome to Rentami! To confirm your email address, please click on the following link:
+
+{{ url_for('confirm_email_token', token=token, _external=True) }}
+
+Thank you for joining us!
+
+Sincerely,
+
+The Rentami Team
