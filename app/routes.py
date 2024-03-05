@@ -221,6 +221,20 @@ def admin():
 @app.route('/users_list', methods=['GET', 'POST'])
 @requires_verification
 def users_list(): 
+    if request.method == 'POST':
+        user_id = request.form.get('activation') #Change the is_verified user variable
+        user = User.query.filter_by(id=user_id).one()
+        if user:
+            if user.is_verified == True:
+                user.is_verified = False
+                db.session.commit()
+                flash(f'The user with ID {user.id} and Email {user.email} has been Deactivated', 'success')
+                return redirect(url_for('users_list'))
+            else:
+                user.is_verified = True
+                db.session.commit()
+                flash(f'The user with ID {user.id} and Email {user.email} has been Activated', 'success')
+                return redirect(url_for('users_list'))
     if current_user.username == 'admin' and current_user.role == 'admin':
         users = User.query.all()
         return render_template('users_list.html', page='users_list', users=users)
