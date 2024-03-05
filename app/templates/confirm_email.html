@@ -7,4 +7,8 @@
 <p>You should find a confirmation link in your email ({{ current_user.email }}) inbox. If you don't see it, please check your spam folder!</p> 
 <p>If you haven't received the email, you can <a href="{{ url_for('send_verification_email_route') }}">request a new confirmation link</a>.</p>
 
+<p>If you are still not receiving any emails, please 
+    <a href="mailto:rentami_team@outlook.com?subject=Email%20Registration%20Issue&body=Please%20activate%20the%20account%20linked%20with%20this%20email">click here</a> 
+    and send us the prefilled email using your registration email.</p>
+
 {% endblock %}
