@@ -33,6 +33,7 @@
             <th>Reg Date</th>
             <th>User Revenue</th>
             <th>Action</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -46,6 +47,11 @@
                 <td>
                     <form action="{{ url_for('user', username=user.username) }}" method="get">
                         <button type="submit"><i class="fa-solid fa-wrench"></i></button>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('users_list') }}" method="post">
+                        <button type="submit" name="activation" value="{{ user.id }}">{{ user.is_verified }}</button>
                     </form>
                 </td>
             </tr>
