@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
     currency = db.Column(db.String(1), default='€')
     measurement_unit = db.Column(db.String(5), default='Km')
     language = db.Column(db.String(2), default='en')
-    is_verified = db.Column(db.Boolean, default=False)
+    is_verified = db.Column(db.Boolean, default=True)
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
