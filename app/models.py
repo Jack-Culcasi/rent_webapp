@@ -395,7 +395,7 @@ class Contacts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), index=True)
     driver_licence_n = db.Column(db.Integer, index=True)
-    dob = db.Column(db.String(8), index=True)
+    dob = db.Column(db.String(10), index=True)
     telephone = db.Column(db.String(20), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
     bookings = db.relationship('Booking', backref='owner', lazy='dynamic')
