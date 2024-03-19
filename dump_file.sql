@@ -34,7 +34,7 @@ CREATE TABLE `alembic_version` (
 
 LOCK TABLES `alembic_version` WRITE;
 /*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('e6756aac58b6');
+INSERT INTO `alembic_version` VALUES ('2d10b752c2dd');
 /*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +67,7 @@ CREATE TABLE `booking` (
   CONSTRAINT `booking_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
   CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`car_plate`) REFERENCES `car` (`plate`),
   CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,6 +76,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
+INSERT INTO `booking` VALUES (1,'2024-03-20 12:49:00','2024-03-23 12:49:00','SZ654SZ',3,'33333',50,100,1,1);
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,6 +130,7 @@ CREATE TABLE `car` (
 
 LOCK TABLES `car` WRITE;
 /*!40000 ALTER TABLE `car` DISABLE KEYS */;
+INSERT INTO `car` VALUES ('SZ654SZ','Seat','Ibiza','Petrol',2005,1250,3,4,50,50,50,'2024-04-06 00:00:00',0,NULL,0,NULL,100);
 /*!40000 ALTER TABLE `car` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,7 +145,7 @@ CREATE TABLE `contacts` (
   `id` int NOT NULL AUTO_INCREMENT,
   `full_name` varchar(128) DEFAULT NULL,
   `driver_licence_n` int DEFAULT NULL,
-  `dob` varchar(8) DEFAULT NULL,
+  `dob` varchar(10) DEFAULT NULL,
   `telephone` varchar(20) DEFAULT NULL,
   `user_id` int NOT NULL,
   `money_spent` int DEFAULT NULL,
@@ -157,7 +159,7 @@ CREATE TABLE `contacts` (
   KEY `ix_contacts_rented_days` (`rented_days`),
   KEY `ix_contacts_telephone` (`telephone`),
   CONSTRAINT `contacts_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,6 +168,7 @@ CREATE TABLE `contacts` (
 
 LOCK TABLES `contacts` WRITE;
 /*!40000 ALTER TABLE `contacts` DISABLE KEYS */;
+INSERT INTO `contacts` VALUES (1,'Giacomo Culcasi',52546325,'21/12/1994','09232758',3,50,4);
 /*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -190,7 +193,7 @@ CREATE TABLE `groups` (
   KEY `ix_groups_name` (`name`),
   KEY `ix_groups_telephone` (`telephone`),
   CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,6 +202,7 @@ CREATE TABLE `groups` (
 
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES (1,'Baia dei Mulini','7854568',50,1,3);
 /*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,7 +224,7 @@ CREATE TABLE `renewal` (
   PRIMARY KEY (`id`),
   KEY `car_id` (`car_id`),
   CONSTRAINT `renewal_ibfk_1` FOREIGN KEY (`car_id`) REFERENCES `car` (`plate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,6 +233,7 @@ CREATE TABLE `renewal` (
 
 LOCK TABLES `renewal` WRITE;
 /*!40000 ALTER TABLE `renewal` DISABLE KEYS */;
+INSERT INTO `renewal` VALUES (1,'SZ654SZ','insurance','2024-03-19','2024-04-06',50,'eheh!!');
 /*!40000 ALTER TABLE `renewal` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,7 +258,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_user_email` (`email`),
   UNIQUE KEY `ix_user_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +267,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'2024-03-15 17:31:36','admin','giacomofculcasi@gmail.com','pbkdf2:sha256:600000$qeQxRVoi034fg0Xo$1eb52f3d33619d8657990cc6da44c16d1b5127dcddd3d39d53417aac0a6c9ede','admin','€','Km','en',1);
+INSERT INTO `user` VALUES (1,'2024-03-15 17:31:36','admin','giacomofculcasi@gmail.com','pbkdf2:sha256:600000$qeQxRVoi034fg0Xo$1eb52f3d33619d8657990cc6da44c16d1b5127dcddd3d39d53417aac0a6c9ede','admin','€','Km','en',1),(3,'2024-03-19 12:40:37','prova','prova@prova.com','pbkdf2:sha256:600000$CFk6WRPrk00SA4rl$76a82ad20dcb86322ba0d379ba54776f92fd2f1b66ce1455bd4829405558e3a8','user','$','km','en',1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -275,4 +280,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-15 17:54:42
+-- Dump completed on 2024-03-19 13:16:09
