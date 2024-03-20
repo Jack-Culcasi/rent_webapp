@@ -1,0 +1,42 @@
+.
+├── app
+│   ├── decorator.py
+│   ├── email.py
+│   ├── errors.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── routes.py
+│   ├── static
+│   └── templates
+├── app.db
+├── app_structure.txt
+├── bugs_n_improvements.txt
+├── config.py
+├── dump_file.sql
+├── migrations
+│   ├── alembic.ini
+│   ├── env.py
+│   ├── __pycache__
+│   ├── README
+│   ├── script.py.mako
+│   └── versions
+├── Procfile
+├── __pycache__
+│   ├── config.cpython-310.pyc
+│   └── rent_webapp.cpython-310.pyc
+├── README.md
+├── rent_webapp.py
+├── requirements.txt
+├── tests
+│   └── test.py
+└── venv
+    ├── bin
+    ├── include
+    ├── lib
+    ├── lib64 -> lib
+    ├── pyvenv.cfg
+    └── share
+
+15 directories, 24 files
