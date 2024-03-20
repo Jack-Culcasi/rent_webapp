@@ -30,13 +30,13 @@
     </div>
 </form>
 
-<label>Download all bookings for single:</label>
+<label>Scarica tutte le pronationi per ogni:</label>
 
 <form action="{{ url_for('downloads') }}" method="post">
     <div class="btn-group" role="group" aria-label="Basic outlined example">
-        <button type="submit" name="single_data_button" value="car" class="btn btn-outline-primary">Car</button>
-        <button type="submit" name="single_data_button" value="contact" class="btn btn-outline-primary">Contact</button>
-        <button type="submit" name="single_data_button" value="group" class="btn btn-outline-primary">Group</button>
+        <button type="submit" name="single_data_button" value="car" class="btn btn-outline-primary">Auto</button>
+        <button type="submit" name="single_data_button" value="contact" class="btn btn-outline-primary">Contatto</button>
+        <button type="submit" name="single_data_button" value="group" class="btn btn-outline-primary">Gruppo</button>
     </div>
 </form>
 
@@ -46,30 +46,30 @@
             <div class="row" style="margin-top: -20px;">
             <!-- Dropdown for search type -->
             <div class="col">
-                <label for="search_type" class="form-label">Search by</label>
+                <label for="search_type" class="form-label">Cerca per</label>
                 <select class="form-select" id="search_type" name="search_type">
-                <option value="plate">Plate</option>
-                <option value="make">Make</option>
-                <option value="model">Model</option>
-                <option value="fuel">Fuel</option>
-                <option value="year">Year</option>
-                <option value="cc">Cc</option>
+                <option value="plate">Targa</option>
+                <option value="make">Marchio</option>
+                <option value="model">Modello</option>
+                <option value="fuel">Carburante</option>
+                <option value="year">Anno</option>
+                <option value="cc">Cilindrata</option>
                 </select>
             </div>
             <!-- Input field for search query -->
             <div class="col">
                 <label for="search_type" class="form-label hidden-label">Search Query</label>
-                <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Search...">
+                <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Cerca...">
             </div>
             <!-- "Or" text -->
             <div class="col">
-                <p style="text-align: center; margin-top: 3em;">Or</p>
+                <p style="text-align: center; margin-top: 3em;">O</p>
             </div>
             <!-- Dropdown for selecting a car -->
             <div class="col">
-                <label for="select_car" class="form-label">Select a Car</label>
+                <label for="select_car" class="form-label">Seleziona un'auto</label>
                 <select class="form-select" id="select_car" name="select_car">
-                <option value="blank">Select a car...</option>
+                <option value="blank">Seleziona...</option>
                 {% for car in user_cars %}
                 <option value="{{ car.plate }}">{{ car.plate }} - {{ car.model }} - {{ car.year }}</option>
                 {% endfor %}
@@ -83,7 +83,7 @@
         {% if search_query or cars %}
             {% if cars %}
                 <!-- Display search results in a table -->
-                <h3>Results</h3>
+                <h3>Risultati</h3>
                 <table class="table" id="carTable">
                 <thead>
                     <tr>
