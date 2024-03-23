@@ -1,0 +1,122 @@
+{% extends "index.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentami</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+
+				<!-- Header -->
+				<header id="header">
+					<a href="#" class="logo"><strong>Rentami</strong></a>
+					<ul class="icons">
+						<li><a href="mailto:rentami_team@outlook.com" class="icon solid fa-envelope"><span class="label">Mail</span></a></li>
+					</ul>
+				</header>
+
+				<!-- Banner -->
+				<section id="banner">
+					<div class="content">
+						<header>
+							<h1>A tool to manage your rental fleet.</h1>
+							<p>A comprehensive platform to streamline your car rental business operations</p>
+						</header>
+						<p>Our system offers a range of features tailored to meet the needs of car rental businesses and individual vehicle owners. Whether you manage a large fleet or a few cars, our platform can help you efficiently manage bookings, track vehicle maintenance, and analyze performance.</p>
+						<ul class="actions">
+							<li><a href="{{ url_for('register') }}" class="button big">Sign Up Now</a></li>
+						</ul>
+					</div>
+					<span class="image object">
+						<video controls autoplay loop muted poster="images/banner-image.jpg">
+              <source src="path_to_your_video.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+					</span>
+				</section>
+
+				<!-- Features Section -->
+				<section>
+					<header class="major">
+						<h2>Key Features</h2>
+					</header>
+					<div class="features">
+						<article>
+							<span class="icon solid fa-car"></span>
+							<div class="content">
+								<h3>Add Cars</h3>
+								<p>Easily add and manage vehicles in your rental fleet with details such as make, model, and registration plate and more.</p>
+							</div>
+						</article>
+						<article>
+							<span class="icon solid fa-user-friends"></span>
+							<div class="content">
+								<h3>Add Contacts</h3>
+                <p>Keep track of your customers by adding them to your contacts list. Manage their bookings and track spending for better customer analysis and relationship management.</p>							</div>
+						</article>
+						<article>
+							<span class="icon solid fa-users"></span>
+							<div class="content">
+								<h3>Add Groups</h3>
+                <p>Organize your clients, such as hotels and airports, into groups for easier management and tracking of bookings. With groups, you can calculate and keep track of commissions for each organization, making it easy to manage your business relationships.</p>							</div>
+						</article>
+						<article>
+							<span class="icon solid fa-calendar-alt"></span>
+							<div class="content">
+								<h3>Make Bookings</h3>
+								<p>Effortlessly create and manage bookings using cars, contacts, and groups, with options for notes, scheduling, pricing, and tracking.</p>
+							</div>
+						</article>
+						<article>
+							<span class="icon solid fa-wrench"></span>
+							<div class="content">
+								<h3>Manage Maintenance</h3>
+								<p>Keep your fleet in top condition by tracking and scheduling maintenance tasks such as MOT, insurance, and road tax.</p>
+							</div>
+						</article>
+						<article>
+							<span class="icon solid fa-chart-bar"></span>
+							<div class="content">
+								<h3>View Statistics</h3>
+								<p>Gain insights into the performance of your vehicles and bookings with detailed statistics and analytics.</p>
+							</div>
+						</article>
+            <article>
+              <span class="icon solid fa-download"></span>
+              <div class="content">
+                  <h3>Download Excel Files</h3>
+                  <p>Export your data, including bookings, cars, and contacts, into Excel files for easy analysis and reporting.</p>
+              </div>
+          </article>
+          <article>
+            <span class="icon solid fa-calendar"></span>
+            <div class="content">
+                <h3>Calendar View</h3>
+                <p>Visualize your bookings in a convenient calendar view for easy tracking and scheduling, the calendar is also downloadable.</p>
+            </div>
+        </article>
+					</div>
+				</section>
+
+			</div>
+		</div>
+
+	</div>
+
+</body>
+</html>
+
+
+
+{% endblock %}
