@@ -30,6 +30,10 @@ from app.models import User, Car, Booking, Contacts, Groups
 
 mail = Mail()
 
+@app.route('/')
+def home():
+    return render_template('home.html', title='Home')
+
                                                                                 # Users Login/Logout/Profile/Admin
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -386,7 +390,6 @@ def delete_car():
         flash('Invalid request.', 'error')
     return redirect(url_for('garage_view'))
 
-@app.route('/')
 @app.route('/overview', methods=['GET', 'POST'])
 @requires_verification
 def overview(): # Booking
