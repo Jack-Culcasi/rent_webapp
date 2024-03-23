@@ -49,6 +49,7 @@
 									</header>
 									<ul>
 										{% if current_user.is_anonymous %}
+										<li><a href="{{ url_for('home') }}">Home</a></li>
 										<li><a href="{{ url_for('login') }}">Login</a></li>
 										{% else %}
 										<li><a href="{{ url_for('overview') }}">Overview</a></li>
