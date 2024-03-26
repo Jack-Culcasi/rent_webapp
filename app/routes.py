@@ -26,7 +26,7 @@ import base64
 # Local imports
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Car, Booking, Contacts, Groups
+from app.models import User, Car, Booking, Contacts, Groups, Renewal
 
 mail = Mail()
 
@@ -548,7 +548,13 @@ def renew():
                                user_name=current_user.username if current_user.is_authenticated else None)
     
     elif 'cost_amount' in request.form:
-        cost_amount = int(request.form['cost_amount'])
+        try:
+            cost_amount = int(request.form['cost_amount'])
+        except ValueError:
+            # Handle the case where the input is not an integer
+            flash('Cost amount must be an integer.', 'error')
+            # Redirect or render the template with an error message
+            return redirect(url_for('renew', car_plate=car_object.plate))
         option = request.form['option']
 
         # Fetch the forms
