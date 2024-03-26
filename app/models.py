@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import desc
 from datetime import datetime
 from time import time
 import jwt
@@ -120,10 +121,27 @@ class Renewal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.String(8), db.ForeignKey('car.plate'))
     renewal_type = db.Column(db.String(50))  # e.g., 'MOT', 'Insurance'
-    renewal_date = db.Column(db.Date) # New expiry date
-    renewal_expiry = db.Column(db.Date)
+    renewal_date = db.Column(db.Date)        # Date of the renewal
+    renewal_expiry = db.Column(db.Date)      # New expiry date
     renewal_cost = db.Column(db.Float)
     description = db.Column(db.String(160))
+
+    @classmethod
+    def latest_renewal(cls, car_id, renewal_type):
+        '''lista = cls.query.filter_by(car_id=car_id, renewal_type=renewal_type)\
+                            .order_by(desc(cls.renewal_expiry)).all()
+        for x in lista:
+            print(x.renewal_expiry)'''
+        # Query the database for renewals of the specified type for the given car,
+        # order them by renewal date in descending order (latest first),
+        # and retrieve the first (latest) renewal, or return None if no renewals are found
+        latest = cls.query.filter_by(car_id=car_id, renewal_type=renewal_type)\
+                            .order_by(desc(cls.renewal_expiry)).first()
+
+        if latest:
+            return latest.renewal_expiry
+        else:
+            return None
     
 class Car(db.Model):
     plate = db.Column(db.String(8), primary_key=True, index=True, unique=True)
@@ -157,6 +175,9 @@ class Car(db.Model):
         db.session.add(renewal)
         db.session.commit()
 
+        if renewal_date.date() < Renewal.latest_renewal(self.plate, renewal_type):
+            renewal_date = Renewal.latest_renewal(self.plate, renewal_type)
+
         if renewal_type == 'insurance':
             self.insurance_expiry_date = renewal_date
             self.insurance_cost += renewal_cost
@@ -181,9 +202,32 @@ class Car(db.Model):
     
     def delete_renewal(self, renewal_id):
         renewal = Renewal.query.filter_by(car_id=self.plate, id=renewal_id).first()
+        renewal_type = renewal.renewal_type
+        renewal_cost = renewal.renewal_cost
         try:
             db.session.delete(renewal)
             db.session.commit()
+            if renewal_type == 'insurance':
+                self.insurance_expiry_date = Renewal.latest_renewal(self.plate, renewal_type)
+                self.insurance_cost -= renewal_cost
+                self.car_cost -= renewal_cost
+                db.session.commit()
+
+            if renewal_type == 'mot':
+                self.mot_expiry_date = Renewal.latest_renewal(self.plate, renewal_type)
+                self.mot_cost -= renewal_cost
+                self.car_cost -= renewal_cost
+                db.session.commit()
+
+            if renewal_type == 'road_tax':
+                self.road_tax_expiry_date = Renewal.latest_renewal(self.plate, renewal_type)
+                self.road_tax_cost -= renewal_cost
+                self.car_cost -= renewal_cost
+                db.session.commit()
+
+            if renewal_type == 'other':
+                self.car_cost -= renewal_cost
+                db.session.commit()
         except SQLAlchemyError as e:
             print(f"Error finding the renewal: {str(e)}")
         return True        
