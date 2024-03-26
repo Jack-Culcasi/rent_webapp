@@ -186,7 +186,7 @@
 
 <h3>Storico costi auto</h3>
 
-<form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
+
     <table class="table">
       <thead>
         <tr>
@@ -206,7 +206,19 @@
         <tr>
             <!-- Display booking data with associated sorting attribute -->
             <td data-sort="id">{{ renewal.id }}</td>
-            <td data-sort="renewal_type">{{ renewal.renewal_type.capitalize() }}</td>
+            <td data-sort="renewal_type">
+                {% if renewal.renewal_type.lower() == 'mot' %}
+                    Revisione
+                {% elif renewal.renewal_type.lower() == 'insurance' %}
+                    Assicurazione
+                {% elif renewal.renewal_type.lower() == 'road_tax' %}
+                    Bollo
+                {% elif renewal.renewal_type.lower() == 'other' %}
+                    Altro
+                {% else %}
+                    {{ renewal.renewal_type.capitalize() }}
+                {% endif %}
+            </td>
             <td data-sort="renewal_date">{{ renewal.renewal_date.strftime("%b %d %Y") }}</td>
             <td data-sort="new_expiry_date">{{ renewal.renewal_expiry.strftime("%b %d %Y") }}</td>
             <td data-sort="renewal_cost">{{ renewal.renewal_cost }}</td>
@@ -221,13 +233,15 @@
           {% endif %}
             </td>
             <td>
+                <form method="POST" action="{{ url_for('renew', car_plate=car_object.plate) }}">
                 <input type="hidden" name="delete" value="{{ renewal.id }}">
-                <button type="submit" class="btn btn-primary btn-delete" onclick="return confirm('Are you sure you want to delete this {{ renewal.renewal_type.capitalize() }} record?');"><i class="fas fa-trash-alt"></i></button>
-          </td>
+                <button type="submit" class="btn btn-primary btn-delete" onclick="return confirm('Are you sure you want to delete this {{ renewal.renewal_type.capitalize() }} record? hey {{ renewal.id }}');"><i class="fas fa-trash-alt"></i></button>
+                </form>
+
+            </td>
         </tr>
         {% endfor %}
     </tbody>
     </table>
-    </form>
 
 {% endblock %}
