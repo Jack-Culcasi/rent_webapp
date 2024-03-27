@@ -22,7 +22,7 @@
 {% endfor %}
 
 <!-- Add Contact Section -->
-<form method="POST" action="{{ url_for('contacts') }}">
+<form method="POST" action="{% if add_and_book_contact %}{{ url_for('contacts', add_and_book_contact=add_and_book_contact) }}{% else %}{{ url_for('contacts') }}{% endif %}">
     <header id="header">
     <h2>Aggiungi contatto</h2>
     </header>
@@ -30,19 +30,31 @@
       <!-- Input fields for adding a contact -->
       <div class="col">
         <label for="full_name" class="form-label">Nome completo</label>
-        <input type="text" class="form-control" id="full_name" name="full_name">
+        <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Franco Mannone">
       </div>
       <div class="col">
         <label for="dob" class="form-label">Data di nascita</label>
-        <input type="text" class="form-control" id="dob" name="dob">
+        <input type="text" class="form-control" id="dob" name="dob" placeholder="20/04/1960">
+      </div>
+      <div class="col">
+        <label for="town_of_birth" class="form-label">Città di nascita</label>
+        <input type="text" class="form-control" id="town_of_birth" name="town_of_birth" placeholder="Trapani">
+      </div>
+      <div class="col">
+        <label for="city_of_residence" class="form-label">Città di residenza</label>
+        <input type="text" class="form-control" id="city_of_residence" name="city_of_residence" placeholder="Trapani">
+      </div>
+      <div class="col">
+        <label for="address" class="form-label">Indirizzo</label>
+        <input type="text" class="form-control" id="address" name="address" placeholder="35 Via Antonello da Messina">
       </div>
       <div class="col">
         <label for="driver_licence_n" class="form-label">Numero patente</label>
-        <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
+        <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n" placeholder="ABC123456">
       </div>
       <div class="col">
         <label for="telephone" class="form-label">Telefono</label>
-        <input type="text" class="form-control" id="telephone" name="telephone">
+        <input type="text" class="form-control" id="telephone" name="telephone" placeholder="1234567890">
       </div>
     </div>
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;"><i class="fa-solid fa-user-plus"></i></button>
@@ -83,6 +95,9 @@
                 <th>ID</th>
                 <th>Nome completo</th>
                 <th>Data di nascita</th>
+                <th>Città di nascita</th>
+                <th>Residenza</th>
+                <th>Indirizzo</th>
                 <th>Numero patente</th>
                 <th>Telefono</th>
                 <th>Prenota</th>   
@@ -95,6 +110,9 @@
                     <td>{{ contact.id }}</td>
                     <td>{{ contact.full_name }}</td>
                     <td>{{ contact.dob }}</td>
+                    <td>{{ contact.town_of_birth }}</td>
+                    <td>{{ contact.city_of_residence }}</td>
+                    <td>{{ contact.address }}</td>
                     <td>{{ contact.driver_licence_n }}</td>
                     <td>{{ contact.telephone }}</td>
                     <td>
@@ -127,6 +145,9 @@
     <th scope="col">Id</th>
     <th scope="col">Nome completo</th>
     <th scope="col">Data di nascita</th>
+    <th scope="col">Città di nascita</th>
+    <th scope="col">Residenza</th>
+    <th scope="col">Indirizzo</th>
     <th scope="col">Numero patente</th>
     <th scope="col">Telefono</th>
     <th scope="col">Azioni</th>
@@ -140,6 +161,9 @@
       <td>{{ contact.id }}</td>
       <td>{{ contact.full_name }}</td>
       <td>{{ contact.dob }}</td>
+      <td>{{ contact.town_of_birth }}</td>
+      <td>{{ contact.city_of_residence }}</td>
+      <td>{{ contact.address }}</td>
       <td>{{ contact.driver_licence_n }}</td>
       <td>{{ contact.telephone }}</td>
       <form class="col" action="{{ url_for('contact_manage', contact_id=contact.id) }}" method="get">
