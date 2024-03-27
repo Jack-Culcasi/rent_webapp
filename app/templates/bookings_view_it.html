@@ -59,7 +59,7 @@
               <!-- Add hidden input for booking ID -->
               
               <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}"><i class="fa-solid fa-wrench"></i></button>
-              <button type="submit" class="btn btn-primary btn-delete" name="delete" onclick="return confirm('Are you sure you want to delete this booking?');"><i class="fas fa-trash-alt"></i></button>
+              <button type="submit" class="btn btn-primary btn-delete" name="delete" value="{{ booking.id }}" onclick="return confirm('Sicuro di voler cancellare questa prenotazione ?');"><i class="fas fa-trash-alt"></i></button>
         </td>
       </tr>
       {% endfor %}
