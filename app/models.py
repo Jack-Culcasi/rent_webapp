@@ -464,6 +464,8 @@ class Contacts(db.Model):
 
         db.session.add(new_contact)
         db.session.commit()
+        
+        return new_contact
 
     @classmethod
     def search(cls, search_query, current_user_id):
