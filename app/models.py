@@ -438,21 +438,27 @@ class Booking(db.Model):
 class Contacts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(128), index=True)
-    driver_licence_n = db.Column(db.Integer, index=True)
+    driver_licence_n = db.Column(db.String(20), index=True)
     dob = db.Column(db.String(10), index=True)
     telephone = db.Column(db.String(20), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', name='contacts_user_id'), nullable=False)
     bookings = db.relationship('Booking', backref='owner', lazy='dynamic')
     money_spent = db.Column(db.Integer, default=0, index=True)
     rented_days = db.Column(db.Integer, default=0, index=True)
+    town_of_birth = db.Column(db.String(100), index=True)
+    city_of_residence = db.Column(db.String(100), index=True)
+    address = db.Column(db.String(255), index=True)
 
     @staticmethod
-    def add_contact(full_name, dob, driver_licence_n, telephone, user_id):
+    def add_contact(full_name, dob, driver_licence_n, telephone, town_of_birth,  city_of_residence, address, user_id):
         new_contact = Contacts(
             full_name = full_name,
             driver_licence_n = driver_licence_n,
             dob = dob,
             telephone = telephone,
+            town_of_birth = town_of_birth,
+            city_of_residence = city_of_residence,
+            address = address,
             user_id = user_id
         )
 
