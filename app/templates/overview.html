@@ -134,35 +134,23 @@
         {% else %}
             <!-- Your input fields for adding a new contact go here -->
         
-    <div class="row">
+            <div class="row">
 
-        <!-- Input fields for adding a contact -->
-        <div class="col-2">
-            <label for="full_name" class="form-label">Full name</label>
-            <input type="text" class="form-control" id="full_name" name="full_name">
-        </div>
-        <div class="col-2">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="text" class="form-control" id="dob" name="dob">
-        </div>
-        <div class="col-2">
-            <label for="driver_licence_n" class="form-label">Driver Licence Number</label>
-            <input type="text" class="form-control" id="driver_licence_n" name="driver_licence_n">
-        </div>
-        <div class="col-2">
-            <label for="telephone" class="form-label">Telephone</label>
-            <input type="text" class="form-control" id="telephone" name="telephone">
-        </div>
-
-        <p style="margin-top: 3em;">Or</p>
-
-        <div class="col-2">    
-            <a href="{{ url_for('contacts')}}">        
-                <p style="margin-top: 50px;">Search Existing Contact</p>
-            </a>
-        </div>   
+                <div class="col-2">
+                    <a href="{{ url_for('contacts', add_and_book_contact=True) }}">            
+                        <p>Add a new contact</p>
+                    </a>
+                </div>   
         
-    </div> 
+                <p>or</p>
+        
+                <div class="col-2">
+                    <a href="{{ url_for('contacts')}}">            
+                        <p>Search Existing Contact </p>
+                    </a>
+                </div>   
+                
+            </div> 
     {% endif %}
 
     <div class="row" style="margin-top: 0px;">
