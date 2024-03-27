@@ -1152,6 +1152,7 @@ def calendar():
 @requires_verification
 def contacts(): 
     user_contacts = current_user.contacts.all()
+    add_and_book_contact = request.args.get('add_and_book_contact')
 
     if request.method == 'POST':
         if 'full_name' in request.form:
@@ -1160,9 +1161,15 @@ def contacts():
             dob = request.form.get('dob')
             driver_licence_n = request.form.get('driver_licence_n')
             telephone = request.form.get('telephone')
+            town_of_birth = request.form.get('town_of_birth')
+            city_of_residence = request.form.get('city_of_residence')
+            address = request.form.get('address')
 
-            Contacts.add_contact(full_name, dob, driver_licence_n, telephone, current_user.id)
+            new_contact = Contacts.add_contact(full_name, dob, driver_licence_n, telephone, town_of_birth, city_of_residence, address, current_user.id)
             flash('Contact added successfully', 'success')
+            
+            if add_and_book_contact:
+                return redirect(url_for('overview', contact_id=new_contact.id))                
 
         elif 'search_type' in request.form:
             # Process the form data for searching a contact
@@ -1195,7 +1202,8 @@ def contacts():
         return redirect(url_for('contacts'))
 
     return render_template('contacts.html' if current_user.language == 'en' else f'contacts_{current_user.language}.html', 
-                           user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+                           user_contacts=user_contacts, add_and_book_contact=add_and_book_contact if add_and_book_contact else None,
+                           user_name=current_user.username if current_user.is_authenticated else None)
 
     
 @app.route('/contact/<int:contact_id>', methods=['GET', 'POST'])
@@ -1213,6 +1221,9 @@ def contact_manage(contact_id):
             contact.dob = request.form.get('dob')
             contact.driver_licence_n = request.form.get('driver_licence_n')
             contact.telephone = request.form.get('telephone')
+            contact.town_of_birth = request.form.get('town_of_birth')
+            contact.city_of_residence = request.form.get('city_of_residence')
+            contact.address = request.form.get('address')
             db.session.commit()
             flash('Contact details amended successfully', 'success')
 
