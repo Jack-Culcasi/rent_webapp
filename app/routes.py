@@ -20,7 +20,6 @@ import calendar as cal
 import pandas as pd
 import io
 import openpyxl
-import matplotlib.pyplot as plt
 import base64
 
 # Local imports
@@ -1423,14 +1422,14 @@ def downloads():
                            page="downloads", single_data_button=single_data_button if single_data_button else None, user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/graphs', methods=['GET', 'POST'])
+'''@app.route('/graphs', methods=['GET', 'POST'])
 @requires_verification
 def graphs():
-    '''msg = Message('Oggetto',
+    msg = Message('Oggetto',
                   sender='rentami_team@outlook.com',
                   recipients=['giacomofculcasi@gmail.com'])
     msg.body = 'evviva lo sticchio!'
-    mail.send(msg)'''
+    mail.send(msg)
     user_cars = current_user.garage.all()
     user_contacts = current_user.contacts.all()
     user_groups = current_user.groups.all()
@@ -1504,4 +1503,4 @@ def graphs():
     return render_template('graphs.html' if current_user.language == 'en' else f'graphs_{current_user.language}.html',
                            from_datetime=from_datetime.strftime('%Y-%m-%d'), to_datetime=to_datetime.strftime('%Y-%m-%d'),
                            user_name=current_user.username if current_user.is_authenticated else None,
-                           plot_data=plot_data)
+                           plot_data=plot_data)'''
