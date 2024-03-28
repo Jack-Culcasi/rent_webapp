@@ -820,13 +820,14 @@ def bookings_manage():
                     end_date = request.form['end_date']
                     end_time = request.form['end_time']
                     note = request.form['note']
+                    price = int(request.form['price'])
 
                     # Parsing form data to create datetime objects
                     start_datetime = datetime.strptime(f'{start_date} {start_time}', '%Y-%m-%d %H:%M')
                     end_datetime = datetime.strptime(f'{end_date} {end_time}', '%Y-%m-%d %H:%M')
 
                     # Call the amend_booking method
-                    selected_booking.amend_booking(start_datetime, end_datetime, note)
+                    selected_booking.amend_booking(start_datetime, end_datetime, note, price)
 
                     flash('Booking amended successfully!', 'success')
 
