@@ -426,7 +426,7 @@ def overview(): # Booking
                     return redirect(url_for('overview'))
 
                 if contact_id == None:
-                    if full_name == '': # Skip if client's fields are empty
+                    if full_name == None: # Skip if client's fields are empty
                         pass
                     else:
                         # Create a new contact
@@ -1166,11 +1166,16 @@ def contacts():
             city_of_residence = request.form.get('city_of_residence')
             address = request.form.get('address')
 
-            new_contact = Contacts.add_contact(full_name, dob, driver_licence_n, telephone, town_of_birth, city_of_residence, address, current_user.id)
-            flash('Contact added successfully', 'success')
-            
-            if add_and_book_contact:
-                return redirect(url_for('overview', contact_id=new_contact.id))                
+            overlapping_contact = Contacts.query.filter_by(driver_licence_n=driver_licence_n).first()
+            if overlapping_contact:
+                flash(f'A contact with this Driver Licence Number already exists, its ID is {overlapping_contact.id}', 'error')
+            else:
+
+                new_contact = Contacts.add_contact(full_name, dob, driver_licence_n, telephone, town_of_birth, city_of_residence, address, current_user.id)
+                flash('Contact added successfully', 'success')
+                
+                if add_and_book_contact:
+                    return redirect(url_for('overview', contact_id=new_contact.id))                
 
         elif 'search_type' in request.form:
             # Process the form data for searching a contact
