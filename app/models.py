@@ -415,14 +415,18 @@ class Booking(db.Model):
     def __repr__(self):
         return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}, Note: {self.note}>'
         
-    def amend_booking(self, start_datetime, end_datetime, note):
+    def amend_booking(self, start_datetime, end_datetime, note, price):
         if start_datetime >= end_datetime:
             raise ValueError("End date must be after start date.")
+        
+        money_difference = price - self.money
 
         # Update booking information
         self.start_datetime = start_datetime
         self.end_datetime = end_datetime
         self.note = note
+        self.money = price
+        self.car.money += money_difference
 
         # Save changes to the database
         db.session.commit()
