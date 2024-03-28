@@ -61,8 +61,8 @@
                 </div>
 
                 <div class="col">
-                    <label for="price" class="form-label">Prezzo</label>
-                    <input type="text" class="form-control" id="price" name="price" value="{{ selected_booking.money }}" readonly>
+                    <label for="price" class="form-label">Prezzo {{ current_user.currency }}</label>
+                    <input type="text" class="form-control" id="price" name="price" value="{{ selected_booking.money }}">
                 </div>
 
                 <div class="col">
@@ -139,7 +139,7 @@
 
             <!-- Delete Button with Confirmation -->
             <button type="button" class="btn btn-primary btn-delete" style="margin-top: 20px;" onclick="confirmDelete('booking')"><i class="fas fa-trash-alt"></i></button>
-
+            <input type="hidden" id="bookingIdToDelete" name="delete" value="{{ selected_booking.id }}">
         </form>
     {% endif %}
 {% endblock %}
