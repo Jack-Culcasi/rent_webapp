@@ -319,6 +319,13 @@ class Booking(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id', name='booking_group'), nullable=True)
     group = db.relationship('Groups', back_populates='bookings', lazy=True)
 
+    def get_contact_name(self):
+        if self.contact_id:
+            contact = Contacts.query.get(self.contact_id)
+            return contact.full_name if contact else "None"
+        else:
+            return "None"
+
     def get_booking_info(self):
         # Generate a string containing detailed booking information.
         booking_info = f"Booking ID: {self.id}\n"
