@@ -27,7 +27,7 @@
         <th scope="col"><a href="#" class="sort-link" data-sort="id">ID</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="plate">Plate</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="model">Model</a></th>
-        <th scope="col"><a href="#" class="sort-link" data-sort="km">{{ current_user.measurement_unit.capitalize() }}</a></th>
+        <th scope="col"><a href="#" class="sort-link" data-sort="client">Client</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="start_datetime">Start</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="end_datetime">End</a></th>
         <th scope="col"><a href="#" class="sort-link" data-sort="note">Note</a></th>
@@ -42,7 +42,7 @@
           <td data-sort="id">{{ booking.id }}</td>
           <td data-sort="plate">{{ booking.car.plate }}</td>
           <td data-sort="model">{{ booking.car.model }}</td>
-          <td data-sort="km">{{ booking.km }}</td>          
+          <td data-sort="client">{{ booking.get_contact_name() }}</td>          
           <td data-sort="start_datetime">{{ booking.start_datetime.strftime("%b %d %H:%M") }}</td>
           <td data-sort="end_datetime">{{ booking.end_datetime.strftime("%b %d %H:%M") }}</td>
           <td data-sort="note">
