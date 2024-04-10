@@ -81,7 +81,7 @@
                         {% set booking = booking_data[day][car.plate] %}
                         {% if booking | length == 1 %}
                             {% if booking[0].start_datetime.day == day or booking[0].end_datetime.day == day %}
-                        <td class="booked-start-finish" title="Prenotazione ID: {{ booking[0].id }}&#10;Inizio: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Gruppo: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Nota: {{ booking[0].note }}{% else %}&#10;&#10;Nota: {{ booking[0].note }}{% endif %}{% endif %}">
+                        <td class="booked-start-finish" title="Prenotazione ID: {{ booking[0].id }}&#10;Cliente: {{ booking[0].get_contact_name() }}&#10;Inizio: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Gruppo: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Nota: {{ booking[0].note }}{% else %}&#10;&#10;Nota: {{ booking[0].note }}{% endif %}{% endif %}">
                             <a href="{{ url_for('bookings_manage', booking_id=booking[0].id) }}">{{ booking[0].id }}</a>
                         </td>
                             {% else %}
