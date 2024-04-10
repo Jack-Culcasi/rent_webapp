@@ -21,6 +21,7 @@ import pandas as pd
 import io
 import openpyxl
 import base64
+import random
 
 # Local imports
 from app import app, db
@@ -1164,6 +1165,11 @@ def contacts():
             town_of_birth = request.form.get('town_of_birth')
             city_of_residence = request.form.get('city_of_residence')
             address = request.form.get('address')
+
+            if not driver_licence_n:
+                # Generate a random number between 1 and 99999 and creates a temporary driver licence
+                random_number = random.randint(1, 99999)
+                driver_licence_n = f"NULL{random_number}"
 
             overlapping_contact = Contacts.query.filter_by(driver_licence_n=driver_licence_n).first()
             if overlapping_contact:
