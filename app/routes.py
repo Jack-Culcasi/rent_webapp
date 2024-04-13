@@ -422,8 +422,7 @@ def overview(): # Booking
 
                 # Check if start_datetime is in the past
                 if start_datetime < datetime.now():
-                    flash('Booking cannot be made for a past date and time.', 'error')
-                    return redirect(url_for('overview'))
+                    flash('You have made a booking for a past date, ignore this message if it was on purpose.', 'error')
 
                 if contact_id == None:
                     if full_name == None: # Skip if client's fields are empty
