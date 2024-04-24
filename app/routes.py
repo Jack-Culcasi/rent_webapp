@@ -784,7 +784,7 @@ def bookings_manage():
             contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
             group = Groups.query.filter_by(id=selected_booking.group_id).first()
         
-        if request.form.get('action') == 'delete' or 'delete' in request.form:
+        if request.form.get('action') == 'delete':
             booking_id = request.form.get('delete')
             # Modify the query to eagerly load the 'car' relationship
             selected_booking = Booking.query.options(db.joinedload(Booking.car)).filter_by(id=booking_id).first()
