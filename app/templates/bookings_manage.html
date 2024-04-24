@@ -129,13 +129,12 @@
                     <textarea class="form-control" id="note" name="note" rows="3" maxlength="160" oninput="updateCharacterCount(this)" style="width: 810px; height: 80px;">{{ selected_booking.note }}</textarea>
                     <p id="character-count">0/160</p>
                 </div>
-            </div>
-
-            <!-- Hidden input field for the action -->
-            <input type="hidden" name="action" id="action" value="">
+            </div>           
 
             <!-- Amend Button with Confirmation -->
             <button type="button" class="btn btn-primary" style="margin-top: 20px;" onclick="confirmAmend('booking')"><i class="fa-solid fa-pen"></i></button>
+            <!-- Hidden input field for the action -->
+            <input type="hidden" name="action" id="action" value="">
 
             <!-- Delete Button with Confirmation -->
             <button type="button" class="btn btn-primary btn-delete" style="margin-top: 20px;" onclick="confirmDelete('booking')"><i class="fas fa-trash-alt"></i></button>
