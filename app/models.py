@@ -409,7 +409,14 @@ class Booking(db.Model):
                 if booking.end_datetime > datetime.now():
                     car.days -= booking_duration
                     car.money -= booking.money
-
+                    if booking.contact_id:
+                        contact = booking.get_contact()
+                        contact.rented_days -= booking_duration
+                        contact.money_spent -= booking.money
+                    if booking.group_id:
+                        group = Groups.query.filter_by(id=booking.group_id).first()
+                        group.money -= booking.money
+                        group.bookings_number -= 1
                 db.session.commit()
                 return True
             else:
@@ -418,6 +425,13 @@ class Booking(db.Model):
             print(f"Error removing booking: {str(e)}")
             db.session.rollback()
             return False
+
+    def get_contact(self):
+        try:
+            contact = Contacts.query.filter_by(id=self.contact_id).first()
+            return contact 
+        except:
+            raise "No contact found."
 
     def __repr__(self):
         return f'<Booking: {self.id}, Plate: {self.car_plate}, User: {self.user_id}, Note: {self.note}>'
