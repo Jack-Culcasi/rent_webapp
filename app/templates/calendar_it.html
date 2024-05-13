@@ -91,8 +91,8 @@
                         </td>
                         
                         {% elif booking | length > 1 %}
-                        <td class="booked-start-finish" title="Prenotazione ID: {{ booking[0].id }}&#10;Inizio: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Gruppo: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Nota: {{ booking[0].note }}{% else %}&#10;&#10;Nota: {{ booking[0].note }}{% endif %}{% endif %}&#10;
-Prenotazione ID: {{ booking[1].id }}&#10;Inizio: {{ booking[1].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[1].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Gruppo: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Nota: {{ booking[0].note }}{% else %}&#10;&#10;Nota: {{ booking[0].note }}{% endif %}{% endif %}">
+                        <td class="booked-start-finish" title="Prenotazione ID: {{ booking[0].id }}&#10;Cliente: {{ booking[0].get_contact_name() }}&#10;Inizio: {{ booking[0].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[0].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[0].group.name %}&#10;Gruppo: {{ booking[0].group.name }}{% endif %}{% if booking[0].note %}{% if not booking[0].group.name %}&#10;Nota: {{ booking[0].note }}{% else %}&#10;&#10;Nota: {{ booking[0].note }}{% endif %}{% endif %}&#10;
+Prenotazione ID: {{ booking[1].id }}&#10;Cliente: {{ booking[1].get_contact_name() }}&#10;Inizio: {{ booking[1].start_datetime.strftime('%d/%m, %H:%M') }}&#10;Fine: {{ booking[1].end_datetime.strftime('%d/%m, %H:%M') }}{% if booking[1].group.name %}&#10;Gruppo: {{ booking[1].group.name }}{% endif %}{% if booking[1].note %}{% if not booking[1].group.name %}&#10;Nota: {{ booking[1].note }}{% else %}&#10;&#10;Nota: {{ booking[1].note }}{% endif %}{% endif %}">
                                 M
                             </td>
                         {% else %}
