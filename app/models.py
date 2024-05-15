@@ -4,7 +4,7 @@ from flask_login import UserMixin, current_user
 from app import login
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import time
 import jwt
 from app import app
@@ -528,6 +528,25 @@ class Contacts(db.Model):
             # Invalid search type, return an invalid condition to produce an empty result
             return cls.user_id == -1  # Assuming an invalid condition#
         
+    def stats(self, start_date, end_date):
+        # add a day to end_date to include booking on that end
+        end_date = (datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+        contact_bookings = Booking.query.join(Contacts).filter(
+                                Contacts.id == self.id,
+                                Booking.start_datetime >= start_date,
+                                Booking.start_datetime <= end_date 
+                            ).all()
+        bookings_amount = len(contact_bookings)
+        rented_days = 0
+        money_spent = 0
+
+        for booking in contact_bookings:
+            booking_duration = (booking.end_datetime - booking.start_datetime).days + 1 # It adds a day because a booking within the same day counts as zero days.
+            rented_days += booking_duration
+            money_spent += booking.money
+
+        return [contact_bookings, bookings_amount, rented_days, money_spent]
+                
 class Groups(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
@@ -571,3 +590,22 @@ class Groups(db.Model):
         else:
             # Invalid search type, return an invalid condition to produce an empty result
             return cls.user_id == -1  # Assuming an invalid condition
+        
+    def stats(self, start_date, end_date):
+        # add a day to end_date to include booking on that end
+        end_date = (datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+        groups_bookings = Booking.query.join(Groups).filter(
+                                Groups.id == self.id,
+                                Booking.start_datetime >= start_date,
+                                Booking.start_datetime <= end_date  
+                            ).all()
+        bookings_amount = len(groups_bookings)
+        rented_days = 0
+        money_spent = 0
+
+        for booking in groups_bookings:
+            booking_duration = (booking.end_datetime - booking.start_datetime).days + 1 # It adds a day because a booking within the same day counts as zero days.
+            rented_days += booking_duration
+            money_spent += booking.money
+
+        return [groups_bookings, bookings_amount, rented_days, money_spent]
