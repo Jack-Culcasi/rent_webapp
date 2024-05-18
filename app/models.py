@@ -128,10 +128,6 @@ class Renewal(db.Model):
 
     @classmethod
     def latest_renewal(cls, car_id, renewal_type):
-        '''lista = cls.query.filter_by(car_id=car_id, renewal_type=renewal_type)\
-                            .order_by(desc(cls.renewal_expiry)).all()
-        for x in lista:
-            print(x.renewal_expiry)'''
         # Query the database for renewals of the specified type for the given car,
         # order them by renewal date in descending order (latest first),
         # and retrieve the first (latest) renewal, or return None if no renewals are found
