@@ -1427,85 +1427,73 @@ def downloads():
                            page="downloads", single_data_button=single_data_button if single_data_button else None, user_cars=user_cars,
                            user_name=current_user.username if current_user.is_authenticated else None)
 
-'''@app.route('/graphs', methods=['GET', 'POST'])
+@app.route('/contacts_stats', methods=['GET', 'POST'])
 @requires_verification
-def graphs():
-    msg = Message('Oggetto',
-                  sender='rentami_team@outlook.com',
-                  recipients=['giacomofculcasi@gmail.com'])
-    msg.body = 'evviva lo sticchio!'
-    mail.send(msg)
-    user_cars = current_user.garage.all()
+def stats_contacts():
     user_contacts = current_user.contacts.all()
+    if request.method == 'POST':
+        if 'search_type' in request.form:
+                # Process the form data for searching a contact
+                start_date = request.form.get('start_date')
+                end_date = request.form.get('end_date')
+                search_type = request.form.get('search_type')
+                search_query = request.form.get('search_query')
+                search_results = Contacts.search_contacts(search_type, search_query, current_user.id)
+                return render_template('stats_contacts.html' if current_user.language == 'en' else f'stats_contacts_{current_user.language}.html', 
+                                    user_contacts=user_contacts, search_query=search_query, search_results=search_results, start_date=start_date, end_date=end_date,
+                                    user_name=current_user.username if current_user.is_authenticated else None)
+        elif 'select_contact' in request.form:
+            # Process and return contact's statistic data
+            contact_id = request.form.get('select_contact')
+            start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
+            end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
+            contact = Contacts.query.filter_by(id=contact_id).first()
+            contact_bookings = contact.stats(start_date, end_date)[0]
+            bookings_amount = contact.stats(start_date, end_date)[1]
+            rented_days = contact.stats(start_date, end_date)[2]
+            money_spent = contact.stats(start_date, end_date)[3]
+            return render_template('stats_contacts.html' if current_user.language == 'en' else f'stats_contacts_{current_user.language}.html', 
+                                    contact=contact, start_date=start_date, end_date=end_date, contact_bookings=contact_bookings,
+                                    bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent,
+                                    user_name=current_user.username if current_user.is_authenticated else None)
+
+    return render_template('stats_contacts.html' if current_user.language == 'en' else f'stats_contacts_{current_user.language}.html', 
+                                    user_contacts=user_contacts, user_name=current_user.username if current_user.is_authenticated else None)
+
+@app.route('/groups_stats', methods=['GET', 'POST'])
+@requires_verification
+def stats_groups():
     user_groups = current_user.groups.all()
+    if request.method == 'POST':
+        if 'search_type' in request.form:
+                # Process the form data for searching a contact
+                start_date = request.form.get('start_date')
+                end_date = request.form.get('end_date')
+                search_type = request.form.get('search_type')
+                search_query = request.form.get('search_query')
+                search_results = Groups.search_groups(search_type, search_query, current_user.id)
+                return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
+                                    user_groups=user_groups, search_query=search_query, search_results=search_results, start_date=start_date, end_date=end_date,
+                                    user_name=current_user.username if current_user.is_authenticated else None)
+        elif 'select_contact' in request.form:
+            # Process and return contact's statistic data
+            contact_id = request.form.get('select_contact')
+            start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
+            end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
+            group = Groups.query.filter_by(id=contact_id).first()
+            group_bookings = group.stats(start_date, end_date)[0]
+            bookings_amount = group.stats(start_date, end_date)[1]
+            rented_days = group.stats(start_date, end_date)[2]
+            money_spent = group.stats(start_date, end_date)[3]
+            return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
+                                    group=group, start_date=start_date, end_date=end_date, group_bookings=group_bookings,
+                                    bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent,
+                                    user_name=current_user.username if current_user.is_authenticated else None)
 
-    # To check time frame
-    from_date = request.form.get('from')
-    to_date = request.form.get('to')
+    return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
+                                    user_groups=user_groups, user_name=current_user.username if current_user.is_authenticated else None)
 
-    # Standard time frame if no Input of 1 month
-    if from_date == None:
-        from_date = datetime.now().strftime('%Y-%m-%d')
-        to_date = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
-        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
-        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
-    # Chosen time frame if Input    
-    else:
-        from_datetime = datetime.strptime(f'{from_date}', '%Y-%m-%d')
-        to_datetime = datetime.strptime(f'{to_date}', '%Y-%m-%d')
-        #Include the full to_datetime
-        to_datetime += timedelta(days=1)    
-
-    # Fetch all bookings for the user within the specified time range
-    user_bookings = Booking.query.filter(
-                Booking.user_id == current_user.id,
-                Booking.start_datetime >= from_datetime,
-                Booking.start_datetime <= to_datetime,
-                ).all()
-
-    # Extract the dates of bookings
-    booking_dates = [booking.start_datetime.date() for booking in user_bookings]
-
-    # Define the time frame
-    time_frame = to_datetime - from_datetime
-
-    # Create a list of all the days in the time frame
-    all_dates = [from_datetime + timedelta(days=i) for i in range(time_frame.days + 1)]
-    all_dates = [date.date() for date in all_dates]
-
-    # Count the number of bookings for each day
-    date_counts = {}
-    for date in all_dates:
-        date_counts[date] = sum(1 for booking in user_bookings if booking.start_datetime.date() == date)
-
-    # Extract dates and corresponding counts
-    dates = list(date_counts.keys())
-    counts = list(date_counts.values())
-
-    # Convert the plot data to datetime.date objects
-    dates = [date.strftime('%d') for date in dates]
-
-    # Plot the data
-    plt.plot(dates, counts, color='blue', marker='', linestyle='-')
-
-    # Customize the plot
-    plt.title('Number of Bookings per Day')
-    plt.xlabel('Day')
-    plt.ylabel('Number of Bookings')
-    plt.xticks(rotation=45, ha='right')
-
-    # Show the plot
-    plt.tight_layout()
-
-    # Save the plot to a buffer and convert to base64
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plot_data = base64.b64encode(buffer.getvalue()).decode()
-    plt.close()  # Close the plot to prevent it from displaying in the console
-
-
-    return render_template('graphs.html' if current_user.language == 'en' else f'graphs_{current_user.language}.html',
-                           from_datetime=from_datetime.strftime('%Y-%m-%d'), to_datetime=to_datetime.strftime('%Y-%m-%d'),
-                           user_name=current_user.username if current_user.is_authenticated else None,
-                           plot_data=plot_data)'''
+@app.route('/stats', methods=['GET', 'POST'])
+@requires_verification
+def stats_general():
+    return 
