@@ -75,8 +75,19 @@ Ci sono stati inoltre dei costi per un ammontare di {{ current_user.currency }} 
     </div>
 
 </div>
-
 <br>
+<div class="row">
+    <div class="col">
+        <label>Scarica Report</label>
+        <form action="{{ url_for('stats_general') }}" method="POST">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="rented_days" value="{{ rented_days }}">
+            <input type="hidden" name="money_spent" value="{{ money_spent }}">
+            <button type="submit" name="report_download" title="Scarica report"><i class="fa fa-download"></i></button>
+        </form>
+    </div>
+</div>
 
 <!-- Booked Cars Section -->
 <form action="{{ url_for('bookings_manage') }}" method="POST">

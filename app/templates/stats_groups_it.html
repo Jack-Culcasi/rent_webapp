@@ -127,6 +127,19 @@
     </div>
 
 </div>
+<br>
+<div class="row">
+    <div class="col">
+        <label>Scarica Report</label>
+        <form action="{{ url_for('stats_groups') }}" method="POST">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="group" value="{{ group }}">
+            <input type="hidden" name="commission_amount" value="{{ commission_amount }}">
+            <button type="submit" name="report_download" title="Scarica report"><i class="fa fa-download"></i></button>
+        </form>
+    </div>
+</div>
 
 <h2>Prenotazioni</h2>
 
