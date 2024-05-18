@@ -73,8 +73,10 @@
 										<li><a href="{{ url_for('calendar') }}">Calendario</a></li>
 										<li>
 											<span class="opener {% if page == 'analytics' or page == 'downloads' %}active{% endif %}">Statistiche</span>
-											<ul>
-												<li>Downloads</li>												
+											<ul>	
+												<li><a href="{{ url_for('stats_contacts') }}">Statistiche Contatti</a></li>
+												<li><a href="{{ url_for('stats_groups') }}">Statistiche Gruppi</a></li>
+												<li><a href="{{ url_for('stats_general') }}">Statistiche Generali</a></li>												
 												<li><a href="{{ url_for('downloads') }}">Sezione Download</a></li>
 											</ul>
 										</li>
