@@ -1,0 +1,136 @@
+{% if current_user.language == 'en' %}
+    {% extends "index.html" %}
+{% else %}
+    {% extends "index_" + current_user.language + ".html" %}
+{% endif %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Flash Messages -->
+{% for category, message in get_flashed_messages(with_categories=true) %}
+    {% if category == 'success' %}
+        <div class="alert alert-success" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% elif category == 'error' %}
+        <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; margin-top: 10px;">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<h2>Seleziona un periodo</h2>
+<p>I risultati includeranno tutte le prenotazioni che hanno inizio entro le date selezionate, comprese</p>
+
+<form action="{{ url_for('stats_general') }}" method="POST">
+  <div class="row">
+    <!-- Start Date Input -->
+    <div class="col">
+        <label for="start_date" class="form-label">Dal</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+      <!-- End Date Input -->
+      <div class="col">
+        <label for="end_date" class="form-label">Al</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" required>
+      </div>  
+  </div>
+  <button type="submit" class="btn btn-danger" style="margin-top: 20px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+</form>
+
+{% if user_bookings %}
+<h2>Prenotazioni dal {{ str_start_date }} al {{ str_end_date }}</h2>
+<p>Nell'arco di {{ period_duration }} giorni sono state effettuate {{ bookings_amount }} prenotazioni, il ricavato è stato di {{ current_user.currency }} {{ money_spent }}<br>
+Per una media di {{ average_bookings_per_day }} prenotazioni al giorno ed un ricavo di {{ current_user.currency }} {{ average_money_per_day }} per giorno<br>
+Durante questo periodo di tempo un auto è stata noleggiata al prezzo medio di {{ current_user.currency }} {{ average_booking_cost_per_day }} al giorno.
+{% if total_cost > 0 %}
+<br>
+Ci sono stati inoltre dei costi per un ammontare di {{ current_user.currency }} {{ total_cost }} che a fronte di un ricavo di {{ current_user.currency }} {{ money_spent }} formano un profitto di {{ current_user.currency }} {{ money_spent - total_cost }}</p>
+</p>
+{% else %}
+</p>
+{% endif %}
+{% if booked_contacts > 0 %}
+<p>Durante questo periodo sono state coinvolte {{ booked_cars }} auto, {{ booked_contacts }} contatti e {{ booked_groups }} gruppi.</p>
+{% endif %}
+
+
+<div class="row">
+    <div class="col">
+        <label for="bookings_number" class="form-label">Numero prenotazioni</label>
+        <input type="text" class="form-control" id="bookings_number" name="bookings_number" value="{{ bookings_amount }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="days_rented" class="form-label">Giorni noleggiati</label>
+        <input type="text" class="form-control" id="days_rented" name="days_rented" value="{{ rented_days }}" readonly>
+    </div>
+
+    <div class="col">
+        <label for="money_spent" class="form-label">{{ current_user.currency }}</label>
+        <input type="text" class="form-control" id="money_spent" name="money_spent" value="{{ money_spent }}" readonly>
+    </div>
+
+</div>
+
+<br>
+
+<!-- Booked Cars Section -->
+<form action="{{ url_for('bookings_manage') }}" method="POST">
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Targa</th>
+                <th>Modello</th>
+                <th>Cliente</th>
+                <th>Inizio</th>
+                <th>Fine</th>
+                <th>Gruppo</th>
+                <th>Azioni</th>
+                <th>Commento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in user_bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.car.plate }}</td>
+                    <td>{{ booking.car.model }}</td>
+                    <td>{{ booking.get_contact_name() }}</td>
+                    <td>{{ booking.start_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>{{ booking.end_datetime.strftime("%dth %B %H:%M") }}</td>
+                    <td>
+                        {% if booking.group %}
+                            <a href="{{ url_for('group_manage', group_id=booking.group.id) }}">{{ booking.group.name }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Add hidden input for booking ID -->
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" class="btn btn-danger" name="manage_booking" value="{{ booking.id }}"><i class="fa-solid fa-wrench"></i></button>
+                    </td>
+                    <td>
+                        {% if booking.note %}
+                            <span class="note-tooltip">
+                                Note
+                                <div class="tooltip" data-toggle="tooltip" title="{{ booking.note }}">{{ booking.note }}</div>
+                            </span>
+                        {% else %}
+                            <!-- Display nothing if there is no note -->
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% else %}
+<p>Non ci sono prenotazioni in questo periodo di tempo.</p>
+{% endif %}
+
+{% endblock %}
