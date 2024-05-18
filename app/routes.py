@@ -27,6 +27,7 @@ import random
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Car, Booking, Contacts, Groups, Renewal
+from app.print_report import download_report_group, download_report_general
 
 mail = Mail()
 
@@ -1465,6 +1466,22 @@ def stats_contacts():
 def stats_groups():
     user_groups = current_user.groups.all()
     if request.method == 'POST':
+        if 'report_download' in request.form:
+            group = Groups.query.filter_by(id=(request.form.get('group'))[-2]).first()
+            start_date = datetime.strptime(request.form.get('start_date'), '%d-%m').strftime('%Y-%m-%d')
+            end_date = datetime.strptime(request.form.get('end_date'), '%d-%m-%Y').strftime('%Y-%m-%d')
+            commission_amount = request.form.get('commission_amount')
+            group_bookings = Booking.query.join(Groups).filter(
+                                Groups.id == group.id,
+                                Booking.start_datetime >= start_date,
+                                Booking.start_datetime <= end_date  
+                            ).all()
+            
+            if not commission_amount:
+                commission_amount = 0
+
+            return download_report_group(group, start_date, end_date, group_bookings, commission_amount)
+
         if 'search_type' in request.form:
                 # Process the form data for searching a group
                 commission_amount = request.form.get('commission_amount')
@@ -1480,18 +1497,25 @@ def stats_groups():
         elif 'select_group' in request.form:
             # Process and return group's statistic data
             commission_amount = request.form.get('commission_amount')
-            contact_id = request.form.get('select_group')
+            group_id = request.form.get('select_group')
             start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
             end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
-            group = Groups.query.filter_by(id=contact_id).first()
+            group = Groups.query.filter_by(id=group_id).first()
             group_bookings = group.stats(start_date, end_date)[0]
             bookings_amount = group.stats(start_date, end_date)[1]
             rented_days = group.stats(start_date, end_date)[2]
             money_spent = group.stats(start_date, end_date)[3]
             str_start_date = (datetime.strptime(start_date, '%Y-%m-%d')).strftime('%d-%m')
             str_end_date = (datetime.strptime(end_date, '%Y-%m-%d')).strftime('%d-%m-%Y')
+            
+            if not commission_amount:
+                commission_amount = 0
+                commission_due = 0
+            else:
+                commission_due = money_spent * (float(commission_amount) / 100)
 
-            commission_due = money_spent * (float(commission_amount) / 100)
+            print(commission_amount)
+
             return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
                                     group=group, start_date=str_start_date, end_date=str_end_date, group_bookings=group_bookings,
                                     bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent, commission_due=commission_due,
@@ -1505,6 +1529,19 @@ def stats_groups():
 @requires_verification
 def stats_general():
     if request.method == 'POST':
+        if 'report_download' in request.form:
+            start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d').strftime('%Y-%m-%d')
+            end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').strftime('%Y-%m-%d')
+            rented_days = request.form.get('rented_days')
+            money_spent = request.form.get('money_spent')
+            user_bookings = Booking.query.filter(
+                            Booking.user_id == current_user.id,
+                            Booking.start_datetime >= start_date,
+                            Booking.start_datetime <= end_date  
+                            ).all()
+            print(start_date, end_date)
+            return download_report_general(start_date, end_date, user_bookings, rented_days, money_spent)
+        
         if 'start_date' in request.form:
                 str_start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%d-%m')
                 str_end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%d-%m-%Y')
@@ -1557,7 +1594,7 @@ def stats_general():
      
                     
                     return render_template('stats_general.html' if current_user.language == 'en' else f'stats_general_{current_user.language}.html', 
-                                    start_date=start_date, end_date=start_date, user_bookings=user_bookings, average_booking_cost_per_day=average_booking_cost_per_day,
+                                    start_date=start_date, end_date=end_date, user_bookings=user_bookings, average_booking_cost_per_day=average_booking_cost_per_day,
                                     str_start_date=str_start_date, str_end_date=str_end_date, period_duration=period_duration, booked_cars=len(booked_cars),
                                     average_bookings_per_day = average_bookings_per_day, average_money_per_day=average_money_per_day, total_cost=total_cost,
                                     bookings_amount=len(user_bookings), rented_days=rented_days, money_spent=money_spent, booked_contacts=len(booked_contacts),
