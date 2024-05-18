@@ -95,7 +95,6 @@ def send_verification_email_route():
 @app.route('/confirm_email/<token>', methods=['GET'])
 def confirm_email_token(token):
     user = User.verify_verification_token(token)
-    print('User.verify_verification_token(token)', User.verify_verification_token(token))
     if user:
         # Mark the user as verified
         user.is_verified = True
@@ -1258,7 +1257,6 @@ def groups():
             # Process the form data for adding a group
             name = request.form.get('name')
             telephone = request.form.get('telephone')
-            print(name, telephone)
             Groups.add_group(name, telephone, current_user.id)
             flash('Group added successfully', 'success')
 
@@ -1452,8 +1450,10 @@ def stats_contacts():
             bookings_amount = contact.stats(start_date, end_date)[1]
             rented_days = contact.stats(start_date, end_date)[2]
             money_spent = contact.stats(start_date, end_date)[3]
+            str_start_date = (datetime.strptime(start_date, '%Y-%m-%d')).strftime('%d-%m')
+            str_end_date = (datetime.strptime(end_date, '%Y-%m-%d')).strftime('%d-%m-%Y')
             return render_template('stats_contacts.html' if current_user.language == 'en' else f'stats_contacts_{current_user.language}.html', 
-                                    contact=contact, start_date=start_date, end_date=end_date, contact_bookings=contact_bookings,
+                                    contact=contact, start_date=str_start_date, end_date=str_end_date, contact_bookings=contact_bookings,
                                     bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent,
                                     user_name=current_user.username if current_user.is_authenticated else None)
 
@@ -1466,7 +1466,8 @@ def stats_groups():
     user_groups = current_user.groups.all()
     if request.method == 'POST':
         if 'search_type' in request.form:
-                # Process the form data for searching a contact
+                # Process the form data for searching a group
+                commission_amount = request.form.get('commission_amount')
                 start_date = request.form.get('start_date')
                 end_date = request.form.get('end_date')
                 search_type = request.form.get('search_type')
@@ -1474,10 +1475,12 @@ def stats_groups():
                 search_results = Groups.search_groups(search_type, search_query, current_user.id)
                 return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
                                     user_groups=user_groups, search_query=search_query, search_results=search_results, start_date=start_date, end_date=end_date,
+                                    commission_amount=commission_amount,
                                     user_name=current_user.username if current_user.is_authenticated else None)
-        elif 'select_contact' in request.form:
-            # Process and return contact's statistic data
-            contact_id = request.form.get('select_contact')
+        elif 'select_group' in request.form:
+            # Process and return group's statistic data
+            commission_amount = request.form.get('commission_amount')
+            contact_id = request.form.get('select_group')
             start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
             end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
             group = Groups.query.filter_by(id=contact_id).first()
@@ -1485,15 +1488,86 @@ def stats_groups():
             bookings_amount = group.stats(start_date, end_date)[1]
             rented_days = group.stats(start_date, end_date)[2]
             money_spent = group.stats(start_date, end_date)[3]
+            str_start_date = (datetime.strptime(start_date, '%Y-%m-%d')).strftime('%d-%m')
+            str_end_date = (datetime.strptime(end_date, '%Y-%m-%d')).strftime('%d-%m-%Y')
+
+            commission_due = money_spent * (float(commission_amount) / 100)
             return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
-                                    group=group, start_date=start_date, end_date=end_date, group_bookings=group_bookings,
-                                    bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent,
+                                    group=group, start_date=str_start_date, end_date=str_end_date, group_bookings=group_bookings,
+                                    bookings_amount=bookings_amount, rented_days=rented_days, money_spent=money_spent, commission_due=commission_due,
+                                    commission_amount=commission_amount,
                                     user_name=current_user.username if current_user.is_authenticated else None)
 
     return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
                                     user_groups=user_groups, user_name=current_user.username if current_user.is_authenticated else None)
 
-@app.route('/stats', methods=['GET', 'POST'])
+@app.route('/stats_general', methods=['GET', 'POST'])
 @requires_verification
 def stats_general():
-    return 
+    if request.method == 'POST':
+        if 'start_date' in request.form:
+                str_start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%d-%m')
+                str_end_date = (datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')).strftime('%d-%m-%Y')
+                start_date = (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')).strftime('%Y-%m-%d')
+                end_date = (datetime.strptime(str_end_date, '%d-%m-%Y') + timedelta(days=1)).strftime('%Y-%m-%d')
+                # Fetch all bookings for the user within the specified time range
+                user_bookings = Booking.query.filter(
+                            Booking.user_id == current_user.id,
+                            Booking.start_datetime >= start_date,
+                            Booking.start_datetime <= end_date  
+                            ).all()
+                if len(user_bookings) != 0:
+                    rented_days = 0
+                    money_spent = 0
+                    booked_cars = []
+                    total_cost = 0
+                    booked_contacts = []
+                    booked_groups = []
+
+                    # Increase rented_days and money_spent, iterating user_bookings
+                    for booking in user_bookings:
+                        booking_duration = (booking.end_datetime - booking.start_datetime).days
+                        rented_days += booking_duration
+                        money_spent += booking.money
+                        car = Car.query.filter(
+                                Car.plate == booking.car_plate
+                            ).first()
+                        if car not in booked_cars:
+                            booked_cars.append(car)
+                        if booking.contact_id not in booked_contacts and booking.contact_id != None:
+                            booked_contacts.append(booking.contact_id) 
+                        if booking.group_id not in booked_groups and booking.group_id != None:
+                            booked_groups.append(booking.group_id)                       
+                    
+                    period_duration = ((datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')) - (datetime.strptime(request.form.get('start_date'), '%Y-%m-%d'))).days
+
+                    # Get all renewals from every car
+                    for car in booked_cars:
+                        renewals = Renewal.query.filter(
+                            Renewal.car_id == car.plate
+                        ).all()
+                        # Check if the renewal date is within the time period, if so it increases the total_cost
+                        for renewal in renewals:
+                            if (datetime.strptime(end_date, '%Y-%m-%d')).date() >= renewal.renewal_date >= datetime.strptime(start_date, '%Y-%m-%d').date():
+                                total_cost += renewal.renewal_cost
+
+                    average_bookings_per_day = f"{(rented_days /  period_duration):.2f}"
+                    average_money_per_day = f"{(money_spent / period_duration):.2f}"
+                    average_booking_cost_per_day = f"{(money_spent / rented_days):.2f}"      
+     
+                    
+                    return render_template('stats_general.html' if current_user.language == 'en' else f'stats_general_{current_user.language}.html', 
+                                    start_date=start_date, end_date=start_date, user_bookings=user_bookings, average_booking_cost_per_day=average_booking_cost_per_day,
+                                    str_start_date=str_start_date, str_end_date=str_end_date, period_duration=period_duration, booked_cars=len(booked_cars),
+                                    average_bookings_per_day = average_bookings_per_day, average_money_per_day=average_money_per_day, total_cost=total_cost,
+                                    bookings_amount=len(user_bookings), rented_days=rented_days, money_spent=money_spent, booked_contacts=len(booked_contacts),
+                                    booked_groups=len(booked_groups),
+                                    user_name=current_user.username if current_user.is_authenticated else None)
+                
+                else:
+                    empty = True
+                    return render_template('stats_general.html' if current_user.language == 'en' else f'stats_general_{current_user.language}.html', 
+                                        empty = empty, user_name=current_user.username if current_user.is_authenticated else None)
+
+    return render_template('stats_general.html' if current_user.language == 'en' else f'stats_general_{current_user.language}.html', 
+                                    user_name=current_user.username if current_user.is_authenticated else None)
