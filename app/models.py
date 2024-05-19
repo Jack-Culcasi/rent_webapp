@@ -315,6 +315,34 @@ class Booking(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id', name='booking_group'), nullable=True)
     group = db.relationship('Groups', back_populates='bookings', lazy=True)
 
+    @staticmethod
+    def switch_car(booking, car_object, user_id):
+        start_date = booking.start_datetime
+        end_date = booking.end_datetime
+        contact_id = booking.contact_id
+        price = booking.money
+        note = booking.note
+        km = booking.km
+        group_id = booking.group_id
+
+        try:
+
+            # removes old booking
+            Booking.remove_booking(booking.id)
+
+            # creates a new booking with choosen car
+            Booking.create_booking(
+                        car_object.plate, price, start_date, end_date, contact_id, user_id, note, km, group_id
+                    )
+            
+            return True
+        
+        except SQLAlchemyError as e:
+            print(f"Error during booking creation: {str(e)}")
+            db.session.rollback()
+            raise e
+        
+
     def get_contact_name(self):
         if self.contact_id:
             contact = Contacts.query.get(self.contact_id)
