@@ -366,6 +366,7 @@ class Booking(db.Model):
         # Check if the selected car and contact exist
         car = Car.query.filter_by(plate=car_plate).first()
         contact = Contacts.query.filter_by(id=contact_id).first()
+        group = None
         if group_id:
             group = Groups.query.filter_by(id=group_id).first()
         if not car:
