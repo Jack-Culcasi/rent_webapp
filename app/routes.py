@@ -271,8 +271,37 @@ def user(username):
 @requires_verification
 def garage_view():
     user_cars = current_user.garage.all()
+    selected_booking_id = request.args.get('selected_booking')
+    selected_booking = Booking.query.filter_by(id=selected_booking_id).first()
+    # Check if the user is trying to switch car for a booking
+    if selected_booking:
+        availiable_cars = []
+        for car in user_cars:
+            overlapping_booking = Booking.query.filter(
+                    Booking.car_plate == car.plate,
+                    Booking.start_datetime < selected_booking.end_datetime,
+                    Booking.end_datetime > selected_booking.start_datetime
+                ).first()
+            if not overlapping_booking:
+                availiable_cars.append(car)
+        
+        # handle the case of no available cars
+        if len(availiable_cars) == 0:
+            availiable_cars = False
+    
+    if request.method == 'POST':
+        car_plate = request.form.get('car_plate')
+        car_object = Car.query.filter_by(plate=car_plate).first()
+        selected_booking_id = request.form.get('selected_booking')
+        selected_booking = Booking.query.filter_by(id=selected_booking_id).first()
+        new_booking = Booking.switch_car(selected_booking, car_object, current_user.id)
+        if new_booking:
+            flash('Car successfully switched', 'success')
+            return redirect('bookings_manage')
+        
+
     return render_template('garage_view.html' if current_user.language == 'en' else f'garage_view_{current_user.language}.html', 
-                           title='Garage', 
+                           title='Garage', avaliable_cars=availiable_cars if selected_booking else None, selected_booking=selected_booking,
                            page="garage_view", user_cars=user_cars, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/garage_manage', methods=['GET', 'POST'])
@@ -769,6 +798,7 @@ def bookings_manage():
         selected_booking = Booking.query.filter_by(id=booking_id).first()
         contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
         group = Groups.query.filter_by(id=selected_booking.group_id).first()
+        car_object = Car.query.filter_by(plate=selected_booking.car_plate).first()
         if selected_booking.is_expired():
             flash(f'Booking with ID {selected_booking.id} is no longer active, you can only delete it', 'error')
             return redirect(url_for('bookings_history'))
@@ -776,6 +806,7 @@ def bookings_manage():
         selected_booking = None
         contact = None
         group = None
+        car_object = None
 
     if request.method == 'POST':
         booking_id = request.form.get('search_type')
@@ -783,7 +814,13 @@ def bookings_manage():
             selected_booking = Booking.query.filter_by(id=booking_id).first()
             contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
             group = Groups.query.filter_by(id=selected_booking.group_id).first()
-        
+            car_object = Car.query.filter_by(plate=selected_booking.car_plate).first()
+
+        # Switch car button
+        if request.form.get('selected_booking'):
+            selected_booking_id = request.form.get('selected_booking')
+            return redirect(url_for('garage_view', selected_booking=selected_booking_id))
+
         if request.form.get('action') == 'delete':
             booking_id = request.form.get('delete')
             # Modify the query to eagerly load the 'car' relationship
@@ -799,6 +836,7 @@ def bookings_manage():
         if request.form.get('manage_booking'):
             booking_id = request.form.get('manage_booking')
             selected_booking = Booking.query.filter_by(id=booking_id).first()
+            car_object = Car.query.filter_by(plate=selected_booking.car_plate).first()
 
             if selected_booking:
                 contact = Contacts.query.filter_by(id=selected_booking.contact_id).first()
@@ -837,10 +875,10 @@ def bookings_manage():
 
             else:
                 flash('Booking not found. Amendment failed.', 'error')
-                
+          
     return render_template('bookings_manage.html' if current_user.language == 'en' else f'bookings_manage_{current_user.language}.html',
                            page='bookings_manage', user_bookings=user_bookings, selected_booking=selected_booking, contact=contact, group=group,
-                           user_name=current_user.username if current_user.is_authenticated else None)
+                           car_object=car_object, user_name=current_user.username if current_user.is_authenticated else None)
 
 @app.route('/bookings_history', methods=['GET', 'POST'])
 @requires_verification
@@ -1513,8 +1551,6 @@ def stats_groups():
                 commission_due = 0
             else:
                 commission_due = money_spent * (float(commission_amount) / 100)
-
-            print(commission_amount)
 
             return render_template('stats_groups.html' if current_user.language == 'en' else f'stats_groups_{current_user.language}.html', 
                                     group=group, start_date=str_start_date, end_date=str_end_date, group_bookings=group_bookings,
