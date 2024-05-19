@@ -11,11 +11,49 @@
   <script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
 </head>
 
-<form action="{{ url_for('garage_car') }}" method="POST">
 <header id="header">
   <h2>Garage</h2>
 </header>
 
+{% if avaliable_cars %}
+<br>
+<h3>Auto disponibili dal {{ selected_booking.start_datetime }} al {{ selected_booking.end_datetime }}</h3>
+<table class="table" id="carTable">
+  <thead>
+    <tr>
+      <!-- Define sortable columns with clickable links -->
+      <th scope="col"><a href="#" class="sort-link" data-sort="plate">Targa</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="make">Marchio</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="model">Modello</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="fuel">Carburante</a></th>
+      <th scope="col"><a href="#" class="sort-link" data-sort="select">Seleziona</a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Iterate through user_cars and display car data in rows -->
+    {% for car in avaliable_cars %}
+    <tr>
+        <!-- Display car data with associated sorting attribute -->
+        <td data-sort="plate">{{ car.plate }}</td>
+        <td data-sort="make">{{ car.make }}</td>
+        <td data-sort="model">{{ car.model }}</td>
+        <td data-sort="fuel">{{ car.fuel }}</td>
+        <form action="{{ url_for('garage_view') }}" method="POST">
+          <td style="width: 20px;">            
+            <!-- Add hidden input for Car plate -->          
+            <input type="hidden" name="car_plate" value="{{ car.plate }}">
+            <input type="hidden" name="selected_booking" value="{{ selected_booking.id }}">
+            <button type="submit"><i class="fa-solid fa-check"></i></button>
+        </td>
+      </form>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% elif avaliable_cars == False %}
+<br>
+<p>Non ci sono auto disponibili per il periodo selezionato: dal {{ selected_booking.start_datetime }} al {{ selected_booking.end_datetime }}</p>
+{% else %}
 <!-- Display a table for car data with sortable columns -->
 <table class="table" id="carTable">
     <thead>
@@ -59,5 +97,6 @@
       {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
 {% endblock %}
